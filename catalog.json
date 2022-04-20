@@ -1,0 +1,102 @@
+{
+    "patients": [
+      {
+        "patient_ID": "p_1",
+        "personal_info": {
+          "nome": "",
+          "cognome": "",
+          "malattia": ""
+        },
+        "sensors": [
+          "s_1",
+          "s_2",
+          "s_3"
+        ],
+        "doctor_ID": "d_1",
+        "device_connector": {
+          "broker": "sadfas",
+          "port": "asfasd",
+          "id": "asfasd",
+          "topic":"fasa"
+        }
+      },
+      {
+        "patient_ID": "p_2",
+        "personal_info": {
+          "nome": "",
+          "cognome": "",
+          "malattia": ""
+        },
+        "sensors": [
+          "s_4"
+        ],
+        "doctor_ID": "d_1",
+        "device_connector": {
+          "broker": "",
+          "port": "",
+          "id": "",
+          "topic":"fasa"
+        }
+      }
+    ],
+    "doctors": [
+      {
+        "doctor_ID": "d_1",
+        "address": "sgalkg"
+      }
+    ],
+
+    "sensors": [
+      {
+        "sensor_ID": "s_1",
+        "sensor_type": "bpm",
+        "range":[60,180],
+        "unit":"bpm"
+      },
+      {
+        "sensor_ID": "s_2",
+        "sensor_type": "glucosimetro",
+        "range":[20,300],
+        "unit":"mg/l"
+      },
+      {
+        "sensor_ID": "s_3",
+        "sensor_type": "gps",
+        "range":[-90000000000,90000180000],
+        "unit":"pos"
+      },      
+      {
+        "sensor_ID": "s_4",
+        "sensor_type": "bpm",
+        "range":[60,180],
+        "unit":"bpm"
+      }
+    ],
+    "clinics": [
+      {
+        "clinic_ID": "cl_1",
+        "position": {
+          "longitude": "40000",
+          "latitude": "013000"
+        }
+      }
+    ],
+    "services": {
+      "location": {
+        "type": "",
+        "address": ""
+      },
+      "catalog_manager": {
+        "type": "",
+        "address": ""
+      },
+      "alert_service": {
+        "type": "",
+        "address": ""
+      },
+      "data_analysis": {
+        "type": "",
+        "address": ""
+      }
+    }
+  }
