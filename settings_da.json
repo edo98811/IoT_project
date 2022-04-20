@@ -1,0 +1,10 @@
+{
+    "broker":"",
+    "port":"8081",
+    "service_ID":"data_analysis",
+    "topic":"",
+    "catalog_address":"",
+    "location_address":"",
+    "database_address":""
+
+}
