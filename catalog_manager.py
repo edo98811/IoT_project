@@ -82,77 +82,77 @@ class catalog():
 
 	def POST(self,*uri,**params):
 	
-	# Estrae il catalog dal file
-	f=open(self.catalog_file,'r')
-	catalog = json.load(f)
-	f.close		
+		# Estrae il catalog dal file
+		f=open(self.catalog_file,'r')
+		catalog = json.load(f)
+		f.close		
 
-	if uri[0] == "p-rec":			#### ADD PATIENT ####	
-									# 	uri: /p-rec
-									# 	body del post:
-									# 		{
-									# 			name: ,
-									# 			surname: ,
-									# 			chatID: ,
-									# 			docName: ,
-									# 			docSurname: ,
-									# 			dev: 
-									# 		})		
-		
-		pats=catalog["patients"]
-		docs=catalog["doctors"]
-		sens=catalog["sensors"]
+		if uri[0] == "p-rec":			#### ADD PATIENT ####	
+										# 	uri: /p-rec
+										# 	body del post:
+										# 		{
+										# 			name: ,
+										# 			surname: ,
+										# 			chatID: ,
+										# 			docName: ,
+										# 			docSurname: ,
+										# 			dev: 
+										# 		})		
+			
+			pats=catalog["patients"]
+			docs=catalog["doctors"]
+			sens=catalog["sensors"]
 
-		# Legge il body del POST richiesto da 'patient-rec.html' e lo visualizza nel terminal
-		newPat=json.loads(cherrypy.request.body.read())
-		pprint(newPat)
+			# Legge il body del POST richiesto da 'patient-rec.html' e lo visualizza nel terminal
+			newPat=json.loads(cherrypy.request.body.read())
+			pprint(newPat)
 
-		# Se il paziente è gia registrato mostra un banner di errore e indica di compiere il log-in
-		for p in pats:
-			if (p["personal_info"]["nome"]+p["personal_info"]["cognome"]).lower == (newPat["name"]+newPat["surname"]).lower:
-				return f"Hi {newPat['name']}, you are already registered!\nTo add a new device, please log in and follow the procedure"
-		
-		# Individua l'ID del medico curante del nuovo paziente
-		for d in docs:
-			if (d["name"]+d["surname"]).lower == (newPat["docName"]+newPat["docSurname"]).lower:
-				docID = d["doctor_ID"]
-			else:
-				docID=f"d_{len(docs)+1}"
-		
+			# Se il paziente è gia registrato mostra un banner di errore e indica di compiere il log-in
+			for p in pats:
+				if (p["personal_info"]["nome"]+p["personal_info"]["cognome"]).lower == (newPat["name"]+newPat["surname"]).lower:
+					return f"Hi {newPat['name']}, you are already registered!\nTo add a new device, please log in and follow the procedure"
+			
+			# Individua l'ID del medico curante del nuovo paziente
+			for d in docs:
+				if (d["name"]+d["surname"]).lower == (newPat["docName"]+newPat["docSurname"]).lower:
+					docID = d["doctor_ID"]
+				else:
+					docID=f"d_{len(docs)+1}"
+			
 
-		# Individua l'ID dei sensori posseduti dal paziente tra quelli presenti nel catalog
-		devID=[]
-		for d_newPat in newPat["dev"]:
-			for s in sens:					
-				if s["sensor_type"] == d_newPat:
-					devID.append(s["sensor_ID"])
+			# Individua l'ID dei sensori posseduti dal paziente tra quelli presenti nel catalog
+			devID=[]
+			for d_newPat in newPat["dev"]:
+				for s in sens:					
+					if s["sensor_type"] == d_newPat:
+						devID.append(s["sensor_ID"])
 
-		# Definisce la nuova scheda paziente e la inserisce nella variabile locale che rappresenta il catalog
-		f_newPat={
-			"patient_ID": f"p_{len(pats)+1}",
-			"personal_info": {
-				"nome": newPat["name"],
-				"cognome": newPat["surname"],
-				"malattia": ""
-			},
-			"sensors": devID,
-			"doctor_ID": docID,
-			"device_connector": {
-				"broker": "",
-				"port": "",
-				"id": "",
-				"topic":""
+			# Definisce la nuova scheda paziente e la inserisce nella variabile locale che rappresenta il catalog
+			f_newPat={
+				"patient_ID": f"p_{len(pats)+1}",
+				"personal_info": {
+					"nome": newPat["name"],
+					"cognome": newPat["surname"],
+					"malattia": ""
+				},
+				"sensors": devID,
+				"doctor_ID": docID,
+				"device_connector": {
+					"broker": "",
+					"port": "",
+					"id": "",
+					"topic":""
+				}
 			}
-		}
 
-		catalog["patients"].append(f_newPat)
+			catalog["patients"].append(f_newPat)
 
-		# Aggiorna 'catalog.json'
-		f=open(self.catalog_file,'w')
-		json.dump(catalog,f,indent=4)
-		f.close()
+			# Aggiorna 'catalog.json'
+			f=open(self.catalog_file,'w')
+			json.dump(catalog,f,indent=4)
+			f.close()
 
-		return f"Registration succeeded!\nWelcome {newPat['name']}"
+			return f"Registration succeeded!\nWelcome {newPat['name']}"
 
 
 
