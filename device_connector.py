@@ -1,11 +1,14 @@
 import random
-import MQTT
+from MyMQTT import *
+from MQTT import *
 import random
 import requests
 import json 
 import time
 
-#@cherrypy.tools.json_out() per riapondere e avere come return un json 
+#@cherrypy.tools.json_out() per rispondere e avere come return un json 
+# questa classse serve per creare gli oggetti sensore, ipotizzo che funzionino tutti allo stesso modo cioè generando un valore casuale all'interno del range ogni volta he viene richiesto
+
 
 # creare una classe apposta per il gps? pensare ad un modo più intelligente per simulare un gps
 class sensor_def():
@@ -16,7 +19,7 @@ class sensor_def():
         self.unit = unit
 
     def get_reading(self):
-        output = random.randint(self.range(0),self.range(1))
+        output = random.randint(self.range[0],self.range[1])
         return output
 
 
@@ -24,40 +27,42 @@ class device_connector():
     def __init__(self, broker, port, patient_ID, topic,catalog_address):
 
         #self.catalog_address = catalog_address non serve
-        self.dc = MQTT(broker, port, patient_ID, self)
+        self.dc = MQTT(patient_ID, broker, port, self)
         self.topic = topic
         self.dc.start()
+        self.basetime = time.time()
         self._message = {			
-            'p_ID':patient_ID,#sicuro che è giusto, bisogna capire come aggiungere il basetime o comunque forse implemetare questo tipo di calcolo nel data processing
-            't':0,
+            'p_ID':patient_ID,
+            't':self.basetime,
             'e':[]
 			}
 
         self._sensors = []
 
-        sensors = requests.get(catalog_address + '/get_sensors',data = {'p_ID':patient_ID})#chiede la lista dei sensori del patient id che gli passo  
+        sensors = json.loads(requests.get(catalog_address + '/get_sensors',params= {'p_ID':patient_ID}).text)#chiede la lista dei sensori del patient id che gli passo  
 
-        for sensor in sensors:
+        for sensor in sensors['sl']:
 
-            self._sensors.append(sensor_def(sensor['sensor_type'],sensor['sensor_ID'],sensor['range'],sensor['unit']))
+            sensor = sensor_def(sensor['sensor_type'],sensor['sensor_ID'],sensor['range'],sensor['unit'])
+            self._sensors.append(sensor)
 
             self._message['e'].append({ # creo un template del messaggio del sensore
-                'n':sensor['sensor_ID'],
-                'vs':sensor['sensor_type'],
+                'n':sensor.sensor_ID,
+                'vs':sensor.sensor_type,
                 'v':'',
-                't':'',
-                'u':sensor["unit"]
+                #'t':time.time()-self.basetime, non serve direi
+                'u':sensor.unit
             })
 
     def get_readings(self): 
 
-        for sensor,n in enumerate(self._sensors): #magari va capito meglio come fare questa parte, cioè come migliorare il fatto che i messaggi debbano essere in tempo reale
+        for n,sensor in enumerate(self._sensors):
 
-            value = sensor.get_reading() #questo get reading fa il lavoro che dovrebbe fare il senosre cioè prende un valore di lettura
+            value = sensor.get_reading() #questo get reading prende un valore di lettura dal sensore
             self.message = self._message #copia il template
-            self.message['e'][n]['v'] = value # sicuro che si farebbe così? comuque questo mette il valore letto nel messaggio 
-
-        self.message['t'] = time.time() # bisognerebbe sottrarre il base time
+            self.message['e'][n]['v'] = value
+        print("sensori funzionanti")
+        self.message['t'] = time.time()-self.basetime 
 
         
     def send(self):
@@ -67,31 +72,21 @@ class device_connector():
 
 if __name__ == '__main__':
     
-    catalog_address = '127.0.0.1/catalog_manager'
-    #capire bene come strutturare questa parte qui (prendere dal sensor_type il sensore)
-    patient_ID = 1
-    pat_info = json.loads(requests.get(catalog_address + '/get_dc_info' ,data = {"p_ID":patient_ID})) #manda una richiesta al catalog (poi posso togliere json.loads forse)
+    catalog_address = 'http://127.0.0.1:8080/catalog_manager'
+    patient_ID = 'p_1'
+    pat_info = json.loads(requests.get(catalog_address + '/get_dc_info' ,params= {"p_ID":patient_ID}).text) #manda una richiesta al catalog
+    print(pat_info)
     device_connector1 = device_connector(pat_info["broker"], pat_info["port"], patient_ID, pat_info["topic"],catalog_address)
 
-    patient_ID = 2
-    pat_info = json.loads(requests.get(catalog_address + '/get_dc_info' ,data = {"p_ID":patient_ID}))
+    patient_ID = 'p_2'
+    print(pat_info)
+    pat_info = json.loads(requests.get(catalog_address + '/get_dc_info' ,params = {"p_ID":patient_ID}).text)
+
     device_connector2 = device_connector(pat_info["broker"], pat_info["port"], patient_ID, pat_info["topic"], catalog_address)
 
     while True:
-
+        time.sleep(2)
         device_connector1.get_readings()
         device_connector1.send()
         device_connector2.get_readings()
         device_connector2.send()
-
-        #l'altra idea sarebbe stata avere un comando per ogni sensore
-        # device_connector1.post('1',random.randomint())
-        # device_connector1.post('2',random.rand())
-        # device_connector1.post('3',random.rand())
-        # device_connector1.post('4',random.rand())
-        # device_connector1.send()
-
-        # device_connector2.post('6',random.rand())
-        # device_connector2.post('7',random.rand())
-        # device_connector2.post('8',random.rand())
-        # device_connector2.send()
