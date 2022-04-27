@@ -4,20 +4,32 @@
         "patient_ID": "p_1",
         "personal_info": {
           "nome": "",
-          "cognome": "",
-          "malattia": ""
+          "cognome": ""
         },
         "sensors": [
-          "s_1",
-          "s_2",
-          "s_3"
+          {
+          "sensor_ID":"p_1_1",
+          "sensor_type":"s_1",
+          "is_critical":"critical",
+          "safe_range": [70,30]
+          },
+          {
+          "sensor_ID":"p_1_2",
+          "sensor_type":"s_2",
+          "is_critical":"not_critical",
+          "safe_range": [130,200]
+          },
+          {
+          "sensor_ID":"p_1_3",
+          "sensor_type":"s_3",
+          "is_critical":"informative",
+          "safe_range": [130,200]
+          }
         ],
         "doctor_ID": "d_1",
         "device_connector": {
-          "broker": "sadfas",
-          "port": "asfasd",
-          "id": "asfasd",
-          "topic":"fasa"
+          "service_ID":"dc_2_342312",
+          "topic":"service/dc_1"
         }
       },
       {
@@ -28,14 +40,19 @@
           "malattia": ""
         },
         "sensors": [
-          "s_4"
+          {
+          "sensor_ID":"p_2_1",
+          "sensor_type":"s_1",
+          "is_critical":"critical",
+          "safe_range": [70,30]
+          }
         ],
         "doctor_ID": "d_1",
         "device_connector": {
-          "broker": "",
-          "port": "",
-          "id": "",
-          "topic":"fasa"
+          "broker":"test.mosquitto.org",
+          "port":1883,
+          "service_ID":"dc_2_3242153",
+          "topic":"service/dc_2"
         }
       }
     ],
@@ -46,31 +63,25 @@
       }
     ],
 
-    "sensors": [
+    "sensors_type": [
       {
-        "sensor_ID": "s_1",
-        "sensor_type": "bpm",
+        "type_ID": "s_1",
+        "type": "bpm",
         "range":[60,180],
         "unit":"bpm"
       },
       {
-        "sensor_ID": "s_2",
-        "sensor_type": "glucosimetro",
+        "type_ID": "s_2",
+        "type": "glucosimetro",
         "range":[20,300],
         "unit":"mg/l"
       },
       {
-        "sensor_ID": "s_3",
-        "sensor_type": "gps",
-        "range":[-90000000000,90000180000],
-        "unit":"pos"
-      },      
-      {
-        "sensor_ID": "s_4",
-        "sensor_type": "bpm",
-        "range":[60,180],
-        "unit":"bpm"
-      }
+        "type_ID": "s_3",
+        "type": "altro",
+        "range":[10,300],
+        "unit":"v"
+     }
     ],
     "clinics": [
       {
@@ -98,5 +109,6 @@
         "type": "",
         "address": ""
       }
-    }
+    },
+    "MQTT_broker":"test.mosquitto.org"
   }
