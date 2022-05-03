@@ -64,9 +64,8 @@ if __name__ == '__main__':
 
     # Estrae dal catalog host e port in modo che in caso sia 
     # necessario cambiarli è possibile cambiarli direttamente da lì una volta per tutte
-    f = open(catalog_file,'r')
-    cat = json.load(f)
-    f.close()
+    with open(catalog_file,'r') as f:
+        cat = json.load(f)
 
     host = cat["base_host"]
     port = cat["base_port"]

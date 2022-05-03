@@ -1,6 +1,7 @@
 # subscriber a dati 
 import json
 import time
+import requests
 
 from MQTT import *
 from MyMQTT import *
@@ -148,10 +149,21 @@ class alert_service:
 
 
 if __name__ =='__main__':
-    # carica i i dati relativi al client MQTT e agli indirizzi del location service e del catalog manager
+
+####       CODICE DI "DEBUG"                                                                             # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
+    with open("./catalog.json",'r') as f:                                               # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+        cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
+    host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
+    port = cat["base_port"]
+    catalog = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
+####
+  
+    # Ottiene dal catalog l'indirizzo del servizio di location
+    s = requests.session()
+    location = s.get(catalog+"/service-address?name=location_service")
+
+    # carica i dati relativi al client MQTT e agli indirizzi del location service e del catalog manager
     dati = json.load(open('settings_as.json','r')) 
-    location = dati['location_address']
-    catalog = dati['catalog_address']
     topic = dati['topic']
     broker = dati['broker']
     port = dati['port']

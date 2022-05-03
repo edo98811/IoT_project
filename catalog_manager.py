@@ -49,7 +49,6 @@ class catalog():
 
             return json.dumps(sensor_list)
 
-
         #funzione per le cliniche
         elif uri[0] == 'get_clinics':
 
@@ -104,6 +103,19 @@ class catalog():
             }
         
             return json.dumps(options).encode('utf8')
+
+        elif uri[0] == 'service-address':   # Per ottenere l'indirizzo di un certo servizio REST
+            
+            # url : host:port/catalog_manager/service-address?name=nomedelservizio
+
+            # Estrae il catalog dal file
+            with open(self.catalog_file,'r') as f: 
+                cat = json.load(f) 
+
+            # Costruisce la stringa da passare in risposta, contenente l'indirizzo del servizio richiesto
+            serviceAddress = "http://"+cat["base_host"]+":"+cat["base_port"]+cat["services"][params["name"]]["address"]
+
+            return serviceAddress
 
         else: 
             #cherrypyerror

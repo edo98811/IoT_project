@@ -141,13 +141,13 @@
         }
     ],
     "services": {
-        "location": {
+        "location_service": {
             "type": "",
-            "address": ""
+            "address": "/location_service"
         },
         "catalog_manager": {
             "type": "",
-            "address": ""
+            "address": "/catalog_manager"
         },
         "alert_service": {
             "type": "",
