@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+                integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+        <title>Clinician page</title>
+
+        <style>
+                * {
+                        padding: 0;
+                        margin: 0;
+                        box-sizing: border-box;
+                        font-family: sans-serif;
+                }
+
+                body {
+                        background-size: cover;
+                        background-color: skyblue;
+                        color: black;
+                        width: 100%;
+                        height: 100%;
+                }
+
+                #map {
+                        width: 400px;
+                        height: 300px;
+                }
+
+                .rec-form {
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        width: 600px;
+                }
+
+                .rec-form h1 {
+                        text-align: center;
+                        text-transform: uppercase;
+                        margin: 40px;
+                }
+
+                .rec-form h2 {
+                        text-align: center;
+                        margin: 15px;
+                }
+
+                .rec-form p {
+                        margin: 5px;
+                }
+
+                .rec-form input {
+                        padding: 2px 5px;
+                        width: 100%;
+                        border: 0;
+                        border-radius: 5px;
+                        outline: none;
+                }
+
+                .rec-form button {
+                        font-weight: bold;
+                        margin: 20px 0px;
+                        padding: 10px 15px;
+                        border: 0;
+                        border-radius: 5px;
+                        background-color: #fff;
+                }
+
+                .rec-form button:hover {
+                        color: red;
+                }
+        </style>
+</head>
+
+<body>
+        <div class="rec-form">
+                <h1>Clinician Private Zone</h1>
+
+                <hr>
+
+                <h2>New patient registration</h2>
+                <form action="patient-rec.html">
+                        <button>Go to patient registration page</button>
+                </form>
+
+                <hr>
+
+                <form onsubmit="sendPOSTrequest()">
+                        <h2>Patient device update</h2>
+
+                        <p><label for="name">Patient name:</label>
+                                <input type="text" name="name" id="name" required>
+                        </p>
+
+                        <p><label for="surname">Patient surname:</label>
+                                <input type="text" name="surname" id="surname" required>
+                        </p>
+
+                        <p><label for="devs">Sensor type</label>
+                                <select name="devs" id="devs" required>
+                                </select>
+                        </p>
+
+                        <p><label for="crit">Importance level:</label>
+                                <select name="crit" id="crit" required>
+                                        <option value="not_critical">Not critical</option>
+                                        <option value="informative">Informative</option>
+                                        <option value="critical">Critical</option>
+                                </select>
+                        </p>
+
+                        <p>Safe range:</p>
+                        <p>
+                                <label for="min">Minimum:</label>
+                                <input type="number" name="min" id="min" required>
+                                <label for="max">Maximum:</label>
+                                <input type="number" name="max" id="max" required>
+                        </p>
+
+                        <button type="submit">Update device</button>
+
+                </form>
+
+                <form action="home.html">
+                        <button>Back to home</button>
+                </form>
+        </div>
+
+        <script type="text/javascript">
+
+                const baseUrl = 'http://127.0.0.1:8081/catalog_manager'
+
+                url = baseUrl + '/avail-devs';
+
+                let devsDropdown = document.getElementById('devs');
+                devsDropdown.length = 0;
+
+                let devsDefaultOption = document.createElement('option');
+                devsDefaultOption.text = 'Choose the sensor type';
+
+                devsDropdown.add(devsDefaultOption);
+                devsDropdown.selectedIndex = 0;
+
+                fetch(url)
+                        .then((response) => {
+                                return response.json();
+                        })
+                        .then((data) => {
+                                let devs = data;
+                                let option;
+                                for (let i = 0; i < devs.fullName.length; i++) {
+                                        option = document.createElement('option');
+                                        option.text = devs.fullName[i];
+                                        option.value = devs.devID[i];
+                                        devsDropdown.add(option);
+                                }
+
+                        })
+
+                function sendPOSTrequest() {
+
+                        event.preventDefault();
+                        name = $("#name").val();
+                        surname = $("#surname").val();
+                        devID = $("#devs").val();
+                        crit = $("#crit").val();
+                        min = $("#min").val();
+                        max = $("#max").val();
+                        
+
+                        $.ajax({
+                                type: "POST",
+                                url: baseUrl + '/s-up',
+
+                                data: JSON.stringify({
+                                        name: name,
+                                        surname: surname,
+                                        devID: devID,
+                                        is_critical: crit,
+                                        safe_range: [min, max]
+                                }),
+                                contentType: "text/plain",
+                                dataType: "text",
+                                success: alert("Done!")
+
+                        });
+                }
+        </script>
+</body>
+
+</html>

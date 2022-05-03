@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    
+    <title>Clinics registration page</title>
+
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: sans-serif;
+        }
+
+        body{
+            background-size: cover;
+            background-color: skyblue;
+            color: black ;
+            width: 100%;
+            height: 100%;
+        }
+
+        #map{
+            width: 400px;
+            height: 300px;
+        }
+
+        .rec-form{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            width: 600px;
+        }
+
+        .rec-form h1{
+            text-align: center;
+            text-transform: uppercase;
+            margin: 40px;
+        }
+
+        .rec-form h2{
+            text-align: center;
+            margin: 15px;
+        }
+
+        .rec-form p{
+            margin: 5px;
+        }
+
+        .rec-form input{
+            padding: 2px 5px;
+            width: 100%;
+            border: 0;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .rec-form button{
+            font-weight: bold;
+            margin: 20px 0px;
+            padding: 10px 15px;
+            border: 0;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+
+        .rec-form button:hover{
+            color: red;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="rec-form">
+        <h1>Clinics registration page</h1>
+        
+        <hr>
+
+        <form onsubmit="sendPOSTrequest()">
+            <h2>Clinics info</h2>
+            <p><label for="name">Name:</label>
+            <input type="text" name="name" id="name" required></p>
+            <br>
+            <h3>Location info</h3>
+            <p><label for="lat">Latitude:</label>
+            <input type="number" name="lat" id="lat" required></p>
+            <p><label for="lon">Longitude:</label>
+            <input type="number" name="lon" id="lon" required></p>
+            
+            <button type="reset">RESET</button>
+            <button type="submit">REGISTER</button>
+        </form>
+        <form action="home.html">
+            <button>Back to home</button>
+        </form>
+    </div>
+
+    <script type="text/javascript">
+
+        const baseUrl = 'http://127.0.0.1:8081/catalog_manager'
+
+        function sendPOSTrequest() {
+            
+            event.preventDefault();
+            name = $("#name").val();
+            lon = $("#lon").val();
+            lat = $("#lat").val();
+            
+            $.ajax({
+                type: "POST",
+                url: baseUrl+'/c-rec',
+                
+                data: JSON.stringify({
+                    name: name,
+                    lon: lon,
+                    lat: lat
+                }),
+                contentType: "text/plain",
+                dataType: "text",
+                success: alert("Done!")
+                 
+            });
+        }
+    </script>
+</body>
+</html>

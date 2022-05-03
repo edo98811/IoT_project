@@ -1,6 +1,7 @@
 import json
 #import requests
-#import cherrypy
+import cherrypy
+from pprint import pprint
 
 # va aggiunto un controllo params in tutte le funzioni del codice
 # nell'uri metto solo il tipo di richiesta (quindi da chi iene) ma devo tenere conto che c'è anche la prima parte dell'indirizzo 
@@ -75,91 +76,226 @@ class catalog():
             doctor = next((d for d in catalog['doctors'] if d['doctor_ID'] == d_ID), None) # questa funzione crea un iterator della lista (un oggetto sostanzialmente che applica una funzione a qualche altro oggetto, in questo caso applica un controllo ad una lista)
 
             return json.dumps(doctor['address']) # se serve un campo in particolare
-	
-	else: 
-		#cherrypyerror
-		pass
+    
+        elif uri[0] == 'avail-docs':    # Per il riempimento del menù a tendina del form registrazione paziente
 
-	def POST(self,*uri,**params):
-	
-		# Estrae il catalog dal file
-		f=open(self.catalog_file,'r')
-		catalog = json.load(f)
-		f.close		
+            # Estrae il catalog dal file
+            with open(self.catalog_file,'r') as f: 
+                catalog = json.load(f)  
 
-		if uri[0] == "p-rec":			#### ADD PATIENT ####	
-										# 	uri: /p-rec
-										# 	body del post:
-										# 		{
-										# 			name: ,
-										# 			surname: ,
-										# 			chatID: ,
-										# 			docName: ,
-										# 			docSurname: ,
-										# 			dev: 
-										# 		})		
-			
-			pats=catalog["patients"]
-			docs=catalog["doctors"]
-			sens=catalog["sensors"]
+            docs = catalog['doctors']
+            options = {
+                "fullName":[f"{doc['name']} {doc['surname']}" for doc in docs],
+                "docID":[doc['doctor_ID'] for doc in docs]
+            }
+        
+            return json.dumps(options).encode('utf8')
+        
+        elif uri[0] == 'avail-devs':    # Per il riempimento del menù a tendina del form registrazione paziente
 
-			# Legge il body del POST richiesto da 'patient-rec.html' e lo visualizza nel terminal
-			newPat=json.loads(cherrypy.request.body.read())
-			pprint(newPat)
+            # Estrae il catalog dal file
+            with open(self.catalog_file,'r') as f: 
+                catalog = json.load(f)  
 
-			# Se il paziente è gia registrato mostra un banner di errore e indica di compiere il log-in
-			for p in pats:
-				if (p["personal_info"]["nome"]+p["personal_info"]["cognome"]).lower == (newPat["name"]+newPat["surname"]).lower:
-					return f"Hi {newPat['name']}, you are already registered!\nTo add a new device, please log in and follow the procedure"
-			
-			# Individua l'ID del medico curante del nuovo paziente
-			for d in docs:
-				if (d["name"]+d["surname"]).lower == (newPat["docName"]+newPat["docSurname"]).lower:
-					docID = d["doctor_ID"]
-				else:
-					docID=f"d_{len(docs)+1}"
-			
+            devs = catalog['sensors_type']
+            options = {
+                "fullName":[dev["type"] for dev in devs],
+                "devID":[dev["type_ID"] for dev in devs]
+            }
+        
+            return json.dumps(options).encode('utf8')
 
-			# Individua l'ID dei sensori posseduti dal paziente tra quelli presenti nel catalog
-			devID=[]
-			for d_newPat in newPat["dev"]:
-				for s in sens:					
-					if s["sensor_type"] == d_newPat:
-						devID.append(s["sensor_ID"])
+        else: 
+            #cherrypyerror
+            pass
 
-			# Definisce la nuova scheda paziente e la inserisce nella variabile locale che rappresenta il catalog
-			f_newPat={
-				"patient_ID": f"p_{len(pats)+1}",
-				"personal_info": {
-					"nome": newPat["name"],
-					"cognome": newPat["surname"],
-					"malattia": ""
-				},
-				"sensors": devID,
-				"doctor_ID": docID,
-				"device_connector": {
-					"broker": "",
-					"port": "",
-					"id": "",
-					"topic":""
-				}
-			}
+    def POST(self,*uri,**params):
+        
+        # Estrae il catalog dal file
+        with open(self.catalog_file,'r') as f:
+            catalog = json.load(f)
+                    
+        if uri[0] == "p-rec":			#### ADD PATIENT ####	
 
-			catalog["patients"].append(f_newPat)
+            # 	uri: /p-rec
+            # 	body del post:
+            # 		{
+            # 			name: ,
+            # 			surname: ,
+            # 			chatID: ,
+            # 			docID: ,
+            # 			devID: 
+            # 		})		
+            
+            pats=catalog["patients"]
 
-			# Aggiorna 'catalog.json'
-			f=open(self.catalog_file,'w')
-			json.dump(catalog,f,indent=4)
-			f.close()
+            # Legge il body del POST richiesto da 'patient-rec.html' e lo visualizza nel terminal
+            newPat=json.loads(cherrypy.request.body.read())
+            pprint(newPat)
 
-			return f"Registration succeeded!\nWelcome {newPat['name']}"
+            # CONTROLLO DA RISCRIVERE
+            # # Se il paziente è gia registrato mostra un banner di errore e indica di compiere il log-in
+            # for p in pats:
+            #     if (p["personal_info"]["nome"]+p["personal_info"]["cognome"]).lower == (newPat["name"]+newPat["surname"]).lower:
+            #         return f"Hi {newPat['name']}, you are already registered!\nTo add a new device, please log in and follow the procedure"
 
+            # Definisce la lista di sensori del nuovo paziente
+            newPatDevs=[];i=0
+            for s in newPat["devID"]:
+                i+=1
+                newDev={
+                    "sensor_ID": f"p_{len(pats)+1}_{i}",
+                    "sensor_type": s,
+                    "is_critical": "",
+                    "safe_range": []
+                }
+                newPatDevs.append(newDev)
 
+            # Definisce la nuova scheda paziente e la inserisce nella variabile locale che rappresenta il catalog
+            f_newPat={
+                "patient_ID": f"p_{len(pats)+1}",
+                "personal_info": {
+                    "name": newPat["name"],
+                    "surname": newPat["surname"]
+                },
+                "sensors": newPatDevs,
+                "doctor_ID": newPat["docID"],
+                "device_connector": {
+                    "service_id": "",
+                    "topic":f"service/dc_{len(pats)+1}"
+                }
+            }
 
-	pass
-	#addsensor
-	#addpatient
-	#adddoctor
-	#addclinic
+            catalog["patients"].append(f_newPat)
+
+            # Aggiorna 'catalog.json'
+            with open(self.catalog_file,'w') as f:
+                json.dump(catalog,f,indent=4)
+
+        elif uri[0] == "d-rec":         #### ADD DOCTOR ####
+
+                                        # 	uri: /d-rec
+                                        # 	body del post:
+                                        # 		{
+                                        # 			name: ,
+                                        # 			surname: ,
+                                        # 			chatID: 
+                                        # 		})	
+
+            docs=catalog["doctors"]
+
+            # Legge il body del POST richiesto da 'patient-rec.html' e lo visualizza nel terminal
+            newDoc=json.loads(cherrypy.request.body.read())
+            pprint(newDoc)
+            
+                # CONTROLLO
+            # # Se il paziente è gia registrato mostra un banner di errore e indica di compiere il log-in
+            # for d in docs:
+            #     if (d["personal_info"]["nome"]+d["personal_info"]["cognome"]).lower == (newDoc["name"]+newDoc["surname"]).lower:
+            #         return f"Hi {newDoc['name']}, you are already registered!\nPlease log in and follow the procedure"
+
+            # Definisce la nuova scheda dottore e la inserisce nella variabile locale che rappresenta il catalog
+            f_newDoc={
+                "doctor_ID": f"d_{len(docs)+1}",
+                "name": newDoc["name"],
+                "surname": newDoc["surname"],
+                "chatID" : newDoc["chatID"]
+                }
+
+            catalog["doctors"].append(f_newDoc)
+
+            # Aggiorna 'catalog.json'
+            with open(self.catalog_file,'w') as f:
+                json.dump(catalog,f,indent=4)
+
+            return f"Registration succeeded!\nWelcome {newDoc['name']}"
+
+        elif uri[0] == "c-rec":         #### ADD CLINIC ####
+
+                                        # 	uri: /c-rec
+                                        # 	body del post:
+                                        # 		{
+                                        # 			name: ,
+                                        # 			lon: ,
+                                        # 			lat: 
+                                        # 		})	
+
+            cls=catalog["clinics"]
+
+            # Legge il body del POST richiesto da 'patient-rec.html' e lo visualizza nel terminal
+            newCls=json.loads(cherrypy.request.body.read())
+            pprint(newCls)
+
+                # CONTROLLO
+            # # Se la clinica è gia registrata mostra un banner di errore e indica di compiere il log-in
+            # for c in cls:
+            #     if (c["clinic_name"]).lower == (newCls["name"]).lower:
+            #         return f"Your clinic is already registered!"
+
+            # Definisce la nuova scheda dottore e la inserisce nella variabile locale che rappresenta il catalog
+            f_newCls={
+                "clinic_ID": f"d_{len(cls)+1}",
+                "clinic_name": newCls["name"],
+                "lon": newCls["lon"],
+                "lat" : newCls["lat"]
+                }
+
+            catalog["clinics"].append(f_newCls)
+
+            # Aggiorna 'catalog.json'
+            with open(self.catalog_file,'w') as f:
+                json.dump(catalog,f,indent=4)
+            
+        elif uri[0] == "s-up":          #### UPDATE DEVICE ####
+            
+            # 	uri: /s-up
+            # 	body del post:
+            # 		{
+            # 			name: ,
+            # 			surname: ,
+            # 			devID: ,
+            #           is_critical: ,
+            #           safe_range: ["min", "max"] 
+
+            # Legge il body del POST richiesto da 'patient-rec.html' e lo visualizza nel terminal
+            devInfo=json.loads(cherrypy.request.body.read())
+            pprint(devInfo)
+
+            # Individua il paziente 
+            patInd = 0
+            for pat in catalog["patients"]:    
+                if  pat["personal_info"]["name"]+pat["personal_info"]["surname"] == devInfo["name"]+devInfo["surname"]:
+                    break
+                patInd+=1
+            
+            pat = catalog["patients"][patInd]
+            
+            # Individua il sensore
+            devInd = 0
+            for dev in pat["sensors"]:
+                if dev["sensor_type"] == devInfo["devID"]:
+                    break
+                devInd+=1
+            
+            dev = pat["sensors"][devInd]
+
+            # Applica l'aggiornamento alla scheda sensore
+            dev["is_critical"] = devInfo["is_critical"]
+            dev["safe_range"] = [float(val) for val in devInfo["safe_range"]]
+
+            # Aggiorna il catalog
+            catalog["patients"][patInd]["sensors"][devInd] = dev
+
+            with open(self.catalog_file,'w') as f:
+                json.dump(catalog,f,indent=4)
+
+            
+                    
+            
+
+    #addsensor
+    #addpatient
+    #adddoctor
+    #addclinic
 
 #deve rispondere a: location, data analysis,alert e altre? serve importare le librerie nelle classi ? 

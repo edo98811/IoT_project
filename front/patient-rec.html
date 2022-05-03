@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    
+    <title>Patient registration page</title>
+
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: sans-serif;
+        }
+
+        body{
+            background-size: cover;
+            background-color: skyblue;
+            color: black ;
+            width: 100%;
+            height: 100%;
+        }
+
+        .rec-form{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            width: 600px;
+        }
+
+        .rec-form h1{
+            text-align: center;
+            text-transform: uppercase;
+            margin: 40px;
+        }
+
+        .rec-form h2{
+            text-align: center;
+            margin: 15px;
+        }
+
+        .rec-form p{
+            margin: 5px;
+        }
+
+        .rec-form input{
+            padding: 2px 5px;
+            width: 100%;
+            border: 0;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .rec-form button{
+            font-weight: bold;
+            margin: 20px 0px;
+            padding: 10px 15px;
+            border: 0;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+
+        .rec-form button:hover{
+            color: red;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="rec-form">
+        <h1>Patient registration page</h1>
+        
+        <hr>
+        <!-- in action si inserisce l'url del server a cui fare il get/post -->
+        
+        <form onsubmit="sendPOSTrequest()">
+        <!-- <form action="results.html" method="GET"> -->
+            
+            <h2>Patient info</h2>
+            
+            
+            <p><label for="name">Name:</label>
+            <input type="text" name="name" id="name" required></p>
+            
+            <p><label for="surname">Surname:</label>
+            <input type="text" name="surname" id="surname" required></p>
+            
+            <p><label for="chatID">Telegram chatID:</label>
+            <input type="number" name="chatID" id="chatID" min="0" required></p>
+            
+            <p><label for="docs">Personal doctor:</label>
+                <select name="docs" id="docs">
+                </select></p>
+
+            <p><label for="devs">Devices:</label>
+                <select name="devs" id="devs" multiple> 
+                </select></p>
+            
+            
+            <button type="reset">RESET</button>
+            <button type="submit">REGISTER</button>
+        </form>
+        
+        <form action="home.html">
+            <button>Back to home</button>
+        </form>
+    </div>
+
+    
+    <script type="text/javascript">
+
+        const baseUrl = 'http://127.0.0.1:8081/catalog_manager'
+
+        let docsDropdown = document.getElementById('docs');
+        docsDropdown.length = 0;
+
+        let docsDefaultOption = document.createElement('option');
+        docsDefaultOption.text = 'Choose your doctor';
+        
+        docsDropdown.add(docsDefaultOption);
+        docsDropdown.selectedIndex = 0;
+
+        var url = baseUrl+'/avail-docs';
+
+        fetch(url)
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                let docs = data;
+                let option;
+                for (let i = 0; i < docs.fullName.length; i++) {
+                    option = document.createElement('option');
+                    option.text = docs.fullName[i];
+                    option.value = docs.docID[i];
+                    docsDropdown.add(option);
+                }
+
+            })
+
+        url = baseUrl +'/avail-devs';
+
+        let devsDropdown = document.getElementById('devs');
+        devsDropdown.length = 0;
+
+        let devsDefaultOption = document.createElement('option');
+        devsDefaultOption.text = 'Choose your device(s)';
+        
+        devsDropdown.add(devsDefaultOption);
+        devsDropdown.selectedIndex = 0;
+
+        fetch(url)
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                let devs = data;
+                let option;
+                for (let i = 0; i < devs.fullName.length; i++) {
+                    option = document.createElement('option');
+                    option.text = devs.fullName[i];
+                    option.value = devs.devID[i];
+                    devsDropdown.add(option);
+                }
+
+            })
+        
+        function sendPOSTrequest() {
+            
+            event.preventDefault();
+            name = $("#name").val();
+            surname = $("#surname").val();
+            chatID = $("#chatID").val();
+            docID = $("#docs").val();
+            devID = $("#devs").val();
+            
+            $.ajax({
+                type: "POST",
+                url: baseUrl+'/p-rec',
+                
+                data: JSON.stringify({
+                    name: name,
+                    surname: surname,
+                    chatID: chatID,
+                    docID: docID,
+                    devID: devID
+                }),
+                contentType: "text/plain",
+                dataType: "text",
+                success: alert("Done!")
+                 
+            });
+        }
+    </script>
+</body>
+</html>
