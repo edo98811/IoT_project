@@ -103,12 +103,14 @@
                 </select></p>
             
             
-            <button type="reset">RESET</button>
+            <button type="reset" id="reset">RESET</button>
             <button type="submit">REGISTER</button>
         </form>
+
+        <p id="confirm"></p>
         
-        <form action="home.html">
-            <button>Back to home</button>
+        <form action="clinician-page.html">
+            <button>Back to your personal page</button>
         </form>
     </div>
 
@@ -193,8 +195,11 @@
                 }),
                 contentType: "text/plain",
                 dataType: "text",
-                success: alert("Done!")
-                 
+                success: function() {
+                    $("#reset").click();
+                    let confirmMsg = document.getElementById('confirm');
+                    confirmMsg.innerText = 'Patient ' + name + ' ' + surname + ' successfully registered!'
+                }
             });
         }
     </script>

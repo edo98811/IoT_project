@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     
     <title>Clinics registration page</title>
 
@@ -96,6 +97,9 @@
             <button type="reset">RESET</button>
             <button type="submit">REGISTER</button>
         </form>
+
+        <p id="confirm"></p>
+
         <form action="home.html">
             <button>Back to home</button>
         </form>
@@ -123,8 +127,11 @@
                 }),
                 contentType: "text/plain",
                 dataType: "text",
-                success: alert("Done!")
-                 
+                success: function() {
+                    $("#reset").click();
+                    let confirmMsg = document.getElementById('confirm');
+                    confirmMsg.innerText = 'Welcome ' + name + ', clinic successfully registered!'
+                }                 
             });
         }
     </script>

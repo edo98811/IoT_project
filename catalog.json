@@ -92,6 +92,26 @@
                 "service_id": "",
                 "topic": "service/dc_3"
             }
+        },
+        {
+            "patient_ID": "p_4",
+            "personal_info": {
+                "name": "Mario",
+                "surname": "Rossi"
+            },
+            "sensors": [
+                {
+                    "sensor_ID": "p_4_1",
+                    "sensor_type": "s_1",
+                    "is_critical": "",
+                    "safe_range": []
+                }
+            ],
+            "doctor_ID": "d_1",
+            "device_connector": {
+                "service_id": "",
+                "topic": "service/dc_4"
+            }
         }
     ],
     "doctors": [

@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clinician registration page</title>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    
     <style>
         *{
             padding: 0;
@@ -88,9 +91,11 @@
             <p><label for="chatID">Telegram chatID:</label>
             <input type="number" name="chatID" id="chatID" min="0" required></p>
             
-            <button type="reset">RESET</button>
+            <button type="reset" id="reset">RESET</button>
             <button type="submit">REGISTER</button>
         </form>
+
+        <p id="confirm"></p>
         <form action="home.html">
             <button>Back to home</button>
         </form>
@@ -98,7 +103,9 @@
 
     <script type="text/javascript">
 
-        const baseUrl = 'http://127.0.0.1:8081/catalog_manager'        function sendPOSTrequest() {
+        const baseUrl = 'http://127.0.0.1:8081/catalog_manager'      
+
+        function sendPOSTrequest() {
             
             event.preventDefault();
             name = $("#name").val();
@@ -116,8 +123,11 @@
                 }),
                 contentType: "text/plain",
                 dataType: "text",
-                success: alert("Done!")
-                 
+                success: function() {
+                    $("#reset").click();
+                    let confirmMsg = document.getElementById('confirm');
+                    confirmMsg.innerText = 'Welcome Dr. ' + name + ' ' + surname + ', you have been successfully registered!'
+                }
             });
         }
     </script>

@@ -122,10 +122,12 @@
                                 <label for="max">Maximum:</label>
                                 <input type="number" name="max" id="max" required>
                         </p>
-
+                        <button type="reset" id="reset">RESET</button>
                         <button type="submit">Update device</button>
 
                 </form>
+
+                <p id="confirm"></p>
 
                 <form action="home.html">
                         <button>Back to home</button>
@@ -187,7 +189,12 @@
                                 }),
                                 contentType: "text/plain",
                                 dataType: "text",
-                                success: alert("Done!")
+                                success: function() {
+                                        let sensor = document.getElementById('devs')
+                                        $("#reset").click();
+                                        let confirmMsg = document.getElementById('confirm');
+                                        confirmMsg.innerText = 'Sensor ('+sensor.text+') successfully updated!'
+                                }
 
                         });
                 }
