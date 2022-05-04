@@ -1,12 +1,11 @@
-# subscriber a dati 
 import json
 import time
 import requests
-#sdnfasdhf
 
 from MQTT import *
 from MyMQTT import *
 import requests as r
+#ahdgkldgjag
 
     
 class alert_service:
