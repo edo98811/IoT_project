@@ -212,14 +212,21 @@
         },
         "alert_service": {
             "type": "",
-            "address": ""
+            "address": "",
+            "topic": ""
         },
         "data_analysis": {
             "type": "",
             "address": ""
+        },
+        "telegram_bot": {
+            "token": "5338835932:AAH8QcMIuA8moihJaomvumEspZsbHBzXtlw"
+        }, 
+        "MQTT": {
+            "broker": "test.mosquitto.org",
+            "port": 1883
         }
     },
-    "MQTT_broker": "test.mosquitto.org",
-    "base_host": "127.0.0.1",
-    "base_port": "8081"
+    "base_host": "127.0.0.1"
+    
 }

@@ -5,7 +5,7 @@ import json
 import requests
 import time
 from MyMQTT import *
-import random
+
 
 class TeleBot:
     def __init__(self, token, broker, port, topic):
@@ -15,6 +15,7 @@ class TeleBot:
         self.client = MyMQTT("TelegramBotIot", broker, port, self)
         self.client.start()
         self.topic = topic
+        self.client.mySubscribe(topic)
         #self.__message = {'bn': "telegramBot",
         #                  'e':
          #                 [
@@ -25,12 +26,15 @@ class TeleBot:
                                'callback_query': self.on_callback_query}).run_as_thread()
 
 
-    def on_chat_message(self, msg):
+    def on_chat_message(self, msg):                                 ### risposta ai messaggi di telegram ###
+        # estrazione del chat_ID da cui è arrivato il messaggio
         content_type, chat_type, chat_ID = telepot.glance(msg)
+        # estrazione del testo del messaggio e dello user da cui è stato mandato
         message = msg['text']
         user = msg['from']['first_name']
         
         if message=="/start":
+            # restituisco un messaggio di benvenuto in caso l'utente mi dia come input /start, gli restituisco 
             start_message = f"Welcome {user} to IoT_IHealthBOT. To complete the registration you have to add this chatID to the web page:\n {chat_ID}!!!"
             self.bot.sendMessage(chat_ID, text=start_message)
 
@@ -86,11 +90,22 @@ class TeleBot:
 
 if __name__ == "__main__":
 
-    conf = json.load(open("settings.json"))
-    token = conf["telegramToken"]
-    broker = conf["broker"]
-    port = conf["port"]
-    topic = "telebot/critical_alert"
+    ####       CODICE DI "DEBUG"                                                        # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
+    with open("./catalog.json",'r') as f:                                               # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+        cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
+    host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
+    port = cat["base_port"]
+    catalog = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
+    ####
+
+    # Ottiene dal catalog l'indirizzo del servizio di telegram bot e di comunicazione MQTT
+    s = requests.session()
+    token = s.get(catalog+"/service-address?name=telegram_bot")["token"]
+    MQTT_info = s.get(catalog+"/service-address?name=MQTT")
+    broker = MQTT_info["broker"]
+    port = MQTT_info["port"]
+    topic = s.get(catalog+"/service-address?name=alert_service")["topic"]
+
     bot=TeleBot(token,broker,port,topic)
 
     print("Bot started ...")
