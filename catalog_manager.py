@@ -9,45 +9,68 @@ from pprint import pprint
 
 class catalog():
     exposed=True
+
     def __init__(self,catalog_file):
         self.catalog_file = catalog_file
 
-    def GET(self,*uri,**params): # come funzionano questi parametri?
+    def GET(self,*uri,**params): 
 
         # device connector info per avviarsi 
         if uri[0] == 'get_dc_info':
 
-            catalog = json.load(open(self.catalog_file,'r'))
+            with open(self.catalog_file,'r') as f:
+                catalog = json.load(f)
+
             p_ID = params['p_ID'] #cercare le info di un paziente conoscendo il suo ID, aggiungere try except magari 
             # vediamo se funziona
             pat = next((p for p in catalog['patients'] if p['patient_ID'] == p_ID ), None) # questa funzione crea un iterator della lista (un oggetto sostanzialmente che applica una funzione a qualche altro oggetto, in questo caso applica un controllo ad una lista)
 
             msg = {
-                "broker":pat["device_connector"]["broker"],
-                "port":pat["device_connector"]["port"],
+                "broker":catalog["services"]["MQTT"]["broker"],
+                "port":catalog["services"]["MQTT"]["port"],
                 "topic":pat["device_connector"]["topic"],
             }
             return json.dumps(msg)
 
-        #sensori elativi ad un paziente
+        #sensori relativi ad un paziente
         elif uri[0] == 'get_sensors':
 
-            catalog = json.load(open(self.catalog_file,'r'))
 
+            with open(self.catalog_file,'r') as f:
+                catalog = json.load(f)
 
             p_ID = params['p_ID']
-          
-            pat = next((p for p in catalog['patients'] if p['p_ID'] == p_ID ), None) #sempre solito metodo di iterazione
-            sensor_ids = pat["sensors"]
+
+            # Estrazione scheda paziente di interesse
+            pat = next((p for p in catalog['patients'] if p['patient_ID'] == p_ID ), None)
+
+            # Estrazione scheda sensori del paziente
+            sensors = pat["sensors"]
             sensor_list = []
 
-            for sensor_id in sensor_ids:
-
-                # questa funzione crea un iterator della lista (un oggetto sostanzialmente che applica una funzione a qualche altro oggetto, in questo caso applica un controllo ad una lista)
-                sensor_list.append(next((s for s in catalog['sensors'] if s['s_ID'] == sensor_id ), None))
-                # va ok perchè in ogni caso ce ne dobbe essere solo uno di sensore, quindi l'output è un elemento solo e lo aggiunge alla lista
-
+            # Creazione lista delle tipologie di sensori possedute dal paziente
+            for sensor in sensors:
+                sensor_list.append({
+                    "type": sensor["sensor_type"],
+                    "ID": sensor["sensor_ID"]
+                    }
+                )
+                
             return json.dumps(sensor_list)
+
+        # per passare al DC le info sulle tipologie di sensori
+        elif uri[0] == 'sensor-general-info':
+
+            with open(self.catalog_file,'r') as f:
+               catalog = json.load(f)
+
+            # Estrae dal catalog la scheda sensore associata all'ID passato nei parametri
+            type = params["type"]
+            sen = [s for s in catalog['sensors_type'] if s['type_ID'] == type][0] 
+            # viene costruito come una lista con un solo elemento, quindi lo estraggo con ...[0] 
+
+            return json.dumps(sen)
+
 
         #funzione per le cliniche
         elif uri[0] == 'get_clinics':

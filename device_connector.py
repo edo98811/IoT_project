@@ -9,11 +9,9 @@ import time
 
 
 class sensor_def():                                                     ### definisce un nuovo sensore
-    def __init__(self, sensor_type, sensor_ID, range, unit ):
+    def __init__(self, sensor_type, sensor_ID):
         self.sensor_type = sensor_type
         self.sensor_ID = sensor_ID
-        self.range = range # lista di due numeri
-        self.unit = unit
 
     # genera un numero casuale nel range impostato (self.range)
     def get_reading(self):                                          
@@ -32,7 +30,7 @@ class device_connector():                                                 #class
         self.dc.start()
         self.basetime = time.time() 
 
-        # template messaggio publisher
+        # template messaggio pubblicato dal DC
         self._message = {			
             'p_ID':patient_ID,
             't':self.basetime,
@@ -45,39 +43,33 @@ class device_connector():                                                 #class
         self._sensors = []
 
         #prende dal catalog i sensori assegnati a questo device connector 
-        sensors = json.loads(requests.get(catalog_address + '/get_sensors',params= {'p_ID':patient_ID}).text)#chiede la lista dei sensori del patient id che gli passo  
+        sensors = json.loads(requests.get(catalog_address + '/get_sensors',params= {'p_ID':patient_ID}).text) #chiede la lista dei sensori del patient id che gli passo  
 
-        # riceve un messaggio di questo tipo:
-                    # sensors = {
-                    #    'sl': [
-                    #       {
-                    #     "is_critical":s_info["is_critical"],
-                    #     "safe_range":s_info["safe_range"],
-                    #     "type_ID":s_type["type_ID"],
-                    #     "type":s_type["type"],
-                    #     "range":s_type["range"],
-                    #     "unit":s_type["unit"]
-                    #       },
-                    # ...
-                    #    ]
-                    # }
+        # sensors = [{
+        #       "type": sensor["sensor_type"],
+        #       "ID": sensor["sensor_ID"]
+        #   },
+        #   ... ,
+        #   {
+        #       "type": sensor["sensor_type"],
+        #       "ID": sensor["sensor_ID"]
+        #   }
+        # ]
 
 
-        #itera nella lista sl del messaggio ricevuto
-        for sensor in sensors['sl']:
+        # itera nella lista sl del messaggio ricevuto
+        for sensor in sensors:
 
             # utilizzando la classe sensor_def definisce i sensori associati al device connector
-            sensor = sensor_def(sensor['sensor_type'],sensor['sensor_ID'],sensor['range'],sensor['unit'])
-            self._sensors.append(sensor)
+            s = sensor_def(sensor['type'],sensor['ID'])
+            self._sensors.append(s)
 
             # template messaggio del sensore        
             self._message['e'].append({                            
-                'n':sensor.sensor_ID,
-                'vs':sensor.sensor_type,
+                'n':s.sensor_ID,
+                'vs':s.sensor_type,
                 'v':'',
-                'u':sensor.unit,
-                'is_critical':sensor.is_critical, 
-                'safe_range':sensor.critical_range
+                'u':json.loads(requests.get(catalog_address+"/sensor-general-info", params={"type":s.sensor_type}).text)["unit"]
             })
         
     # prende il valore del sensore e lo inserisce nel messaggio 
@@ -137,25 +129,39 @@ class device_connector():                                                 #class
 
 if __name__ == '__main__':
     
-    catalog_address = 'http://127.0.0.1:8080/catalog_manager'
+####       CODICE DI "DEBUG"                                                            # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
+    with open("./catalog.json",'r') as f:                                               # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+        cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
+    host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
+    port = cat["base_port"]
+    catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
+####
+
+    # Di default il DC sa a quale paziente è associato, dunzue il patient_ID è definito all'interno del suo codice
     patient_ID = 'p_1'
 
     # manda una richiesta al catalog per i dati della connessione MQTT del device connector
     pat_info = json.loads(requests.get(catalog_address + '/get_dc_info' ,params= {"p_ID":patient_ID}).text)
-    print(pat_info)
+            # msg = {
+            #             "broker":catalog["services"]["MQTT"]["broker"],
+            #             "port":catalog["services"]["MQTT"]["port"],
+            #             "topic":pat["device_connector"]["topic"],
+            #         }
+    
+    # Definizione del DC_1
     device_connector1 = device_connector(pat_info["broker"], pat_info["port"], patient_ID, pat_info["topic"],catalog_address)
+    
+    # # per simulare un sistema più complesso viene inizializzato un secondo device connector che funzinerà in parallelo al primo 
+    # patient_ID = 'p_2'
+    # pat_info = json.loads(requests.get(catalog_address + '/get_dc_info' ,params = {"p_ID":patient_ID}).text)
+    # print(pat_info)
+    # device_connector2 = device_connector(pat_info["broker"], pat_info["port"], patient_ID, pat_info["topic"], catalog_address)
 
-    # per simulare un sistema più complesso viene inizializzato un secondo device connector che funzinerà in parallelo al primo 
-    patient_ID = 'p_2'
-    pat_info = json.loads(requests.get(catalog_address + '/get_dc_info' ,params = {"p_ID":patient_ID}).text)
-    print(pat_info)
-    device_connector2 = device_connector(pat_info["broker"], pat_info["port"], patient_ID, pat_info["topic"], catalog_address)
-
-    while True:
-        time.sleep(10)
-        device_connector1.get_readings()
-        device_connector1.send()
-        device_connector2.get_readings()
-        device_connector2.send()
+    # while True:
+    #     time.sleep(10)
+    #     device_connector1.get_readings()
+    #     device_connector1.send()
+    #     device_connector2.get_readings()
+    #     device_connector2.send()
 
  
