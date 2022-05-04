@@ -1,10 +1,9 @@
 {
-    "broker":"",
+    "broker":"test.mosquitto.org",
     "port":"8081",
     "service_ID":"data_analysis",
-    "topic":"",
-    "catalog_address":"",
-    "location_address":"",
+    "topic":"service/#",
+    "catalog_address":"http://127.0.0.1:8080/catalog_manager",
+    "location_address":"http://127.0.0.1:8080/location_service",
     "database_address":""
-
 }
