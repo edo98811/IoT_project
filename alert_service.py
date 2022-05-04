@@ -6,6 +6,7 @@ from MQTT import *
 from MyMQTT import *
 import requests as r
 #ahdgkldgjag
+#emanuele
 
     
 class alert_service:
