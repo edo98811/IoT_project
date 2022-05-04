@@ -13,6 +13,7 @@ class sensor_def():                                                     ### defi
         self.sensor_type = sensor_type
         self.sensor_ID = sensor_ID
 
+        ## DA CONTROLLARE
     # genera un numero casuale nel range impostato (self.range)
     def get_reading(self):                                          
         output = random.randint(self.range[0],self.range[1])
@@ -21,13 +22,14 @@ class sensor_def():                                                     ### defi
 
 
 class device_connector():                                                 #classe del device connector (publisher MQTT)
-    def __init__(self, broker, port, patient_ID, topic,catalog_address):
-
-        self.dc = MQTT(patient_ID, broker, port, self)
-        self.topic = topic
+    def __init__(self, broker, port, patient_ID, topic, catalog_address):
 
         # avvia la connessione MQTT
+        self.dc = MQTT(patient_ID, broker, port, self)
         self.dc.start()
+
+        self.topic = topic
+        
         self.basetime = time.time() 
 
         # template messaggio pubblicato dal DC
@@ -45,16 +47,16 @@ class device_connector():                                                 #class
         #prende dal catalog i sensori assegnati a questo device connector 
         sensors = json.loads(requests.get(catalog_address + '/get_sensors',params= {'p_ID':patient_ID}).text) #chiede la lista dei sensori del patient id che gli passo  
 
-        # sensors = [{
-        #       "type": sensor["sensor_type"],
-        #       "ID": sensor["sensor_ID"]
-        #   },
-        #   ... ,
-        #   {
-        #       "type": sensor["sensor_type"],
-        #       "ID": sensor["sensor_ID"]
-        #   }
-        # ]
+            # sensors = [{
+            #       "type": sensor["sensor_type"],
+            #       "ID": sensor["sensor_ID"]
+            #   },
+            #   ... ,
+            #   {
+            #       "type": sensor["sensor_type"],
+            #       "ID": sensor["sensor_ID"]
+            #   }
+            # ]
 
 
         # itera nella lista sl del messaggio ricevuto
@@ -72,6 +74,8 @@ class device_connector():                                                 #class
                 'u':json.loads(requests.get(catalog_address+"/sensor-general-info", params={"type":s.sensor_type}).text)["unit"]
             })
         
+
+        ## DA CONTROLLARE
     # prende il valore del sensore e lo inserisce nel messaggio 
     def get_readings(self): 
 
@@ -89,7 +93,8 @@ class device_connector():                                                 #class
         self.message['latitude'] = self.message['latitude'] + random.randint(-10,+10) # ipotizzando che la posizione vari casualmente di questa quantità
         self.message['longitude'] = self.message['latitude'] + random.randint(-10,+10)
 
-    
+
+        ## DA CONTROLLARE
     #pubblica il messaggio scritto in get_readings
     def send(self):
 
