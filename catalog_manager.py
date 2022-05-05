@@ -4,7 +4,10 @@ import cherrypy
 from pprint import pprint
 
 # va aggiunto un controllo params in tutte le funzioni del codice
-# nell'uri metto solo il tipo di richiesta (quindi da chi iene) ma devo tenere conto che c'è anche la prima parte dell'indirizzo 
+
+# nell'uri metto solo il tipo di richiesta (quindi da chi viene) 
+# ma devo tenere conto che c'è anche la prima parte dell'indirizzo 
+
 # importante far quadrare tutti i nomi di tutti 
 
 class catalog():
@@ -15,11 +18,12 @@ class catalog():
 
     def GET(self,*uri,**params): 
 
+        # Lettura del catalog
+        with open(self.catalog_file,'r') as f:
+            catalog = json.load(f)
+
         # device connector info per avviarsi 
         if uri[0] == 'get_dc_info':
-
-            with open(self.catalog_file,'r') as f:
-                catalog = json.load(f)
 
             p_ID = params['p_ID'] #cercare le info di un paziente conoscendo il suo ID, aggiungere try except magari 
             # vediamo se funziona
@@ -34,10 +38,6 @@ class catalog():
 
         #sensori relativi ad un paziente
         elif uri[0] == 'get_sensors':
-
-
-            with open(self.catalog_file,'r') as f:
-                catalog = json.load(f)
 
             p_ID = params['p_ID']
 
@@ -60,22 +60,16 @@ class catalog():
 
         # per passare al DC le info sulle tipologie di sensori
         elif uri[0] == 'sensor-general-info':
-
-            with open(self.catalog_file,'r') as f:
-               catalog = json.load(f)
-
-            # Estrae dal catalog la scheda sensore associata all'ID passato nei parametri
+        
+           # Estrae dal catalog la scheda sensore associata all'ID passato nei parametri
             type = params["type"]
             sen = [s for s in catalog['sensors_type'] if s['type_ID'] == type][0] 
             # viene costruito come una lista con un solo elemento, quindi lo estraggo con ...[0] 
 
             return json.dumps(sen)
 
-
         #funzione per le cliniche
         elif uri[0] == 'get_clinics':
-
-            catalog = json.load(open(self.catalog_file,'r'))
 
             clinics = catalog["clinics"]
 
@@ -83,14 +77,11 @@ class catalog():
 
         #per tutti i pazienti 
         elif uri[0] == 'get_patients':
-            catalog = json.load(open(self.catalog_file,'r'))
 
             return json.dumps(catalog['patients'])
 
         #per il dottore di un paziente
         elif uri[0] == 'get_doctor':
-
-            catalog = json.load(open(self.catalog_file,'r'))
 
             p_ID = params["p_ID"] 
             patient = next((p for p in catalog['patients'] if p['patient_ID'] == p_ID), None) # c'è un modo migliore per farlo l'avevo visto su internet
@@ -100,10 +91,6 @@ class catalog():
             return json.dumps(doctor['address']) # se serve un campo in particolare
     
         elif uri[0] == 'avail-docs':    # Per il riempimento del menù a tendina del form registrazione paziente
-
-            # Estrae il catalog dal file
-            with open(self.catalog_file,'r') as f: 
-                catalog = json.load(f)  
 
             docs = catalog['doctors']
             options = {
@@ -115,10 +102,6 @@ class catalog():
         
         elif uri[0] == 'avail-devs':    # Per il riempimento del menù a tendina del form registrazione paziente
 
-            # Estrae il catalog dal file
-            with open(self.catalog_file,'r') as f: 
-                catalog = json.load(f)  
-
             devs = catalog['sensors_type']
             options = {
                 "fullName":[dev["type"] for dev in devs],
@@ -128,15 +111,10 @@ class catalog():
             return json.dumps(options).encode('utf8')
 
         elif uri[0] == 'service-address':   # Per ottenere l'indirizzo di un certo servizio REST
-            
-            # url : host:port/catalog_manager/service-address?name=nomedelservizio
-
-            # Estrae il catalog dal file
-            with open(self.catalog_file,'r') as f: 
-                cat = json.load(f) 
+                                            # url : host:port/catalog_manager/service-address?name=nomedelservizio
 
             # Costruisce la stringa da passare in risposta, contenente l'indirizzo del servizio richiesto
-            serviceAddress = "http://"+cat["base_host"]+":"+cat["base_port"]+cat["services"][params["name"]]["address"]
+            serviceAddress = "http://"+catalog["base_host"]+":"+catalog["base_port"]+catalog["services"][params["name"]]["address"]
 
             return serviceAddress
 
@@ -150,17 +128,17 @@ class catalog():
         with open(self.catalog_file,'r') as f:
             catalog = json.load(f)
                     
-        if uri[0] == "p-rec":			#### ADD PATIENT ####	
+        if uri[0] == "p-rec":			#### ADD PATIENT ####
 
-            # 	uri: /p-rec
-            # 	body del post:
-            # 		{
-            # 			name: ,
-            # 			surname: ,
-            # 			chatID: ,
-            # 			docID: ,
-            # 			devID: 
-            # 		})		
+                                        # 	uri: /p-rec
+                                        # 	body del post:
+                                        # 		{
+                                        # 			name: ,
+                                        # 			surname: ,
+                                        # 			chatID: ,
+                                        # 			docID: ,
+                                        # 			devID: 
+                                        # 		})		
             
             pats=catalog["patients"]
 
@@ -191,7 +169,8 @@ class catalog():
                 "patient_ID": f"p_{len(pats)+1}",
                 "personal_info": {
                     "name": newPat["name"],
-                    "surname": newPat["surname"]
+                    "surname": newPat["surname"],
+                    "chat_ID": newPat["chatID"]
                 },
                 "sensors": newPatDevs,
                 "doctor_ID": newPat["docID"],
@@ -236,14 +215,11 @@ class catalog():
                 "surname": newDoc["surname"],
                 "chatID" : newDoc["chatID"]
                 }
-
             catalog["doctors"].append(f_newDoc)
 
             # Aggiorna 'catalog.json'
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
-
-            return f"Registration succeeded!\nWelcome {newDoc['name']}"
 
         elif uri[0] == "c-rec":         #### ADD CLINIC ####
 
@@ -274,7 +250,6 @@ class catalog():
                 "lon": newCls["lon"],
                 "lat" : newCls["lat"]
                 }
-
             catalog["clinics"].append(f_newCls)
 
             # Aggiorna 'catalog.json'
@@ -283,14 +258,14 @@ class catalog():
             
         elif uri[0] == "s-up":          #### UPDATE DEVICE ####
             
-            # 	uri: /s-up
-            # 	body del post:
-            # 		{
-            # 			name: ,
-            # 			surname: ,
-            # 			devID: ,
-            #           is_critical: ,
-            #           safe_range: ["min", "max"] 
+                                        # 	uri: /s-up
+                                        # 	body del post:
+                                        # 		{
+                                        # 			name: ,
+                                        # 			surname: ,
+                                        # 			devID: ,
+                                        #           is_critical: ,
+                                        #           safe_range: ["min", "max"] 
 
             # Legge il body del POST richiesto da 'patient-rec.html' e lo visualizza nel terminal
             devInfo=json.loads(cherrypy.request.body.read())
@@ -302,7 +277,6 @@ class catalog():
                 if  pat["personal_info"]["name"]+pat["personal_info"]["surname"] == devInfo["name"]+devInfo["surname"]:
                     break
                 patInd+=1
-            
             pat = catalog["patients"][patInd]
             
             # Individua il sensore
@@ -311,7 +285,6 @@ class catalog():
                 if dev["sensor_type"] == devInfo["devID"]:
                     break
                 devInd+=1
-            
             dev = pat["sensors"][devInd]
 
             # Applica l'aggiornamento alla scheda sensore
@@ -320,17 +293,9 @@ class catalog():
 
             # Aggiorna il catalog
             catalog["patients"][patInd]["sensors"][devInd] = dev
-
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
 
             
                     
-            
-
-    #addsensor
-    #addpatient
-    #adddoctor
-    #addclinic
-
 #deve rispondere a: location, data analysis,alert e altre? serve importare le librerie nelle classi ? 

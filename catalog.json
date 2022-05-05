@@ -4,7 +4,8 @@
             "patient_ID": "p_1",
             "personal_info": {
                 "name": "Caio",
-                "surname": "Marzio"
+                "surname": "Marzio",
+                "chat_ID": 1234567890
             },
             "sensors": [
                 {
@@ -195,6 +196,7 @@
     "clinics": [
         {
             "clinic_ID": "cl_1",
+            "name": "St. Mary Clinic",
             "position": {
                 "longitude": "40000",
                 "latitude": "013000"
