@@ -13,8 +13,8 @@
                     "sensor_type": "s_1",
                     "is_critical": "critical",
                     "safe_range": [
-                        70,
-                        30
+                        30,
+                        70
                     ]
                 },
                 {
@@ -155,7 +155,7 @@
             "doctor_ID": "d_1",
             "name": "Pinco",
             "surname": "Pallino",
-            "address": "sgalkg"
+            "chatID": "769841234"
         },
         {
             "doctor_ID": "d_2",
