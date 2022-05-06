@@ -8,14 +8,16 @@ from MyMQTT import *
 
 
 class TeleBot:
-    def __init__(self, token, broker, port, topic):
+    def __init__(self, token, broker, port, topic, catalog):
         # Local token
         self.tokenBot = token
         self.bot = telepot.Bot(self.tokenBot)
         self.client = MyMQTT("TelegramBotIot", broker, port, self)
+        self.catalog = catalog
         self.client.start()
         self.topic = topic
         self.client.mySubscribe(topic)
+        
         #self.__message = {'bn': "telegramBot",
         #                  'e':
          #                 [
@@ -39,15 +41,25 @@ class TeleBot:
             self.bot.sendMessage(chat_ID, text=start_message)
 
         elif message == '/report':
-            patients = ['mf', 'hd']
-            question = 'This is the list of your patients, select the one that you are interest about'
-            self.bot.sendMessage(chat_ID, text=question,
-                reply_markup=InlineKeyboardMarkup(
-                    inline_keyboard=[
-                        list(map(lambda c: InlineKeyboardButton(text=str(c), callback_data=str(c)), patients))
-                    ]
-                )
-            )
+            # in caso il medico scelga questa key bisogna resituirgli la lista di tutti i suoi pazienti
+            # dal chat_id risalgo al nome del medico
+            doctors = json.loads(requests.get(catalog + '/avail-docs').text)
+            for doctor in doctors:
+                if doctor['chatID'] == chat_ID:
+                    doctor_id = doctor['docID']
+
+            # a partire dal doctor id scorro la lista dei pazienti e tengo solamente coloro che hanno quel dottore 
+
+            patients = json.loads(requests.get(catalog + '/get_patients',params= {'doctor_ID':doctor_id}).text)
+            print(patients)
+            #question = 'This is the list of your patients, select the one that you are interest about'
+            #self.bot.sendMessage(chat_ID, text=question,
+            #    reply_markup=InlineKeyboardMarkup(
+            #        inline_keyboard=[
+            #            list(map(lambda c: InlineKeyboardButton(text=str(c), callback_data=str(c)), patients))
+            #        ]
+            #    )
+            #)
         
         else:
             self.bot.sendMessage(chat_ID, text="Command not supported. The available command are:\n\
@@ -104,9 +116,10 @@ if __name__ == "__main__":
     MQTT_info = s.get(catalog+"/service-address?name=MQTT")
     broker = MQTT_info["broker"]
     port = MQTT_info["port"]
-    topic = s.get(catalog+"/service-address?name=alert_service")["topic"]
+    alert_topic = s.get(catalog+"/service-address?name=alert_service")["topic"]
+    
 
-    bot=TeleBot(token,broker,port,topic)
+    bot=TeleBot(token,broker,port,alert_topic, catalog)
 
     print("Bot started ...")
     while True:
