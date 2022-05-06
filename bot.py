@@ -123,12 +123,11 @@ if __name__ == "__main__":
     ####
 
     # Ottiene dal catalog l'indirizzo del servizio di telegram bot e di comunicazione MQTT
-    s = requests.session()
-    token = s.get(catalog+"/service-address?name=telegram_bot")["token"]
-    MQTT_info = s.get(catalog+"/service-address?name=MQTT")
+    token = json.loads(requests.get(catalog+"/service-info?name=telegram_bot").text)["token"]
+    MQTT_info = json.loads(requests.get(catalog+"/service-info?name=MQTT").text)
     broker = MQTT_info["broker"]
     port = MQTT_info["port"]
-    alert_topic = s.get(catalog+"/service-address?name=alert_service")["topic"]
+    alert_topic =  json.loads(requests.get(catalog+"/service-info?name=alert_service").text)["topic"]
     
 
     bot=TeleBot(token,broker,port,alert_topic, catalog)
