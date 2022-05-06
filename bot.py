@@ -47,7 +47,7 @@ class TeleBot:
             # dal chat_id risalgo al nome del medico
             doctors = json.loads(requests.get(catalog + '/avail-docs').text)
             for doctor in doctors:
-                if doctor['chatID'] == chat_ID:
+                if doctor['chat_ID'] == chat_ID:
                     doctor_id = doctor['docID']
 
             # a partire dal doctor id scorro la lista dei pazienti e tengo solamente coloro che hanno quel dottore 

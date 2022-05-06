@@ -85,7 +85,8 @@ class catalog():
             docs = catalog['doctors']
             options = {
                 "fullName":[f"{doc['name']} {doc['surname']}" for doc in docs],
-                "docID":[doc['doctor_ID'] for doc in docs]
+                "docID":[doc['doctor_ID'] for doc in docs],
+                "chat_ID": [doc["chat_id"]for doc in docs]
             }
         
             return json.dumps(options).encode('utf8')
