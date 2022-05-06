@@ -51,9 +51,9 @@ class TeleBot:
                     doctor_id = doctor['docID']
 
             # a partire dal doctor id scorro la lista dei pazienti e tengo solamente coloro che hanno quel dottore 
-
             patients = json.loads(requests.get(catalog + '/get_patients',params= {'doctor_ID':doctor_id}).text)
             print(patients)
+            
             #question = 'This is the list of your patients, select the one that you are interest about'
             #self.bot.sendMessage(chat_ID, text=question,
             #    reply_markup=InlineKeyboardMarkup(
