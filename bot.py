@@ -28,7 +28,9 @@ class TeleBot:
                                'callback_query': self.on_callback_query}).run_as_thread()
 
 
-    def on_chat_message(self, msg):                                 ### risposta ai messaggi di telegram ###
+
+    ### Routine di risposta ai messaggi di telegram ###
+    def on_chat_message(self, msg):                                 
         # estrazione del chat_ID da cui è arrivato il messaggio
         content_type, chat_type, chat_ID = telepot.glance(msg)
         # estrazione del testo del messaggio e dello user da cui è stato mandato
@@ -62,18 +64,25 @@ class TeleBot:
             #)
         
         else:
+            # se nessun messaggio e' riconosciuto rimando la lista dei possibili comandi
             self.bot.sendMessage(chat_ID, text="Command not supported. The available command are:\n\
     /start: if you want to know your ChatID\n\
     /report: if you want the report of a patient\n\
     /quit: exit?\n")
             
 
+
+    ### Routine per rispondere alle inline Keyboard
     def on_callback_query(self,msg):
-        query_ID , chat_ID , query_data = telepot.glance(msg,flavor='callback_query')  
+        query_ID , chat_ID , query_data = telepot.glance(msg,flavor='callback_query') 
+        # estraggo lista pazienti a partire dal chatID come fatto in precedenza 
         patients = ['mf', 'hd']
+        # possibili periodi temporali di cui il medico vuole il resocont
         TimeLapse = ['day', 'week', 'month']
         for patient in patients:
             if query_data == patient:           
+                # ho trovato il paziente selezionato dal medico tramite inline Keyboard e restituisco una nuova inline keyboard
+                # con i 3 periodi temporali tra cui il medico deve scegliere (rimandare all'URL di thingspeak)
                 question = 'Select the time lapse you are interest about'
                 self.bot.sendMessage(chat_ID, text=question,
                 reply_markup=InlineKeyboardMarkup(
@@ -84,7 +93,10 @@ class TeleBot:
             )
 
 
+
+    ### Routine per messaggi di alert derivanti da Alert service tramite protocollo MQTT ###
     def notify(self,topic,message):
+        # leggo il messaggio ed estraggo il chat_ID del medico a cui deve essere mandata la notifica 
         msg=json.loads(message)        
         alert=msg["alert"]
         chat_ID = msg["chat_ID"]
