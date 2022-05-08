@@ -112,6 +112,41 @@
                 "service_id": "",
                 "topic": "service/dc_4"
             }
+        },
+        {
+            "patient_ID": "p_5",
+            "personal_info": {
+                "name": "davide",
+                "surname": "d'adamo"
+            },
+            "sensors": [
+                {
+                    "sensor_ID": "p_5_1",
+                    "sensor_type": "s_1",
+                    "is_critical": "critical",
+                    "safe_range": [
+                        40.0,
+                        120.0
+                    ]
+                },
+                {
+                    "sensor_ID": "p_5_2",
+                    "sensor_type": "s_2",
+                    "is_critical": "",
+                    "safe_range": []
+                },
+                {
+                    "sensor_ID": "p_5_3",
+                    "sensor_type": "s_3",
+                    "is_critical": "",
+                    "safe_range": []
+                }
+            ],
+            "doctor_ID": "d_2",
+            "device_connector": {
+                "service_id": "",
+                "topic": "service/dc_5"
+            }
         }
     ],
     "doctors": [
@@ -119,7 +154,13 @@
             "doctor_ID": "d_1",
             "name": "Pinco",
             "surname": "Pallino",
-            "address": "sgalkg"
+            "chatID": "sgalkg"
+        },
+        {
+            "doctor_ID": "d_2",
+            "name": "Marco",
+            "surname": "Gagliardi",
+            "chatID": "73768282738"
         }
     ],
     "sensors_type": [
@@ -171,14 +212,22 @@
         },
         "alert_service": {
             "type": "",
-            "address": ""
+            "address": "",
+            "topic": ""
         },
         "data_analysis": {
             "type": "",
             "address": ""
+        },
+        "telegram_bot": {
+            "token": "5338835932:AAH8QcMIuA8moihJaomvumEspZsbHBzXtlw"
+        }, 
+        "MQTT": {
+            "broker": "test.mosquitto.org",
+            "port": 1883
         }
     },
-    "MQTT_broker": "test.mosquitto.org",
     "base_host": "127.0.0.1",
-    "base_port": "8081"
+    "base_port": "9090"
+    
 }

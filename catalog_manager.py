@@ -115,7 +115,8 @@ class catalog():
             docs = catalog['doctors']
             options = {
                 "fullName":[f"{doc['name']} {doc['surname']}" for doc in docs],
-                "docID":[doc['doctor_ID'] for doc in docs]
+                "docID":[doc['doctor_ID'] for doc in docs],
+                "chatID": [doc["chatid"]for doc in docs]
             }
         
             return json.dumps(options).encode('utf8')
@@ -134,7 +135,7 @@ class catalog():
         
             return json.dumps(options).encode('utf8')
 
-        elif uri[0] == 'service-address':   # Per ottenere l'indirizzo di un certo servizio REST
+        elif uri[0] == 'service-info':   # Per ottenere l'indirizzo di un certo servizio REST
             
             # url : host:port/catalog_manager/service-address?name=nomedelservizio
 
@@ -144,8 +145,10 @@ class catalog():
 
             # Costruisce la stringa da passare in risposta, contenente l'indirizzo del servizio richiesto
             serviceAddress = "http://"+cat["base_host"]+":"+ cat["base_port"]+cat["services"][params["name"]]["address"]
+            # Costruisce l'elemento che contiene le info dei servizi
+            serviceInfo = cat["services"][params["name"]]
 
-            return serviceAddress
+            return json.dumps(serviceInfo)
 
         else: 
             #cherrypyerror
