@@ -33,8 +33,6 @@ class alert_service:
                 #         'v':'',
                 #         't':time,
                 #         'u':unit
-                #         'is_critical':
-                #         'saferange':
                 #         },
                 #         {               
                 #         'n':sensor_ID,
@@ -42,8 +40,6 @@ class alert_service:
                 #         'v':'',
                 #         't':time,
                 #         'u':unit,
-                #         'is_critical':
-                #         'saferange':
                 #         },
                 #     ]
                 #     'latitude':0,
@@ -57,7 +53,14 @@ class alert_service:
         # itera lungo le misurazioni dei singoli sensori e controlla la criticità associata ad essa, nel caso ci sia un problema richiama i metodi di notifica 
         # i metodi per le procedure di allerta sono definiti sotto 
         for measure in measures:
-            
+
+            is_critical =json.loads(requests.get(self.catalog_address + '/get_critical_info', params= {'p_ID':patient_ID, 's_ID':measure['n']}).text)
+            # messaggio ricevuto 
+            # is_critical = {
+            # 'safe_range':''
+            # 'is_critical':[numero1, numero2]
+            # }
+   
             if measure["is_critial"] == "not_critical":
                 pass
 
