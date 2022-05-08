@@ -49,9 +49,6 @@ class FrontEnd(object):
         #     f.close()
         #     return view
 
-
-
-
 class Root(object):
 
     @cherrypy.expose
