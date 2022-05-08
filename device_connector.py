@@ -8,7 +8,7 @@ import time
 
 
 
-class sensor_def():                                                     ### definisce un nuovo sensore
+class sensor_def():                                                     ### classe del sensore
     def __init__(self, sensor_type, sensor_ID, range, unit ):
         self.sensor_type = sensor_type
         self.sensor_ID = sensor_ID
