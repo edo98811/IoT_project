@@ -15,14 +15,14 @@ class location_service():
 
     # restituisce la location di un paziente, richiamata da alert service
     def GET(self, *uri, **params): 
-        p_ID = params["p_ID"]
+        patient_ID = params["patient_ID"]
             
         #estrae il dizionario relativo al paziente e lo restituisce alla clinica che dovrà fare un controllo sulla presenza o meno deella posizione calcolata
-        patient_info = next((p for p in self.nearest if p['patient_ID'] == p_ID), None) 
+        msg = next((p for p in self.nearest if p['patient_ID'] == patient_ID), None) 
 
-        return patient_info
+        return msg
 
-    @cherrypy.tools.json_in()
+    #@cherrypy.tools.json_in()
     def POST(self, *uri, **params):
 
         #payload del messaggio di POST 
@@ -44,32 +44,48 @@ class location_service():
 
                 self.nearest.append({
                     'patient_ID':patient['patient_ID'],
-                    'clinic_pos':'',
-                    'patient_pos':'',
+                    'clinic_location':'',
+                    'patient_location':'',
                     'nearest':'',
                     'clinic_address':"" 
                 })
 
         # estrae dal dizionario ricevuto la posizione e l'ID del paziente
         # il messaggio ora come ora è così strutturato (bisogna vedere cosa se ne farà del data analysis): 
-                    # msg = {
-                    #     "p_ID":patient_ID,
-                    #     "s_ID":measure['n'],
-                    #     "location": {
-                    #         "latitude":
-                    #         "longitude":
-                    #     }
-                    # }
+        # template messaggio: 
+                                # msg = {			
+                                # 'p_ID':patient_ID,
+                                # 't':basetime,
+                                # 'e':[ 
+                                #       {               
+                                #         'n':sensor_ID,
+                                #         'vs':sensor_type,
+                                #         'v':'value',
+                                #         't':time,
+                                #         'u':unit
+                                #         },
+                                #         {               
+                                #         'n':sensor_ID,
+                                #         'vs':sensor_type,
+                                #         'v':'',
+                                #         't':time,
+                                #         'u':unit,
+                                #         },
+                                #   ]
+                                #   'location':{        #un problema concettuale è che avendo la posizione qui non serve forse chiamare il catalog service
+                                #       'latitude':0,
+                                #       'longitude':0
+                                #   } 
+                                # }
 
-        pat_pos = msg['location']
-        p_ID = msg['p_ID']
-
+        patient_location = msg['location']
+        patient_ID = msg['patient_ID']
 
         # itera tra tutte le cliniche calcolando la distanza dal paziente per trovare quella più vicina
         # la lista delle cliniche ha questa struttura (come nel catalog):
                     #   [{
                     #     "clinic_ID": "cl_1",
-                    #     "position": {
+                    #     "location": {
                     #       "longitude": "40000",
                     #       "latitude": "013000"
                     #     }
@@ -78,10 +94,10 @@ class location_service():
 
         for clinic,i in enumerate(self.clinics): 
             
-            cl_pos = clinic['clinic_pos']
+            clinic_location = clinic['clinic_location']
 
             #calcolo della piu vicina con la distanza euclidea
-            d = dist([pat_pos['longitude'],pat_pos['latitude']],[cl_pos["longitude"],cl_pos["latitude"]])
+            d = dist([patient_location['longitude'],patient_location['latitude']],[clinic_location["longitude"],clinic_location["latitude"]])
 
             # se dist_temp è vuota (prima iterazione) la inizializza a d
             if not dist_temp: dist_temp = d
@@ -94,13 +110,13 @@ class location_service():
 
         # cerca nella lista nearest inizializzata in precedenza il paziente di cui va aggiornata la posizione e salva l'indice
         for patient, i in enumerate(self.nearest):
-            if patient['patient_ID'] == p_ID:
+            if patient['patient_ID'] == patient_ID:
                 p_index = i
             
         #aggiorna la posizione
-        self.nearest[p_index]['nearest'] == self.clinics_pos[nearest_index]['clinic_id']
+        self.nearest[p_index]['nearest'] == self.clinics[nearest_index]['clinic_id']
         self.nearest[p_index]['patient_pos'] == msg['pos']
-        self.nearest[p_index]['clinic_pos'] == self.clinics_pos[nearest_index]['clinic_pos']
+        self.nearest[p_index]['clinic_pos'] == self.clinics[nearest_index]['clinic_location']
         self.nearest[p_index]['clinic_address'] = 'alert/clinica1'
 
 

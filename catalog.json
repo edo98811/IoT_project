@@ -9,7 +9,7 @@
             "sensors": [
                 {
                     "sensor_ID": "p_1_1",
-                    "sensor_type": "s_1",
+                    "type_ID": "s_1",
                     "is_critical": "critical",
                     "safe_range": [
                         70,
@@ -18,7 +18,7 @@
                 },
                 {
                     "sensor_ID": "p_1_2",
-                    "sensor_type": "s_2",
+                    "type_ID": "s_2",
                     "is_critical": "not_critical",
                     "safe_range": [
                         130,
@@ -27,7 +27,7 @@
                 },
                 {
                     "sensor_ID": "p_1_3",
-                    "sensor_type": "s_3",
+                    "type_ID": "s_3",
                     "is_critical": "informative",
                     "safe_range": [
                         130,
@@ -50,7 +50,7 @@
             "sensors": [
                 {
                     "sensor_ID": "p_2_1",
-                    "sensor_type": "s_1",
+                    "type_ID": "s_1",
                     "is_critical": "critical",
                     "safe_range": [
                         70,
@@ -73,7 +73,7 @@
             "sensors": [
                 {
                     "sensor_ID": "p_3_1",
-                    "sensor_type": "s_2",
+                    "type_ID": "s_2",
                     "is_critical": "not_critical",
                     "safe_range": [
                         30.0,
@@ -82,7 +82,7 @@
                 },
                 {
                     "sensor_ID": "p_3_2",
-                    "sensor_type": "s_3",
+                    "type_ID": "s_3",
                     "is_critical": "",
                     "safe_range": []
                 }
@@ -102,7 +102,7 @@
             "sensors": [
                 {
                     "sensor_ID": "p_4_1",
-                    "sensor_type": "s_1",
+                    "type_ID": "s_1",
                     "is_critical": "",
                     "safe_range": []
                 }
@@ -122,7 +122,7 @@
             "sensors": [
                 {
                     "sensor_ID": "p_5_1",
-                    "sensor_type": "s_1",
+                    "type_ID": "s_1",
                     "is_critical": "critical",
                     "safe_range": [
                         40.0,
@@ -131,13 +131,13 @@
                 },
                 {
                     "sensor_ID": "p_5_2",
-                    "sensor_type": "s_2",
+                    "type_ID": "s_2",
                     "is_critical": "",
                     "safe_range": []
                 },
                 {
                     "sensor_ID": "p_5_3",
-                    "sensor_type": "s_3",
+                    "type_ID": "s_3",
                     "is_critical": "",
                     "safe_range": []
                 }
@@ -203,17 +203,17 @@
     ],
     "services": {
         "location_service": {
-            "type": "",
+            "service_ID":"location_service",
             "address": "/location_service"
         },
         "catalog_manager": {
-            "type": "",
+            "service_ID":"alert_service",
             "address": "/catalog_manager"
         },
         "alert_service": {
-            "type": "",
-            "address": "",
-            "topic": ""
+            "service_ID":"alert_service",
+            "topic":"service/#",
+            "port":1883
         },
         "data_analysis": {
             "type": "",
@@ -223,11 +223,9 @@
             "token": "5338835932:AAH8QcMIuA8moihJaomvumEspZsbHBzXtlw"
         }, 
         "MQTT": {
-            "broker": "test.mosquitto.org",
-            "port": 1883
+            "broker": "test.mosquitto.org"
         }
     },
     "base_host": "127.0.0.1",
     "base_port": "9090"
-    
 }

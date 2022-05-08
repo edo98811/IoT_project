@@ -1,7 +1,6 @@
-from email import message
 import random
 from MyMQTT import *
-from MQTT import *
+from MQTT import * # da toglierne uno
 import requests
 import json 
 import time
@@ -105,33 +104,31 @@ class device_connector():                                                 #class
         del self.message # elimina il messaggio dopo averlo mandato
         # il messaggio dovrebbe essere ricevuto dal data analysis
 
-    # template messaggio inviato: 
-                # message = {			
-                # 'p_ID':patient_ID,
-                # 't':basetime,
-                # 'e':[ misurazioni
-                #         {               
-                #         'n':sensor_ID,
-                #         'vs':sensor_type,
-                #         'v':'',
-                #         't':time,
-                #         'u':unit
-                #         'iscritical':
-                #         'saferange':
-                #         },
-                #         {               
-                #         'n':sensor_ID,
-                #         'vs':sensor_type,
-                #         'v':'',
-                #         't':time,
-                #         'u':unit,
-                #         'iscritical':
-                #         'saferange':
-                #         },
-                #     ]
-                #     'latitude':0,
-                #     'longitude':0
-                # }
+   # template messaggio: 
+                                # msg = {			
+                                # 'p_ID':patient_ID,
+                                # 't':basetime,
+                                # 'e':[ 
+                                #       {               
+                                #         'n':sensor_ID,
+                                #         'vs':sensor_type,
+                                #         'v':'value',
+                                #         't':time,
+                                #         'u':unit
+                                #         },
+                                #         {               
+                                #         'n':sensor_ID,
+                                #         'vs':sensor_type,
+                                #         'v':'',
+                                #         't':time,
+                                #         'u':unit,
+                                #         },
+                                #   ]
+                                #   'location':{        #un problema concettuale è che avendo la posizione qui non serve forse chiamare il catalog service
+                                #       'latitude':0,
+                                #       'longitude':0
+                                #   } 
+                                # }
 
 
 
@@ -150,6 +147,7 @@ if __name__ == '__main__':
     pat_info = json.loads(requests.get(catalog_address + '/get_dc_info' ,params = {"p_ID":patient_ID}).text)
     print(pat_info)
     device_connector2 = device_connector(pat_info["broker"], pat_info["port"], patient_ID, pat_info["topic"], catalog_address)
+
 
     while True:
         time.sleep(10)
