@@ -150,7 +150,7 @@ class catalog():
 
         elif uri[0] == 'get_service_info':
 
-            return catalog["services"][params["service_ID"]]
+            return json.dumps(catalog["services"][params["service_ID"]])
 
         elif uri[0] == 'get_MQTT':
 

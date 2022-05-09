@@ -33,7 +33,7 @@ class device_connector():                                                 #class
 
         # template messaggio publisher
         self._message = {			
-            'p_ID':patient_ID,
+            'patient_ID':patient_ID,
             't':self.basetime,
             'e':[],
             'latitude':0,
@@ -44,7 +44,7 @@ class device_connector():                                                 #class
         self._sensors = []
 
         #prende dal catalog i sensori assegnati a questo device connector 
-        sensors = json.loads(requests.get(catalog_address + '/get_sensors',params= {'p_ID':patient_ID}).text)#chiede la lista dei sensori del patient id che gli passo  
+        sensors = json.loads(requests.get(catalog_address + '/get_sensors',params= {'patient_ID':patient_ID}).text)#chiede la lista dei sensori del patient id che gli passo  
 
         # riceve un messaggio di questo tipo:
                     # sensors = {
@@ -106,7 +106,7 @@ class device_connector():                                                 #class
 
    # template messaggio: 
                                 # msg = {			
-                                # 'p_ID':patient_ID,
+                                # 'patient_ID':patient_ID,
                                 # 't':basetime,
                                 # 'e':[ 
                                 #       {               
@@ -138,13 +138,13 @@ if __name__ == '__main__':
     patient_ID = 'p_1'
 
     # manda una richiesta al catalog per i dati della connessione MQTT del device connector
-    pat_info = json.loads(requests.get(catalog_address + '/get_dc_info' ,params= {"p_ID":patient_ID}).text)
+    pat_info = json.loads(requests.get(catalog_address + '/get_dc_info' ,params= {"patient_ID":patient_ID}).text)
     print(pat_info)
     device_connector1 = device_connector(pat_info["broker"], pat_info["port"], patient_ID, pat_info["topic"],catalog_address)
 
     # per simulare un sistema più complesso viene inizializzato un secondo device connector che funzinerà in parallelo al primo 
     patient_ID = 'p_2'
-    pat_info = json.loads(requests.get(catalog_address + '/get_dc_info' ,params = {"p_ID":patient_ID}).text)
+    pat_info = json.loads(requests.get(catalog_address + '/get_dc_info' ,params = {"patient_ID":patient_ID}).text)
     print(pat_info)
     device_connector2 = device_connector(pat_info["broker"], pat_info["port"], patient_ID, pat_info["topic"], catalog_address)
 

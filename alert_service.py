@@ -19,7 +19,7 @@ class alert_service:
         # messaggio ricevuto da device connector
         # template messaggio: 
                                 # message = {			
-                                # 'p_ID':patient_ID,
+                                # 'patient_ID':patient_ID,
                                 # 't':basetime,
                                 # 'e':[ 
                                 #       {               
@@ -44,14 +44,14 @@ class alert_service:
                                 # }
 
         # prende le informazioni necessarie 
-        patient_ID = msg['p_ID']
+        patient_ID = msg['patient_ID']
         measures = msg['e']
 
         # itera lungo le misurazioni dei singoli sensori e controlla la criticità associata ad essa, nel caso ci sia un problema richiama i metodi di notifica 
         # i metodi per le procedure di allerta sono definiti sotto 
         for measure in measures:
 
-            is_critical = json.loads(requests.get(self.catalog_address + '/get_critical_info', params= {'p_ID':patient_ID, 's_ID':measure['n']}).text)
+            is_critical = json.loads(requests.get(self.catalog_address + '/get_critical_info', params= {'patient_ID':patient_ID, 's_ID':measure['n']}).text)
             
                                 # messaggio ricevuto 
                                 # is_critical = {
@@ -84,7 +84,7 @@ class alert_service:
     def critical_alert(self,patient_ID,problem):
 
         # get al catalog per informazioni di contatto del medico 
-        doctor = json.loads(r.get(self.catalog_address + 'get_doctor',data = {"p_ID":patient_ID}).text)
+        doctor = json.loads(r.get(self.catalog_address + 'get_doctor',data = {"patient_ID":patient_ID}).text)
 
         # ricava il contatto (ha ricevuto tutte le info)
         doctor_chat_ID = doctor["chat_ID"]
@@ -96,7 +96,7 @@ class alert_service:
                                 # }
 
         # get al location service per informazioni di contatto della clinica
-        nearest_clinic = json.loads(r.get(self.location_service, data = {"p_ID":patient_ID}).text)
+        nearest_clinic = json.loads(r.get(self.location_service, data = {"patient_ID":patient_ID}).text)
 
         # template messaggio ricevuto:
                                 # msg = {
@@ -112,7 +112,7 @@ class alert_service:
            
             # messaggio da mandare alla clinica e al medico
             msg = {
-                "p_ID":patient_ID,
+                "patient_ID":patient_ID,
                 "patient_position":
                     {
                     "latitude":nearest_clinic['patient_pos']['latitude'],
@@ -135,7 +135,7 @@ class alert_service:
         else: 
             msg = {
                 "patient_problem":problem, 
-                "p_ID":patient_ID,
+                "patient_ID":patient_ID,
                 "position":"not known"
             }
 
@@ -148,7 +148,7 @@ class alert_service:
     def informative_alert(self,patient_ID,problem):
 
         # get al catalog per informazioni di contatto del paziente
-        patient = json.loads(r.get(self.catalog_address + 'get_patient',data = {"p_ID":patient_ID}).text)
+        patient = json.loads(r.get(self.catalog_address + 'get_patient',data = {"patient_ID":patient_ID}).text)
 
         patient_chat_ID = patient["chat_ID"]
         # messaggio

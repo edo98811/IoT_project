@@ -19,14 +19,14 @@ class data_analysis_service():
         
         msg = json.loads(msg) #in questo caso il messaggio arriva da mqtt quindi in formato stringa
 
-        patient_ID = msg['p_ID']
+        patient_ID = msg['patient_ID']
         measures = msg['e']
 
         for measure in measures:
             if measure['vs'] =='gps': #riguardare bene come dovrebbe essere il formato senml
                 msg = {
-                    "p_ID":patient_ID,
-                    "s_ID":measure['n'],
+                    "patient_ID":patient_ID,
+                    "sensor_ID":measure['n'],
                     "location": {
                         "latitude":measure['v'][0:4],#potrebbe essere un idea scriverla in questo formato per rispettare senml
                         "longitude":measure['v'][5:-1]
@@ -36,14 +36,14 @@ class data_analysis_service():
 
             else: #forse basta proprio anche solo la lettura del dato come in measure, anche sopra, oppure si puo aggiungere anche altre informazioni come il sensore etc
                 msg = {
-                    "p_ID":patient_ID,
-                    "s_ID":measure['vs'],
+                    "patient_ID":patient_ID,
+                    "sensor_ID":measure['vs'],
                     "v": measure['v'],
                     "u":measure["u"]
                 }
                 #scrive sul database
                 #r.post(self.database_address,msg)
-                print('dati sensosre' + msg["s_ID"] + "salvati correttamente")
+                print('dati sensosre' + msg["sensor_ID"] + "salvati correttamente")
 
 
 

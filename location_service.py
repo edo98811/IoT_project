@@ -54,7 +54,7 @@ class location_service():
         # il messaggio ora come ora è così strutturato (bisogna vedere cosa se ne farà del data analysis): 
         # template messaggio: 
                                 # msg = {			
-                                # 'p_ID':patient_ID,
+                                # 'patient_ID':patient_ID,
                                 # 't':basetime,
                                 # 'e':[ 
                                 #       {               
