@@ -11,7 +11,6 @@ from MyMQTT import *
 
 class TeleBot:
     def __init__(self, token, broker, port, topic, catalog_address):
-        # Local token
         self.tokenBot = token
         self.bot = telepot.Bot(self.tokenBot)
         self.catalog_address = catalog_address
@@ -96,18 +95,11 @@ class TeleBot:
     def notify(self,topic,message):
         # leggo il messaggio ed estraggo il chat_ID del medico a cui deve essere mandata la notifica 
         msg=json.loads(message)        
-        alert=msg["alert"]
+        problem=msg["problem"]
         chat_ID = msg["chat_ID"]
-
-        if topic == "telebot/personal_alert":    
-            action=msg["action"]
-            personal_alert=f"ATTENTION!!!\n{alert}, you should {action}"
-            self.bot.sendMessage(chat_ID, text=personal_alert)
-
-        elif topic == "telebot/critical_alert":
-            patient_ID = msg["alert"]
-            critical_alert=f"ATTENTION!!!\n{patient_ID} is having a {alert}"
-            self.bot.sendMessage(chat_ID, text=critical_alert)
+        patient_ID = msg["pat_ID"]
+        critical_alert=f"ATTENTION!!!\n{patient_ID} is having a {alert}"
+        self.bot.sendMessage(chat_ID, text=critical_alert)
 
 
 if __name__ == "__main__":
@@ -126,7 +118,6 @@ if __name__ == "__main__":
     broker = MQTT_info["broker"]
     port = MQTT_info["port"]
     topic =  json.loads(requests.get(catalog_address+"/service-info?name=alert_service").text)["topic"]
-    print(topic)
     bot=TeleBot(token,broker,port, topic, catalog_address)
 
     print("Bot started ...")
