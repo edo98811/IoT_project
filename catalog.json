@@ -26,7 +26,6 @@
             "TS_rKey": "82M0DY5FZ2TCJOKU",
             "doctor_ID": "d_1",
             "device_connector": {
-                "service_id": "",
                 "topic": "service/dc_1"
             }
         }

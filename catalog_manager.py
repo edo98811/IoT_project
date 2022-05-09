@@ -200,15 +200,13 @@ class catalog():
                 "TS_rKey": [k["api_key"] for k in resp["api_keys"] if not k["write_flag"]][0],
                 "doctor_ID": newPat["docID"],
                 "device_connector": {
-                    "service_id": "",
-                    "topic": "channels/" + str(resp["id"]) + "/publish/" + [k["api_key"] for k in resp["api_keys"] if k["write_flag"]][0]
+                    "topic": f"service/dc_{len(pats)+1}"
                 }
             }
 
             catalog["patients"].append(f_newPat)
 
-            
-            
+                        
             # Aggiorna 'catalog.json'
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
