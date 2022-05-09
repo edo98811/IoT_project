@@ -1,5 +1,5 @@
 import json
-#import requests
+import requests
 import cherrypy
 from pprint import pprint
 
@@ -58,10 +58,11 @@ class catalog():
                 
             return json.dumps(sensor_list)
 
-        # per passare al DC le info sulle tipologie di sensori
-        elif uri[0] == 'sensor-general-info':
         
-           # Estrae dal catalog la scheda sensore associata all'ID passato nei parametri
+        elif uri[0] == 'sensor-general-info':   # per passare al DC le info sulle tipologie di sensori
+                                                # url : host:port/catalog_manager/sensor-general-info?type=typeID
+                                                #         
+            # Estrae dal catalog la scheda sensore associata all'ID passato nei parametri
             type = params["type"]
             sen = [s for s in catalog['sensors_type'] if s['type_ID'] == type][0] 
             # viene costruito come una lista con un solo elemento, quindi lo estraggo con ...[0] 
@@ -118,6 +119,11 @@ class catalog():
             serviceAddress = "http://"+catalog["base_host"]+":"+catalog["base_port"]+catalog["services"][params["name"]]["address"]
 
             return serviceAddress
+        
+        elif uri[0] == 'service-info':  # Per ottenere le informzioni relative ad un servizio (tutto il dizionario)
+                                        # url : host:port/catalog_manager/service-info?name=nomedelservizio
+
+            return json.dumps(catalog["services"][params["name"]])
 
         else: 
             #cherrypyerror
@@ -165,6 +171,21 @@ class catalog():
                 }
                 newPatDevs.append(newDev)
 
+            # Crea un nuovo canale su ThingSpeak
+            b = {
+                "api_key": catalog["services"]["ThingSpeak"]["api_key"],
+                "name": f"{newPat['name']} {newPat['surname']}",
+                "public_flag": True
+                }
+            
+            for i in range(len(newPatDevs)):
+                b[f"field{i+1}"] = [s["type"] for s in catalog["sensors_type"] if s["type_ID"] == newPat["devID"][i]][0]
+            
+            # Richiesta POST per la creazione del canale su TS, e memorizzazion channel ID
+            resp = json.loads(requests.post("https://api.thingspeak.com/channels.json",b).text)
+
+            pprint(resp)
+            
             # Definisce la nuova scheda paziente e la inserisce nella variabile locale che rappresenta il catalog
             f_newPat={
                 "patient_ID": f"p_{len(pats)+1}",
@@ -174,15 +195,20 @@ class catalog():
                     "chat_ID": newPat["chatID"]
                 },
                 "sensors": newPatDevs,
+                "TS_chID": resp["id"],
+                "TS_wKey": [k["api_key"] for k in resp["api_keys"] if k["write_flag"]][0],
+                "TS_rKey": [k["api_key"] for k in resp["api_keys"] if not k["write_flag"]][0],
                 "doctor_ID": newPat["docID"],
                 "device_connector": {
                     "service_id": "",
-                    "topic":f"service/dc_{len(pats)+1}"
+                    "topic": "channels/" + str(resp["id"]) + "/publish/" + [k["api_key"] for k in resp["api_keys"] if k["write_flag"]][0]
                 }
             }
 
             catalog["patients"].append(f_newPat)
 
+            
+            
             # Aggiorna 'catalog.json'
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
