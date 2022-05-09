@@ -92,14 +92,24 @@ class TeleBot:
 
 
     ### Routine per messaggi di alert derivanti da Alert service tramite protocollo MQTT ###
-    def notify(self,topic,message):
-        # leggo il messaggio ed estraggo il chat_ID del medico a cui deve essere mandata la notifica 
-        msg=json.loads(message)        
-        problem=msg["problem"]
-        chat_ID = msg["chat_ID"]
-        patient_ID = msg["pat_ID"]
-        critical_alert=f"ATTENTION!!!\n{patient_ID} is having a {alert}"
-        self.bot.sendMessage(chat_ID, text=critical_alert)
+    
+        def notify(self,topic,message):
+            # leggo il messaggio ed estraggo il chat_ID del medico a cui deve essere mandata la notifica 
+            msg=json.loads(message)        
+            alert=msg["alert"]
+            chat_ID = msg["chat_ID"]
+            topic = topic.split("/")
+
+            if topic == "telebot/personal_alert":    
+                action=msg["action"]
+                personal_alert=f"ATTENTION!!!\n{alert}, you should {action}"
+                self.bot.sendMessage(chat_ID, text=personal_alert)
+
+            elif topic == "telebot/critical_alert":
+                patient_ID = msg["alert"]
+                critical_alert=f"ATTENTION!!!\n{patient_ID} is having a {alert}"
+                self.bot.sendMessage(chat_ID, text=critical_alert)
+
 
 
 if __name__ == "__main__":
