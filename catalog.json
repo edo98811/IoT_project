@@ -35,6 +35,7 @@
                     ]
                 }
             ],
+            "TS_chID": "prova",
             "doctor_ID": "d_1",
             "device_connector": {
                 "service_ID": "dc_2_342312",
@@ -58,6 +59,7 @@
                     ]
                 }
             ],
+            "TS_chID": "prova",
             "doctor_ID": "d_1",
             "device_connector": {
                 "service_ID": "dc_2_3242153",
@@ -87,7 +89,8 @@
                     "safe_range": []
                 }
             ],
-            "doctor_ID": "d_1",
+            "TS_chID": "prova",
+            "doctor_ID": "d_2",
             "device_connector": {
                 "service_id": "",
                 "topic": "service/dc_3"
@@ -107,6 +110,7 @@
                     "safe_range": []
                 }
             ],
+            "TS_chID": "prova",
             "doctor_ID": "d_1",
             "device_connector": {
                 "service_id": "",
@@ -142,6 +146,7 @@
                     "safe_range": []
                 }
             ],
+            "TS_chID": "1726081",
             "doctor_ID": "d_2",
             "device_connector": {
                 "service_id": "",
@@ -160,7 +165,7 @@
             "doctor_ID": "d_2",
             "name": "Marco",
             "surname": "Gagliardi",
-            "chatID": "73768282738"
+            "chatID": "612859950"
         }
     ],
     "sensors_type": [
@@ -213,7 +218,7 @@
         "alert_service": {
             "type": "",
             "address": "",
-            "topic": ""
+            "topic": "telebot/critical_alert"
         },
         "data_analysis": {
             "type": "",
@@ -228,6 +233,6 @@
         }
     },
     "base_host": "127.0.0.1",
-    "base_port": "9090"
+    "base_port": "9091"
     
 }

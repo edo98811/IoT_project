@@ -1,29 +1,24 @@
+from operator import imod
 import telepot
 from telepot.loop import MessageLoop
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 import json
 import requests
 import time
+from pprint import pprint
 from MyMQTT import *
 
 
 class TeleBot:
-    def __init__(self, token, broker, port, topic, catalog):
+    def __init__(self, token, broker, port, topic, catalog_address):
         # Local token
         self.tokenBot = token
         self.bot = telepot.Bot(self.tokenBot)
+        self.catalog_address = catalog_address
         self.client = MyMQTT("TelegramBotIot", broker, port, self)
-        self.catalog = catalog
         self.client.start()
         self.topic = topic
         self.client.mySubscribe(topic)
-        
-        #self.__message = {'bn': "telegramBot",
-        #                  'e':
-         #                 [
-          #                    {'n': 'switch', 'v': '', 't': '', 'u': 'bool'},
-           #               ]
-            #              }
         MessageLoop(self.bot, {'chat': self.on_chat_message,
                                'callback_query': self.on_callback_query}).run_as_thread()
 
@@ -45,23 +40,22 @@ class TeleBot:
         elif message == '/report':
             # in caso il medico scelga questa key bisogna resituirgli la lista di tutti i suoi pazienti
             # dal chat_id risalgo al nome del medico
-            doctors = json.loads(requests.get(catalog + '/avail-docs').text)
-            for doctor in doctors:
-                if doctor['chat_ID'] == chat_ID:
-                    doctor_id = doctor['docID']
-
+            doctors = json.loads(requests.get(catalog_address + '/avail-docs').text)
+            doctor_id = doctors["docID"][doctors["chatID"].index(str(chat_ID))]
             # a partire dal doctor id scorro la lista dei pazienti e tengo solamente coloro che hanno quel dottore 
-            patients = json.loads(requests.get(catalog + '/get_patients',params= {'doctor_ID':doctor_id}).text)
-            print(patients)
+            patients = json.loads(requests.get(catalog_address + '/get_patients').text)
+            patFullNames = [f"{pat['personal_info']['name']} {pat['personal_info']['surname']}" for pat in patients if pat['doctor_ID']==doctor_id]
             
-            #question = 'This is the list of your patients, select the one that you are interest about'
-            #self.bot.sendMessage(chat_ID, text=question,
-            #    reply_markup=InlineKeyboardMarkup(
-            #        inline_keyboard=[
-            #            list(map(lambda c: InlineKeyboardButton(text=str(c), callback_data=str(c)), patients))
-            #        ]
-            #    )
-            #)
+            patIndex = [patients.index(pat) for pat in patients if pat['doctor_ID']==doctor_id]
+            
+            question = 'This is the list of your patients, select the one that you are interest about'
+            self.bot.sendMessage(chat_ID, text=question,
+                reply_markup=InlineKeyboardMarkup(
+                    inline_keyboard=[
+                        list(map(lambda c,p: InlineKeyboardButton(text=str(c), callback_data=str(p)), patFullNames, patIndex))
+                    ]
+                )
+            )
         
         else:
             # se nessun messaggio e' riconosciuto rimando la lista dei possibili comandi
@@ -72,25 +66,29 @@ class TeleBot:
             
 
 
-    ### Routine per rispondere alle inline Keyboard
+    ### Routine per rispondere alle inline Keyboard ###
     def on_callback_query(self,msg):
+        # estraggo chat_id del medico ed il paziente selezionato (da query data so la posizione che il paziente occupa nel catalog, parto da 0)
         query_ID , chat_ID , query_data = telepot.glance(msg,flavor='callback_query') 
-        # estraggo lista pazienti a partire dal chatID come fatto in precedenza 
-        patients = ['mf', 'hd']
-        # possibili periodi temporali di cui il medico vuole il resocont
-        TimeLapse = ['day', 'week', 'month']
-        for patient in patients:
-            if query_data == patient:           
-                # ho trovato il paziente selezionato dal medico tramite inline Keyboard e restituisco una nuova inline keyboard
-                # con i 3 periodi temporali tra cui il medico deve scegliere (rimandare all'URL di thingspeak)
-                question = 'Select the time lapse you are interest about'
-                self.bot.sendMessage(chat_ID, text=question,
-                reply_markup=InlineKeyboardMarkup(
-                    inline_keyboard=[
-                        list(map(lambda c: InlineKeyboardButton(text=str(c), callback_data=str(c)), TimeLapse))
-                    ]
-                )
+        patients = json.loads(requests.get(catalog_address + '/get_patients').text)
+        pat = patients[int(query_data)]
+        # estraggo i possibili sensori (in sensoro ho i devID e i fullNames)
+        sensors = json.loads(requests.get(catalog_address + '/avail-devs').text)
+        chID = pat['TS_chID']
+        # per trovare i nomi dei sensori che possiede quel paziente devo fare un controllo tra i sensori in sensors e i sensori di patients
+        sensNames = [sensors['fullName'][i] for i in range(len(sensors['fullName'])) if sensors['devID'][i] in [d['sensor_type'] for d in pat['sensors']]] 
+           
+        # ho trovato il paziente selezionato dal medico tramite inline Keyboard e restituisco una nuova inline keyboard
+        # con i possibili sensori tra cui il medico deve scegliere (rimandare all'URL di thingspeak)
+        question = 'Select the sensor you are interest about'
+        
+        self.bot.sendMessage(chat_ID, text=question,
+        reply_markup=InlineKeyboardMarkup(
+            inline_keyboard=[
+                list(map(lambda c,i: InlineKeyboardButton(text=str(c), url=f"https://thingspeak.com/channels/{chID}/charts/{i}?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"), sensNames,range(1,len(sensNames)+1)))
+            ]
             )
+        )
 
 
 
@@ -119,18 +117,17 @@ if __name__ == "__main__":
         cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
     host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
     port = cat['base_port']
-    catalog = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
+    catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
     ####
 
     # Ottiene dal catalog l'indirizzo del servizio di telegram bot e di comunicazione MQTT
-    token = json.loads(requests.get(catalog+"/service-info?name=telegram_bot").text)["token"]
-    MQTT_info = json.loads(requests.get(catalog+"/service-info?name=MQTT").text)
+    token = json.loads(requests.get(catalog_address+"/service-info?name=telegram_bot").text)["token"]
+    MQTT_info = json.loads(requests.get(catalog_address+"/service-info?name=MQTT").text)
     broker = MQTT_info["broker"]
     port = MQTT_info["port"]
-    alert_topic =  json.loads(requests.get(catalog+"/service-info?name=alert_service").text)["topic"]
-    
-
-    bot=TeleBot(token,broker,port,alert_topic, catalog)
+    topic =  json.loads(requests.get(catalog_address+"/service-info?name=alert_service").text)["topic"]
+    print(topic)
+    bot=TeleBot(token,broker,port, topic, catalog_address)
 
     print("Bot started ...")
     while True:
