@@ -106,6 +106,7 @@ class device_connector():                                                 #class
                 value = sensor.get_reading_safe() #
             if self.critical == 1: 
                 value = sensor.get_reading_critical() #
+
             self.message = deepcopy(self._message) # copia il template 
             self.message['e'][n]['v'] = value
 
@@ -114,6 +115,7 @@ class device_connector():                                                 #class
 
         # genera una posizione casuale vicina a quella attuale
         # latitudine e longitudine modificati casualmente
+        
         self.message['location']['latitude'] = self.message['location']['latitude'] + random.randint(-10,+10) # ipotizzando che la posizione vari casualmente di questa quantità
         self.message['location']['longitude'] = self.message['location']['latitude'] + random.randint(-10,+10)
 
