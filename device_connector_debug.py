@@ -1,4 +1,4 @@
-# senza safe range e cambio di 
+from email import message
 import random
 from MyMQTT import *
 from MQTT import *
@@ -49,7 +49,6 @@ class device_connector():                                                 #class
         # template messaggio pubblicato dal DC
         self._message = {			
             'bn':patient_ID,
-            'bt':self.basetime,
             't':self.basetime,
             'e':[]
 			}

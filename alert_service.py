@@ -121,7 +121,7 @@ class alert_service:
             nearest_clinic_chat_ID = nearest_clinic['clinic_chat_ID']
 
             # messaggio mandato alla clinica
-            self.alert_service.myPublish(nearest_clinic_chat_ID, msg)
+            self.alert_service.myPublish('clinic_alert/'+nearest_clinic_chat_ID, msg)
 
             # messaggio mandato al medico
             self.alert_service.myPublish("telebot/critical_alert", msg)
@@ -130,7 +130,9 @@ class alert_service:
             msg = {
                 "patient_problem":problem, 
                 "patient_ID":patient_ID,
-                "location":"not known"
+                "location":"not known",
+                "message":problem, # messaggio che verrà letto 
+                "chat_ID":doctor["chat_ID"]
             }
 
             # messaggio mandato al medico 
