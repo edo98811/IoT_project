@@ -96,20 +96,21 @@ class TeleBot:
         def notify(self,topic,message):
             # leggo il messaggio ed estraggo il chat_ID del medico a cui deve essere mandata la notifica 
             msg=json.loads(message)        
-            alert=msg["alert"]
+            alert=msg["message"]
             chat_ID = msg["chat_ID"]
-            topic = topic.split("/")
+            patient_ID = msg["patient_ID"]
+            topic = topic.split("/")[-1]
 
-            if topic == "telebot/personal_alert":    
-                action=msg["action"]
-                personal_alert=f"ATTENTION!!!\n{alert}, you should {action}"
+            if topic == "telebot/personal_alert":   
+                personal_alert=f"ATTENTION!!!\n{alert}"
                 self.bot.sendMessage(chat_ID, text=personal_alert)
 
             elif topic == "telebot/critical_alert":
                 patient_ID = msg["alert"]
-                critical_alert=f"ATTENTION!!!\n{patient_ID} is having a {alert}"
+                critical_alert=f"ATTENTION {patient_ID}!!!\{alert}"
                 self.bot.sendMessage(chat_ID, text=critical_alert)
 
+            
 
 
 if __name__ == "__main__":
