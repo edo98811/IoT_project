@@ -12,7 +12,7 @@ class TS_Adaptor:
 
 
         # Templeate del url per la richiesta di POST a TS
-        self._url = "https://api.thingspeak.com/channels/<ch_ID>/bulk_update.json"
+        self._url = "https://api.thingspeak.com/channels/<ch_ID>/bulk_update.json" # DA PORTARE IN CTALAOG
 
         # Template del body del POST per TS 
         self._body = {
@@ -20,7 +20,7 @@ class TS_Adaptor:
             "updates": []
         }
 
-        # Template del campo 'update' del body
+        # Template del campo 'updates' del body
         self._inUpdates = {
             "created_at": 0
         } # "field<x>": 0  
