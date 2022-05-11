@@ -12,13 +12,12 @@ class catalog():
     def __init__(self,catalog_file):
         self.catalog_file = catalog_file
 
-    def GET(self,*uri,**params): # come funzionano questi parametri?
+    def GET(self,*uri,**params): 
 
         # legge il catalog dal file json e lo carica in una variabile temporanea catalog 
         with open(self.catalog_file,'r') as f:
             catalog = json.load(f)
 
-        # device connector info
         if uri[0] == 'get_dc_info':
 
             # richiamato da device connector    
@@ -26,37 +25,37 @@ class catalog():
             # questa funzione crea un iterator della lista e mi restituisce le informazioni 
             # sul paziente identificato dal patient_ID passato alla funzione
             # spiegato male: un iterator è un oggetto che applica una funzione ad un altro oggetto 
-            pat = next((p for p in catalog['patients'] if p['patient_ID'] == params['patient_ID'] ), None) 
+            patient = next((p for p in catalog['patients'] if p['patient_ID'] == params['patient_ID'] ), None) 
 
             msg = {
-                "broker":pat["device_connector"]["topic"],
-                "port":pat["device_connector"]["service_ID"],
-                "topic":catalog["MQTT_broker"],
+                "broker":catalog["services"]["MQTT"]["broker"],
+                "port":patient["device_connector"]["port"],
+                "topic":patient["device_connector"]["topic"]
             }
 
             return json.dumps(msg)
 
-        #sensori relativi ad un paziente
-        elif uri[0] == 'get_sensors':
+        elif uri[0] == 'get_sensors':#sensori relativi ad un paziente
 
             # richiamato da device connector
           
             # prende le info del paziente a recupera la lista dei sensori
-            pat = next((p for p in catalog['patients'] if p['patient_ID'] == params['patient_ID'] ), None)
-            sensor_ids = pat["sensors"]
+            patient = next((p for p in catalog['patients'] if p['patient_ID'] == params['patient_ID'] ), None)
+            sensors_info = patient["sensors"]
             sensors = []
 
             # itera lungo la lista dei sensori e prende le loro informazioni dal catalog
-            for s_info in sensor_ids:
+            for s_info in sensors_info:
                 
                 # recupera le carattersitiche dei sensori
-                s_type = next((s for s in catalog['sensors'] if s['type_ID'] == s_info['type'] ), None)
+                s_type = next((s for s in catalog["sensors_type"] if s['type_ID'] == s_info['type_ID'] ), None)
 
                 # questo è il messaggio passato al sensor info del device connector
                 s_msg = {
                     "type_ID":s_type["type_ID"],
                     "type":s_type["type"],
                     "range":s_type["range"],
+                    "safe_range":s_info["safe_range"],
                     "unit":s_type["unit"]
                 }
 
@@ -70,23 +69,19 @@ class catalog():
             } 
             return json.dumps(sensors)
 
-
-        #per le cliniche
-        elif uri[0] == 'get_clinics':
+        elif uri[0] == 'get_clinics':#per le cliniche
 
             # richiamata da location_service
             return json.dumps(catalog["clinics"])
 
-        #get all patient info 
-        elif uri[0] == 'get_patient_info':
+        elif uri[0] == 'get_patient_info':#get all patient info 
 
             # richiamato da alert service
 
             msg = next((p for p in catalog['patients'] if p['patient_ID'] ==  params["patient_ID"]), None)  
             return json.dumps(msg)
-        
-        #per il dottore associato ad un paziente
-        elif uri[0] == 'get_doctor':
+               
+        elif uri[0] == 'get_doctor': #per il dottore associato ad un paziente
             
             # prima trova il paziente per cui devo ricercare il medico
             patient = next((p for p in catalog['patients'] if p['patient_ID'] == params["patient_ID"] ), None) 
@@ -140,9 +135,6 @@ class catalog():
 
             return json.dumps(serviceInfo)
 
-
-
-        ### aggiunti modificando il modo in cui i microservizi comunicano 
         elif uri[0] == 'get_service_address':
 
             # Costruisce l'elemento che contiene le info dei servizi
@@ -155,6 +147,11 @@ class catalog():
         elif uri[0] == 'get_MQTT':
 
             return catalog["services"]["MQTT"]["broker"]
+        
+        elif uri[0] == 'get_critical_info':
+
+            patient = next((p for p in catalog['patients'] if p['patient_ID'] == params['patient_ID'] ), None)
+            return json.dumps(patient["sensors"])
         
         else: 
             #cherrypyerror

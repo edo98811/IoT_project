@@ -8,16 +8,14 @@
             },
             "sensors": [
                 {
-                    "sensor_ID": "p_1_1",
                     "type_ID": "s_1",
                     "is_critical": "critical",
                     "safe_range": [
-                        70,
-                        30
+                        30,
+                        70
                     ]
                 },
                 {
-                    "sensor_ID": "p_1_2",
                     "type_ID": "s_2",
                     "is_critical": "not_critical",
                     "safe_range": [
@@ -26,9 +24,8 @@
                     ]
                 },
                 {
-                    "sensor_ID": "p_1_3",
                     "type_ID": "s_3",
-                    "is_critical": "informative",
+                    "is_critical": "personal",
                     "safe_range": [
                         130,
                         200
@@ -38,7 +35,8 @@
             "doctor_ID": "d_1",
             "device_connector": {
                 "service_ID": "dc_2_342312",
-                "topic": "service/dc_1"
+                "topic": "service/dc_1",
+                "port": "1883"
             }
         },
         {
@@ -49,7 +47,6 @@
             },
             "sensors": [
                 {
-                    "sensor_ID": "p_2_1",
                     "type_ID": "s_1",
                     "is_critical": "critical",
                     "safe_range": [
@@ -61,7 +58,8 @@
             "doctor_ID": "d_1",
             "device_connector": {
                 "service_ID": "dc_2_3242153",
-                "topic": "service/dc_2"
+                "topic": "service/dc_2",
+                "port": "1883"
             }
         },
         {
@@ -72,7 +70,6 @@
             },
             "sensors": [
                 {
-                    "sensor_ID": "p_3_1",
                     "type_ID": "s_2",
                     "is_critical": "not_critical",
                     "safe_range": [
@@ -81,7 +78,6 @@
                     ]
                 },
                 {
-                    "sensor_ID": "p_3_2",
                     "type_ID": "s_3",
                     "is_critical": "",
                     "safe_range": []
@@ -90,7 +86,8 @@
             "doctor_ID": "d_1",
             "device_connector": {
                 "service_id": "",
-                "topic": "service/dc_3"
+                "topic": "service/dc_3",
+                "port": "1883"
             }
         },
         {
@@ -101,7 +98,6 @@
             },
             "sensors": [
                 {
-                    "sensor_ID": "p_4_1",
                     "type_ID": "s_1",
                     "is_critical": "",
                     "safe_range": []
@@ -121,7 +117,6 @@
             },
             "sensors": [
                 {
-                    "sensor_ID": "p_5_1",
                     "type_ID": "s_1",
                     "is_critical": "critical",
                     "safe_range": [
@@ -130,13 +125,11 @@
                     ]
                 },
                 {
-                    "sensor_ID": "p_5_2",
                     "type_ID": "s_2",
                     "is_critical": "",
                     "safe_range": []
                 },
                 {
-                    "sensor_ID": "p_5_3",
                     "type_ID": "s_3",
                     "is_critical": "",
                     "safe_range": []
@@ -195,7 +188,7 @@
     "clinics": [
         {
             "clinic_ID": "cl_1",
-            "position": {
+            "location": {
                 "longitude": "40000",
                 "latitude": "013000"
             }
@@ -216,8 +209,9 @@
             "port":1883
         },
         "data_analysis": {
-            "type": "",
-            "address": ""
+            "service_ID":"data_analysis",
+            "topic":"service/#",
+            "port":1883
         },
         "telegram_bot": {
             "token": "5338835932:AAH8QcMIuA8moihJaomvumEspZsbHBzXtlw"
@@ -227,5 +221,5 @@
         }
     },
     "base_host": "127.0.0.1",
-    "base_port": "9090"
+    "base_port": "8080"
 }

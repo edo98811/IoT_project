@@ -22,30 +22,25 @@ class alert_service:
                                 # 'patient_ID':patient_ID,
                                 # 't':basetime,
                                 # 'e':[ 
-                                #       {               
-                                #         'n':sensor_ID,
-                                #         'vs':sensor_type,
-                                #         'v':'value',
-                                #         't':time,
-                                #         'u':unit
-                                #         },
-                                #         {               
-                                #         'n':sensor_ID,
-                                #         'vs':sensor_type,
+                                #         'n':lat e lon,
                                 #         'v':'',
-                                #         't':time,
+                                #         },
+                                #         .... dal secondo elemento della lista in poi ci sono i sensori
+                                #       {               
+                                #         'n':sensor_type,
+                                #         'v':'',
                                 #         'u':unit,
                                 #         },
-                                #   ]
-                                #   'position':{        #un problema concettuale è che avendo la posizione qui non serve forse chiamare il catalog service
-                                #       'latitude':0,
-                                #       'longitude':0
-                                #   } 
-                                # }
+                                #         {               
+                                #         'n':sensor_type,
+                                #         'v':'',
+                                #         'u':unit,
+                                #         },
+
 
         # prende le informazioni necessarie 
         patient_ID = msg['patient_ID']
-        measures = msg['e']
+        measures = msg['e'][2:-1] # le prime 2 sono la posizione
 
         # itera lungo le misurazioni dei singoli sensori e controlla la criticità associata ad essa, nel caso ci sia un problema richiama i metodi di notifica 
         # i metodi per le procedure di allerta sono definiti sotto 
@@ -55,8 +50,9 @@ class alert_service:
             
                                 # messaggio ricevuto 
                                 # is_critical = {
-                                # 'safe_range':''
-                                # 'is_critical':[numero1, numero2]
+                                #  "type_ID": "s_1",
+                                # 'safe_range':[numero1, numero2]
+                                # 'is_critical':
                                 # }
 
             if is_critical["is_critial"] == "not_critical":
@@ -66,17 +62,17 @@ class alert_service:
                 if measure['v'] > is_critical['safe_range'][1] | measure['v'] < is_critical['safe_range'][0]:
 
                     # se la misurazione è informativa (allerta solo al paziente)
-                    if is_critical["is_critial"] == "informative":
+                    if is_critical["is_critial"] == "personal":
                         
                         #messaggio che viene mandato insieme alla notifica
-                        problem = f'lettura di {measure["vs"]} di {measure["v"]} {measure["u"]} fuori dal range di sicurezza impostato da {measure["v"][0]} a {measure["v"][1]}'
-                        self.informative_alert(patient_ID,problem)
+                        problem = f'reading {measure["n"]}: {measure["v"]} {measure["u"]} out of safe range'
+                        self.personal_alert(patient_ID,problem)
 
                     # se la misuzione è critica (allerta a clinica e medico)
                     if is_critical["is_critial"] == "critical":
 
                         #messaggio che viene mandato insieme alla notifica
-                        problem = f'lettura di {measure["vs"]} di {measure["v"]} {measure["u"]} fuori dal range di sicurezza impostato da {measure["v"][0]} a {measure["v"][1]}'
+                        problem = f'reading {measure["n"]}: {measure["v"]} {measure["u"]} out of safe range'
                         self.critical_alert(patient_ID,problem) # a questo punto chiamo la funzione alert (basta richiamarlo ogni volta)
                     
 
@@ -85,9 +81,6 @@ class alert_service:
 
         # get al catalog per informazioni di contatto del medico 
         doctor = json.loads(r.get(self.catalog_address + 'get_doctor',data = {"patient_ID":patient_ID}).text)
-
-        # ricava il contatto (ha ricevuto tutte le info)
-        doctor_chat_ID = doctor["chat_ID"]
 
         # template del messaggio ricevuto 
                                 # msg = {
@@ -113,14 +106,15 @@ class alert_service:
             # messaggio da mandare alla clinica e al medico
             msg = {
                 "patient_ID":patient_ID,
-                "patient_position":
+                "patient_location":
                     {
                     "latitude":nearest_clinic['patient_pos']['latitude'],
                     "longitude":nearest_clinic['patient_pos']["longitude"]
                     },
-                "patient_problem":problem, # messaggio che verrà letto 
+                "message":problem, # messaggio che verrà letto 
                 "doctor_contact":doctor["chat_ID"],
-                "doctor_name":doctor["name"] # magari da correggere
+                "doctor_name":doctor["name"], 
+                "chat_ID":doctor["chat_ID"]
             }
 
             # contact info della clinica
@@ -130,34 +124,34 @@ class alert_service:
             self.alert_service.myPublish(nearest_clinic_chat_ID, msg)
 
             # messaggio mandato al medico
-            self.alert_service.myPublish(doctor_chat_ID, msg)
+            self.alert_service.myPublish("telebot/critical_alert", msg)
             print ('message correctly sent')
         else: 
             msg = {
                 "patient_problem":problem, 
                 "patient_ID":patient_ID,
-                "position":"not known"
+                "location":"not known"
             }
 
             # messaggio mandato al medico 
-            self.alert_service.myPublish(doctor_chat_ID, msg)
+            self.alert_service.myPublish("telebot/critical_alert", msg)
 
-            print ('error: patient position unknown') # in questo caso manda solo un messaggio la medico (non è aggiornata la posizione del paziente)
+            print ('error: patient location unknown') # in questo caso manda solo un messaggio la medico (non è aggiornata la posizione del paziente)
 
     # allerta informativa (paziente)
-    def informative_alert(self,patient_ID,problem):
+    def personal_alert(self,patient_ID,problem):
 
         # get al catalog per informazioni di contatto del paziente
         patient = json.loads(r.get(self.catalog_address + 'get_patient',data = {"patient_ID":patient_ID}).text)
 
-        patient_chat_ID = patient["chat_ID"]
         # messaggio
         msg = {
-            "message":problem   
+            "message":problem,   
+            "chat_ID":patient["chat_ID"]
         }
 
         # messaggio mandato al paziente (da aggiornare)
-        self.alert_service.myPublish(patient_chat_ID, msg)
+        self.alert_service.myPublish("telebot/personal_alert", msg)
 
 
 if __name__ =='__main__':
@@ -174,9 +168,9 @@ if __name__ =='__main__':
     # Ottiene dal catalog l'indirizzo del servizio di location
     # s = requests.session() # session non dovrebbe servire a noi: https://realpython.com/python-requests/#the-session-object
 
-    location_address = json.loads(r.get(catalog_address +"/get_service_address", params = {'service_ID':'location'}).text) # da modificare sul catalog
+    location_address = r.get(catalog_address +"/get_service_address", params = {'service_ID':'location_service'}).text # da modificare sul catalog
     connection_settings = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'alert_service'}).text)
-    mqtt_broker = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'alert_service'}).text)
+    mqtt_broker = r.get(catalog_address +"/get_MQTT").text
     
     # carica i dati relativi al client MQTT e agli indirizzi del location service e del catalog manager
     topic = connection_settings['topic']
@@ -192,11 +186,3 @@ if __name__ =='__main__':
     while not done:
         time.sleep(1)
 
-
-# da scrivere sul catalog manager 
-    # get service address 
-    # get service info per: alert service, location service
-
-# da uniformare tutti i messaggi 
-    # messaggi mandati si chiamano tutti msg 
-    # tutti i campi vanno in inglsese
