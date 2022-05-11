@@ -1,4 +1,4 @@
-from email import message
+from copy import deepcopy
 import random
 from MyMQTT import *
 from MQTT import *
@@ -104,7 +104,7 @@ class device_connector():                                                 #class
                 value = sensor.get_reading_safe() #
             if self.critical == 1: 
                 value = sensor.get_reading_critical() #
-            self.message = self._message # copia il template 
+            self.message = deepcopy(self._message) # copia il template 
             self.message['e'][n]['v'] = value
 
         print("sensori funzionanti")

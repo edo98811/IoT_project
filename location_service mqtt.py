@@ -6,6 +6,7 @@ import requests
 import cherrypy
 
 
+
 class location_service():
     exposed=True
     def __init__(self,catalog_address):
