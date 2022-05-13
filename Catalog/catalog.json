@@ -12,8 +12,8 @@
                     "type_ID": "s_1",
                     "is_critical": "critical",
                     "safe_range": [
-                        30,
-                        70
+                        35.0,
+                        75.0
                     ]
                 },
                 {
@@ -98,24 +98,24 @@
     ],
     "services": {
         "location_service": {
-            "service_ID":"location_service",
+            "service_ID": "location_service",
             "address": "/location_service"
         },
         "catalog_manager": {
-            "service_ID":"alert_service",
+            "service_ID": "alert_service",
             "address": "/catalog_manager"
         },
         "alert_service": {
-            "service_ID":"alert_service",
-            "topic":"alert/#"   
+            "service_ID": "alert_service",
+            "topic": "alert/#"
         },
         "data_analysis": {
-            "service_ID":"data_analysis",
-            "topic":"service/#"
+            "service_ID": "data_analysis",
+            "topic": "service/#"
         },
         "weekly_report": {
-            "service_ID":"weekly_report",
-            "topic":"weekly_report"
+            "service_ID": "weekly_report",
+            "topic": "weekly_report"
         },
         "telegram_bot": {
             "token": "5338835932:AAH8QcMIuA8moihJaomvumEspZsbHBzXtlw"
@@ -124,15 +124,15 @@
             "broker": "test.mosquitto.org",
             "dubbio": "non avevamo detto di mettere la port qui?",
             "baseTopic": "Iot_Helthcare",
-            "port":1883
+            "port": 1883
         },
         "ThingSpeak": {
             "api_key": "WH6G4IW2A7D3JT6P",
             "topic": "service/#",
             "url_weekly_report": "https://api.thingspeak.com/channels/<ch_id>/feeds.json?days=7 ",
-            "url_update":"https://api.thingspeak.com/channels/<ch_ID>/bulk_update.json"
+            "url_update": "https://api.thingspeak.com/channels/<ch_ID>/bulk_update.json"
         },
-        "front_end":{
+        "front_end": {
             "host": "127.0.0.1",
             "port": "8082"
         }

@@ -10,15 +10,17 @@ class FrontEnd:
     def __init__(self, catalog_address):
         self.catalog_address = catalog_address
     
-    def GET(self,*uri,**params):
-        if uri[0] == "avail_docs":
-            requests.get()
-        
-        else:            
-            # Essendo l'uri corrispondente al nome del file html posso fare direttamente:
-            with open(f"./{uri[0]}",'r') as f:
-                view=f.read()
-            return view
+    def GET(self, *uri, **params):
+                
+        # Essendo l'uri corrispondente al nome del file html posso fare direttamente:
+        with open(f"./{uri[0]}",'r') as f:
+            view=f.read()
+        return view
+
+    def POST(self, *uri, **params):
+
+        body = json.loads(cherrypy.request.body.read())
+        requests.post(f"{catalog_address}/{uri[0]}", json=body)
 
 #####################################################################################
 
@@ -36,9 +38,8 @@ if __name__ == '__main__':
     # Per i post viene adottata la strategia indicata dal prof. Orlando, ma per i get di riempimento 
     # dei menù a tendina abbiamo scelto di conservare la richesta diretta al catalog manager
     htmlFiles=[
-        'front/patient-rec.html',
-        'front/clinician-rec.html',
-        'front/clinics-rec.html'
+        'patient-rec.html',
+        'clinician-page.html'
     ]
 
     import re
