@@ -5,7 +5,6 @@ from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 import json
 import requests
 import time
-from pprint import pprint
 from TeleBot.MyMQTT import *
 
 
