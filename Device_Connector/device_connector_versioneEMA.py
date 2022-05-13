@@ -1,6 +1,6 @@
 from email import message
 import random
-from MyMQTT import *
+from TeleBot.MyMQTT import *
 from MQTT import *
 import requests
 import json 

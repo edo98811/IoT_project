@@ -3,7 +3,7 @@ import time
 import requests
 
 from MQTT import *
-from MyMQTT import *
+from TeleBot.MyMQTT import *   ### COSA SIGNIFICA????????? 
 import requests as r
     
 class alert_service:

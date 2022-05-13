@@ -2,6 +2,7 @@
 from math import dist
 import json
 import time
+from unicodedata import name
 import requests
 import cherrypy
 
@@ -102,6 +103,5 @@ class location_service():
         self.nearest[p_index]['patient_pos'] == msg['pos']
         self.nearest[p_index]['clinic_pos'] == self.clinics[nearest_index]['clinic_location']
         self.nearest[p_index]['clinic_address'] = 'alert/clinica1'
-
 
 

@@ -1,6 +1,7 @@
+# senza safe range e cambio di stato
 from copy import deepcopy
 import random
-from MyMQTT import *
+from TeleBot.MyMQTT import *
 from MQTT import *
 import requests
 import json 
@@ -49,6 +50,7 @@ class device_connector():                                                 #class
         # template messaggio pubblicato dal DC
         self._message = {			
             'bn':patient_ID,
+            'bt':self.basetime,
             't':self.basetime,
             'e':[]
 			}
