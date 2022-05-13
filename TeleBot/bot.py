@@ -96,11 +96,12 @@ class TeleBot:
         def notify(self,topic,message):
             # leggo il messaggio ed estraggo il chat_ID del medico a cui deve essere mandata la notifica 
             msg=json.loads(message) 
-            
-            if topic == "Iot_Helthcare/weekly_report":
+            topic_weekly = json.loads(requests.get(catalog_address+"/service-info?name=weekly_report").text)["topic"]
+            topic_alert = json.loads(requests.get(catalog_address+"/service-info?name=alert_servcice").text)["topic"]
+            if topic == topic_weekly:
                 ...
 
-            elif topic == "Iot_Healthcare/alert":       
+            elif topic == topic_alert:       
                 alert=msg["message"]
                 chat_ID = msg["chat_ID"]
                 patient_ID = msg["patient_ID"]
