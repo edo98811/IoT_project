@@ -131,8 +131,12 @@
         "ThingSpeakAdaptor": {
             "api_key": "WH6G4IW2A7D3JT6P",
             "topic": "service/#"
+        },
+        "front_end": {
+            "host": "127.0.0.1",
+            "port": "8082"
         }
     },
     "base_host": "127.0.0.1",
-    "base_port": "8080"
+    "base_port": "8081"
 }
