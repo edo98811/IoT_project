@@ -210,12 +210,17 @@
         },
         "alert_service": {
             "service_ID":"alert_service",
-            "topic":"service/#",
+            "topic":"Iot_Healthcare/alert/#",
             "port":1883
         },
         "data_analysis": {
             "service_ID":"data_analysis",
             "topic":"service/#",
+            "port":1883
+        },
+        "weekly_report": {
+            "service_ID":"weekly_report",
+            "topic":"Iot_Helthcare/weekly_report",
             "port":1883
         },
         "telegram_bot": {
