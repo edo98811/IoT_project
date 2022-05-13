@@ -53,16 +53,16 @@ class data_analysis_service():
    
         r.post(self.location_service,msg)
 
-        # for n,measure in enumerate(measures):
-        #     if measure['n'] =='lon' |  measure['n'] =='lat' #riguardare bene come dovrebbe essere il formato senml
-        #         msg = {
-        #             "patient_ID":patient_ID,
-        #             "sensor_ID":measure['n'],
-        #             "location": {
-        #                 "latitude":measure['v'][0:4],#potrebbe essere un idea scriverla in questo formato per rispettare senml
-        #                 "longitude":measure['v'][5:-1]
-        #             }
-        #         }
+            # for n,measure in enumerate(measures):
+            #     if measure['n'] =='lon' |  measure['n'] =='lat' #riguardare bene come dovrebbe essere il formato senml
+            #         msg = {
+            #             "patient_ID":patient_ID,
+            #             "sensor_ID":measure['n'],
+            #             "location": {
+            #                 "latitude":measure['v'][0:4],#potrebbe essere un idea scriverla in questo formato per rispettare senml
+            #                 "longitude":measure['v'][5:-1]
+            #             }
+            #         }
         
             # else: #forse basta proprio anche solo la lettura del dato come in measure, anche sopra, oppure si puo aggiungere anche altre informazioni come il sensore etc
             #     msg = {

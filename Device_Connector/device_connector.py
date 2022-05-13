@@ -62,7 +62,6 @@ class device_connector():                                                 #class
                 'n':'lon',
                 'v':0,
             })
-
         #inizializza una lista vuota in cui andrà a mettere gli oggetti sensore
         self._sensors = []
 

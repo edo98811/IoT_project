@@ -119,12 +119,14 @@ class alert_service:
 
             # contact info della clinica
             nearest_clinic_chat_ID = nearest_clinic['clinic_chat_ID']
+            clinic_basetopic = json.loads(r.get(self.location_service, data = {"patient_ID":patient_ID}).text)["clinics_bt"]
 
             # messaggio mandato alla clinica
-            self.alert_service.myPublish('clinic_alert/'+nearest_clinic_chat_ID, msg)
+            self.alert_service.myPublish(clinic_basetopic + '/'+ nearest_clinic_chat_ID, msg)
 
             # messaggio mandato al medico
-            self.alert_service.myPublish("telebot/critical_alert", msg)
+            telebot_critical = json.loads(r.get(self.location_service, data = {"patient_ID":patient_ID}).text)["critical_alert_topic"]
+            self.alert_service.myPublish(telebot_critical , msg)
             print ('message correctly sent')
         else: 
             msg = {
@@ -136,7 +138,8 @@ class alert_service:
             }
 
             # messaggio mandato al medico 
-            self.alert_service.myPublish("telebot/critical_alert", msg)
+            telebot_critical = json.loads(r.get(self.location_service, data = {"patient_ID":patient_ID}).text)["critical_alert_topic"]
+            self.alert_service.myPublish(telebot_critical , msg)
 
             print ('error: patient location unknown') # in questo caso manda solo un messaggio la medico (non è aggiornata la posizione del paziente)
 
@@ -153,7 +156,8 @@ class alert_service:
         }
 
         # messaggio mandato al paziente (da aggiornare)
-        self.alert_service.myPublish("telebot/personal_alert", msg)
+        telebot_personal = json.loads(r.get(self.location_service, data = {"patient_ID":patient_ID}).text)["personal_alert_topic"]
+        self.alert_service.myPublish(telebot_personal , msg)
 
 
 if __name__ =='__main__':

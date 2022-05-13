@@ -22,7 +22,7 @@ class catalog():
         with open(self.catalog_file,'r') as f:
             catalog = json.load(f)
 
-        if uri[0] == 'get_dc_info':
+        if uri[0] == 'get_dc_info':                 # per informazioni necessarie per l'avvio del device connector
 
             # richiamato da device connector    
 
@@ -39,7 +39,7 @@ class catalog():
 
             return json.dumps(msg)
 
-        elif uri[0] == 'get_sensors':#sensori relativi ad un paziente
+        elif uri[0] == 'get_sensors':               # per sensori relativi ad un paziente
 
             # richiamato da device connector
           
@@ -73,19 +73,19 @@ class catalog():
             } 
             return json.dumps(sensors)
 
-        elif uri[0] == 'get_clinics':#per le cliniche
+        elif uri[0] == 'get_clinics':               # per info su tutte le cliniche
 
             # richiamata da location_service
             return json.dumps(catalog["clinics"])
 
-        elif uri[0] == 'get_patient_info':#get all patient info 
+        elif uri[0] == 'get_patient_info':          # per tutte le info su un paziente singolo 
 
             # richiamato da alert service
 
             msg = next((p for p in catalog['patients'] if p['patient_ID'] ==  params["patient_ID"]), None)  
             return json.dumps(msg)
                
-        elif uri[0] == 'get_doctor': #per il dottore associato ad un paziente
+        elif uri[0] == 'get_doctor':                # per il dottore associato ad un paziente
             
             # prima trova il paziente per cui devo ricercare il medico
             patient = next((p for p in catalog['patients'] if p['patient_ID'] == params["patient_ID"] ), None) 
@@ -95,7 +95,7 @@ class catalog():
 
             return json.dumps(msg)
 
-        elif uri[0] == 'avail_docs':    # Per il riempimento del menù a tendina del form registrazione paziente
+        elif uri[0] == 'avail_docs':                # Per il riempimento del menù a tendina del form registrazione paziente
 
             docs = catalog['doctors']
             options = {
@@ -106,7 +106,7 @@ class catalog():
         
             return json.dumps(options).encode('utf8')
         
-        elif uri[0] == 'avail_devs':    # Per il riempimento del menù a tendina del form registrazione paziente
+        elif uri[0] == 'avail_devs':                # Per il riempimento del menù a tendina del form registrazione paziente
 
             devs = catalog['sensors_type']
             options = {
@@ -116,7 +116,7 @@ class catalog():
         
             return json.dumps(options).encode('utf8')
 
-        elif uri[0] == 'get_service_info':  # Per ottenere le informazioni relative ad un servizio
+        elif uri[0] == 'get_service_info':          # Per tutte ottenere le informazioni relative ad un servizio
                                             # url : 
                                             #           host:port/catalog_manager/ get_service_info ? service_ID=nomedelservizio
                                             
@@ -124,11 +124,11 @@ class catalog():
 
             return json.dumps(catalog["services"][params["service_ID"]])
 
-        elif uri[0] == 'get_MQTT':
+        elif uri[0] == 'get_MQTT':                  # per info su broker MQTT
 
             return catalog["services"]["MQTT"]["broker"]
         
-        elif uri[0] == 'get_critical_info':
+        elif uri[0] == 'get_critical_info':         # per info su criticità sensore (solo alert service)
 
             patient = next((p for p in catalog['patients'] if p['patient_ID'] == params['patient_ID'] ), None)
             return json.dumps(patient["sensors"])
