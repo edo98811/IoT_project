@@ -136,10 +136,12 @@ if __name__ == "__main__":
     MQTT_info = json.loads(requests.get(catalog_address+"/service-info?name=MQTT").text)
     broker = MQTT_info["broker"]
     port = MQTT_info["port"]
+    base_Topic= MQTT_info["base_Topic"]
 
     # creo lista di topic a cui il telebot fa da subscriber
     services = ['alert_service', 'weekly_report']
-    topics =  [json.loads(requests.get(catalog_address+"/service-info?name="+s).text)["topic"] for s in services]
+    topics =  [base_Topic + json.loads(requests.get(catalog_address+"/service-info?name="+s).text)["topic"] for s in services]
+
     bot=TeleBot(token,broker,port, topics, catalog_address)
 
     print("Bot started ...")

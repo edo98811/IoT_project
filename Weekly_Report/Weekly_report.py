@@ -3,13 +3,13 @@ import requests
 import time
 
 class WK_Report:
-    def __init__(self, broker, port, topic, catalog_address):
+    def __init__(self, broker, port, topic, catalog_address, url):
         self.catalog_address = catalog_address
         self.client = MyMQTT("WK_Report",broker,port,self)
         self.client.start()
         self.topic = topic
         
-        self.url = https://api.thingspeak.com/channels/<channel_id>/feeds.json?days=7   # DA PORTARE NEL CATALOG
+        self.url = url  
 
 
         
@@ -42,7 +42,11 @@ if __name__ == "__main__":
 
     # creo lista di topic a cui il telebot fa da subscriber
     topic =  json.loads(requests.get(catalog_address+"/service-info?name=weekly_report").text)["topic"] 
-    wkr = WK_Report(broker,port, topic, catalog_address)
+
+    # ricerca dell'url a cui si farà la richiesta di get per avere i dati di ogni settimana
+    url = json.loads(requests.get(catalog_address+"/service-info?name=ThingSpeak").text)["url_weekly_report"] 
+
+    wkr = WK_Report(broker,port, topic, catalog_address, url)
 
     print("Weekly Report started ...")
     while True:

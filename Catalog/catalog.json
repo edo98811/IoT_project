@@ -39,8 +39,7 @@
             "doctor_ID": "d_1",
             "device_connector": {
                 "service_ID": "dc_2_342312",
-                "topic": "service/dc_1",
-                "port": "1883"
+                "topic": "service/dc_1"
             }
         }
     ],
@@ -108,29 +107,30 @@
         },
         "alert_service": {
             "service_ID":"alert_service",
-            "topic":"Iot_Healthcare/alert/#",
-            "port":1883
+            "topic":"alert/#"   
         },
         "data_analysis": {
             "service_ID":"data_analysis",
-            "topic":"service/#",
-            "port":1883
+            "topic":"service/#"
         },
         "weekly_report": {
             "service_ID":"weekly_report",
-            "topic":"Iot_Helthcare/weekly_report",
-            "port":1883
+            "topic":"weekly_report"
         },
         "telegram_bot": {
             "token": "5338835932:AAH8QcMIuA8moihJaomvumEspZsbHBzXtlw"
         },
         "MQTT": {
             "broker": "test.mosquitto.org",
-            "dubbio": "non avevamo detto di mettere la port qui?"
+            "dubbio": "non avevamo detto di mettere la port qui?",
+            "baseTopic": "Iot_Helthcare",
+            "port":1883
         },
-        "ThingSpeakAdaptor": {
+        "ThingSpeak": {
             "api_key": "WH6G4IW2A7D3JT6P",
-            "topic": "service/#"
+            "topic": "service/#",
+            "url_weekly_report": "https://api.thingspeak.com/channels/<channel_id>/feeds.json?days=7 ",
+            "url_update":"https://api.thingspeak.com/channels/<ch_ID>/bulk_update.json"
         }
     },
     "base_host": "127.0.0.1",
