@@ -3,8 +3,9 @@
         {
             "patient_ID": "p_1",
             "personal_info": {
-                "name": "Caio",
-                "surname": "Marzio"
+                "name": "Elena",
+                "surname": "Balestrieri",
+                "chat_ID": "456213"
             },
             "sensors": [
                 {
@@ -32,118 +33,14 @@
                     ]
                 }
             ],
-            "TS_chID": "prova",
+            "TS_chID": 1726296,
+            "TS_wKey": "O0J9EJEEKK4M0N43",
+            "TS_rKey": "82M0DY5FZ2TCJOKU",
             "doctor_ID": "d_1",
             "device_connector": {
                 "service_ID": "dc_2_342312",
                 "topic": "service/dc_1",
                 "port": "1883"
-            }
-        },
-        {
-            "patient_ID": "p_2",
-            "personal_info": {
-                "name": "Paolino",
-                "surname": "Paperino"
-            },
-            "sensors": [
-                {
-                    "type_ID": "s_1",
-                    "is_critical": "critical",
-                    "safe_range": [
-                        70,
-                        30
-                    ]
-                }
-            ],
-            "TS_chID": "prova",
-            "doctor_ID": "d_1",
-            "device_connector": {
-                "service_ID": "dc_2_3242153",
-                "topic": "service/dc_2",
-                "port": "1883"
-            }
-        },
-        {
-            "patient_ID": "p_3",
-            "personal_info": {
-                "name": "Marlon",
-                "surname": "Brando"
-            },
-            "sensors": [
-                {
-                    "type_ID": "s_2",
-                    "is_critical": "not_critical",
-                    "safe_range": [
-                        30.0,
-                        90.0
-                    ]
-                },
-                {
-                    "type_ID": "s_3",
-                    "is_critical": "",
-                    "safe_range": []
-                }
-            ],
-            "TS_chID": "prova",
-            "doctor_ID": "d_2",
-            "device_connector": {
-                "service_id": "",
-                "topic": "service/dc_3",
-                "port": "1883"
-            }
-        },
-        {
-            "patient_ID": "p_4",
-            "personal_info": {
-                "name": "Mario",
-                "surname": "Rossi"
-            },
-            "sensors": [
-                {
-                    "type_ID": "s_1",
-                    "is_critical": "",
-                    "safe_range": []
-                }
-            ],
-            "TS_chID": "prova",
-            "doctor_ID": "d_1",
-            "device_connector": {
-                "service_id": "",
-                "topic": "service/dc_4"
-            }
-        },
-        {
-            "patient_ID": "p_5",
-            "personal_info": {
-                "name": "davide",
-                "surname": "d'adamo"
-            },
-            "sensors": [
-                {
-                    "type_ID": "s_1",
-                    "is_critical": "critical",
-                    "safe_range": [
-                        40.0,
-                        120.0
-                    ]
-                },
-                {
-                    "type_ID": "s_2",
-                    "is_critical": "",
-                    "safe_range": []
-                },
-                {
-                    "type_ID": "s_3",
-                    "is_critical": "",
-                    "safe_range": []
-                }
-            ],
-            "TS_chID": "1726081",
-            "doctor_ID": "d_2",
-            "device_connector": {
-                "service_id": "",
-                "topic": "service/dc_5"
             }
         }
     ],
@@ -152,7 +49,7 @@
             "doctor_ID": "d_1",
             "name": "Pinco",
             "surname": "Pallino",
-            "chatID": "sgalkg"
+            "chatID": "769841234"
         },
         {
             "doctor_ID": "d_2",
@@ -193,6 +90,7 @@
     "clinics": [
         {
             "clinic_ID": "cl_1",
+            "name": "St. Mary Clinic",
             "location": {
                 "longitude": "40000",
                 "latitude": "013000"
@@ -225,9 +123,14 @@
         },
         "telegram_bot": {
             "token": "5338835932:AAH8QcMIuA8moihJaomvumEspZsbHBzXtlw"
-        }, 
+        },
         "MQTT": {
-            "broker": "test.mosquitto.org"
+            "broker": "test.mosquitto.org",
+            "dubbio": "non avevamo detto di mettere la port qui?"
+        },
+        "ThingSpeakAdaptor": {
+            "api_key": "WH6G4IW2A7D3JT6P",
+            "topic": "service/#"
         }
     },
     "base_host": "127.0.0.1",

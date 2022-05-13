@@ -1,14 +1,18 @@
 import json
-#import requests
+import requests
 import cherrypy
 from pprint import pprint
 
 # va aggiunto un controllo params in tutte le funzioni del codice
-# nell'uri metto solo il tipo di richiesta (quindi da chi iene) ma devo tenere conto che c'è anche la prima parte dell'indirizzo 
+
+# nell'uri metto solo il tipo di richiesta (quindi da chi viene) 
+# ma devo tenere conto che c'è anche la prima parte dell'indirizzo 
+
 # importante far quadrare tutti i nomi di tutti 
 
 class catalog():
     exposed=True
+
     def __init__(self,catalog_file):
         self.catalog_file = catalog_file
 
@@ -93,10 +97,6 @@ class catalog():
 
         elif uri[0] == 'avail-docs':    # Per il riempimento del menù a tendina del form registrazione paziente
 
-            # Estrae il catalog dal file
-            with open(self.catalog_file,'r') as f: 
-                catalog = json.load(f)  
-
             docs = catalog['doctors']
             options = {
                 "fullName":[f"{doc['name']} {doc['surname']}" for doc in docs],
@@ -107,10 +107,6 @@ class catalog():
             return json.dumps(options).encode('utf8')
         
         elif uri[0] == 'avail-devs':    # Per il riempimento del menù a tendina del form registrazione paziente
-
-            # Estrae il catalog dal file
-            with open(self.catalog_file,'r') as f: 
-                catalog = json.load(f)  
 
             devs = catalog['sensors_type']
             options = {
@@ -163,7 +159,7 @@ class catalog():
         with open(self.catalog_file,'r') as f:
             catalog = json.load(f)
                     
-        if uri[0] == "p-rec":			#### ADD PATIENT ####	
+        if uri[0] == "p-rec":			#### ADD PATIENT ####
 
                                         # 	uri: /p-rec
                                         # 	body del post:
@@ -199,23 +195,42 @@ class catalog():
                 }
                 newPatDevs.append(newDev)
 
+            # Crea un nuovo canale su ThingSpeak
+            b = {
+                "api_key": catalog["services"]["ThingSpeak"]["api_key"],
+                "name": f"{newPat['name']} {newPat['surname']}",
+                "public_flag": True
+                }
+            
+            for i in range(len(newPatDevs)):
+                b[f"field{i+1}"] = [s["type"] for s in catalog["sensors_type"] if s["type_ID"] == newPat["devID"][i]][0]
+            
+            # Richiesta POST per la creazione del canale su TS, e memorizzazion channel ID
+            resp = json.loads(requests.post("https://api.thingspeak.com/channels.json",b).text)
+
+            pprint(resp)
+            
             # Definisce la nuova scheda paziente e la inserisce nella variabile locale che rappresenta il catalog
             f_newPat={
                 "patient_ID": f"p_{len(pats)+1}",
                 "personal_info": {
                     "name": newPat["name"],
-                    "surname": newPat["surname"]
+                    "surname": newPat["surname"],
+                    "chat_ID": newPat["chatID"]
                 },
                 "sensors": newPatDevs,
+                "TS_chID": resp["id"],
+                "TS_wKey": [k["api_key"] for k in resp["api_keys"] if k["write_flag"]][0],
+                "TS_rKey": [k["api_key"] for k in resp["api_keys"] if not k["write_flag"]][0],
                 "doctor_ID": newPat["docID"],
                 "device_connector": {
-                    "service_id": "",
-                    "topic":f"service/dc_{len(pats)+1}"
+                    "topic": f"service/dc_{len(pats)+1}"
                 }
             }
 
             catalog["patients"].append(f_newPat)
 
+                        
             # Aggiorna 'catalog.json'
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
@@ -249,14 +264,11 @@ class catalog():
                 "surname": newDoc["surname"],
                 "chatID" : newDoc["chatID"]
                 }
-
             catalog["doctors"].append(f_newDoc)
 
             # Aggiorna 'catalog.json'
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
-
-            return f"Registration succeeded!\nWelcome {newDoc['name']}"
 
         elif uri[0] == "c-rec":         #### ADD CLINIC ####
 
@@ -287,7 +299,6 @@ class catalog():
                 "lon": newCls["lon"],
                 "lat" : newCls["lat"]
                 }
-
             catalog["clinics"].append(f_newCls)
 
             # Aggiorna 'catalog.json'
@@ -315,7 +326,6 @@ class catalog():
                 if  pat["personal_info"]["name"]+pat["personal_info"]["surname"] == devInfo["name"]+devInfo["surname"]:
                     break
                 patInd+=1
-            
             pat = catalog["patients"][patInd]
             
             # Individua il sensore
@@ -324,7 +334,6 @@ class catalog():
                 if dev["sensor_type"] == devInfo["devID"]:
                     break
                 devInd+=1
-            
             dev = pat["sensors"][devInd]
 
             # Applica l'aggiornamento alla scheda sensore
@@ -333,7 +342,6 @@ class catalog():
 
             # Aggiorna il catalog
             catalog["patients"][patInd]["sensors"][devInd] = dev
-
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
 

@@ -92,7 +92,7 @@
             <input type="text" name="surname" id="surname" required></p>
             
             <p><label for="chatID">Telegram chatID:</label>
-            <input type="number" name="chatID" id="chatID" min="0" required></p>
+            <input type="number" name="chatID" id="chatID" min="0"  placeholder="Your patient can find it sending '/start' to our bot at the link t.me/IoT_IHealthBOT" required></p>
             
             <p><label for="docs">Personal doctor:</label>
                 <select name="docs" id="docs">
@@ -123,7 +123,7 @@
         docsDropdown.length = 0;
 
         let docsDefaultOption = document.createElement('option');
-        docsDefaultOption.text = 'Choose your doctor';
+        docsDefaultOption.text = 'Choose the doctor of the patient';
         
         docsDropdown.add(docsDefaultOption);
         docsDropdown.selectedIndex = 0;
@@ -152,7 +152,7 @@
         devsDropdown.length = 0;
 
         let devsDefaultOption = document.createElement('option');
-        devsDefaultOption.text = 'Choose your device(s)';
+        devsDefaultOption.text = "Choose the patient's device(s)";
         
         devsDropdown.add(devsDefaultOption);
         devsDropdown.selectedIndex = 0;

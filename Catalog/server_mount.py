@@ -106,7 +106,7 @@ if __name__ == '__main__':
     cherrypy.tree.mount(location_service(catalog_address), '/location_service', conf)
     cherrypy.tree.mount(catalog(catalog_file), '/catalog_manager', conf)
     cherrypy.tree.mount(FrontEnd("./front"), '/', conf)
-
+    # MONTARE IN MAIN DIVERSI
        
     cherrypy.config.update({'server.socket_host':host,
                             'server.socket_port':int(port)})
