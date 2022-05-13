@@ -95,7 +95,7 @@ class catalog():
 
             return json.dumps(msg)
 
-        elif uri[0] == 'avail-docs':    # Per il riempimento del menù a tendina del form registrazione paziente
+        elif uri[0] == 'avail_docs':    # Per il riempimento del menù a tendina del form registrazione paziente
 
             docs = catalog['doctors']
             options = {
@@ -106,7 +106,7 @@ class catalog():
         
             return json.dumps(options).encode('utf8')
         
-        elif uri[0] == 'avail-devs':    # Per il riempimento del menù a tendina del form registrazione paziente
+        elif uri[0] == 'avail_devs':    # Per il riempimento del menù a tendina del form registrazione paziente
 
             devs = catalog['sensors_type']
             options = {
@@ -116,27 +116,11 @@ class catalog():
         
             return json.dumps(options).encode('utf8')
 
-        elif uri[0] == 'service-info':   # Per ottenere l'indirizzo di un certo servizio REST
-            
-            # url : host:port/catalog_manager/service-address?name=nomedelservizio
-
-            # Estrae il catalog dal file
-            with open(self.catalog_file,'r') as f: 
-                cat = json.load(f) 
-
-            # Costruisce la stringa da passare in risposta, contenente l'indirizzo del servizio richiesto
-            serviceAddress = "http://"+cat["base_host"]+":"+ cat["base_port"]+cat["services"][params["name"]]["address"]
-            # Costruisce l'elemento che contiene le info dei servizi
-            serviceInfo = cat["services"][params["name"]]
-
-            return json.dumps(serviceInfo)
-
-        elif uri[0] == 'get_service_address':
-
-            # Costruisce l'elemento che contiene le info dei servizi
-            return "http://"+ catalog["base_host"]+":"+ catalog["base_port"]+catalog["services"][params["service_ID"]]["address"]
-
-        elif uri[0] == 'get_service_info':
+        elif uri[0] == 'get_service_info':  # Per ottenere le informazioni relative ad un servizio
+                                            # url : 
+                                            #           host:port/catalog_manager/ get_service_info ? service_ID=nomedelservizio
+                                            
+                                            # Restituisce l'intero dizionario relativo al servizio richiesto presente all'interno del catalog 
 
             return json.dumps(catalog["services"][params["service_ID"]])
 
@@ -345,7 +329,39 @@ class catalog():
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
 
-            
-                
 
-#deve rispondere a: location, data analysis,alert e altre? serve importare le librerie nelle classi ? 
+#####################################################################################################
+
+
+if __name__ == '__main__':
+
+    catalog_file = 'catalog.json'
+
+    ####       CODICE DI "DEBUG"                                                        # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
+    with open("catalog.json",'r') as f:                                               # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+        cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
+    host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
+    port = cat["base_port"]
+    catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
+    ####
+    
+    # with open("./config.json",'r') as f:
+    #   catalog_address = json.load(f)["catalog_address"]
+    
+    conf = {
+        '/': {
+                'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
+                'tool.session.on': True
+        }
+    }
+
+    cherrypy.tree.mount(catalog(catalog_file), '/catalog_manager', conf)
+
+    # MONTARE IN MAIN DIVERSI
+       
+    cherrypy.config.update({'server.socket_host': host,
+                            'server.socket_port': int(port)})
+    # this is needed if you want to have the custom error page
+    # cherrypy.config.update({'error_page.400': error_page_400}) # potremmo metterla anche noi questa pagina
+    cherrypy.engine.start()
+    cherrypy.engine.block()

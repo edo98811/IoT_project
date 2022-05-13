@@ -4,7 +4,7 @@ import time
 from copy import deepcopy
 
 class TS_Adaptor:
-    def __init__(self, broker, port, topic, catalog_address):
+    def __init__(self, broker, port, topic, catalog_address, url):
         self.client = MyMQTT("TS_Adaptor",broker,port,self)
         self.client.start()
         self.topic = topic
@@ -12,7 +12,7 @@ class TS_Adaptor:
 
 
         # Templeate del url per la richiesta di POST a TS
-        self._url = "https://api.thingspeak.com/channels/<ch_ID>/bulk_update.json" # DA PORTARE IN CTALAOG
+        self._url =  url
 
         # Template del body del POST per TS 
         self._body = {
@@ -56,7 +56,7 @@ class TS_Adaptor:
         # Definisce l'url a cui mandare la richiesta POST
         newUrl = self._url 
         uri = newUrl.split('/')
-        uri[4] = str(pat['TS_chID'])
+        uri[-2] = str(pat['TS_chID'])
         newUrl = '/'.join(uri)
 
         # Definizione del body
@@ -94,10 +94,14 @@ if __name__ == "__main__":
     port = mqtt['port']
 
     # Topic
-    topic = json.loads(requests.get(catalog_address+'/service-info?name=ThingSpeakAdaptor').text)['topic']
+    base_Topic= mqtt["base_Topic"]
+    topic = f"{base_Topic}/{json.loads(requests.get(catalog_address+'/service-info?name=ThingSpeakAdaptor').text)['topic']}"
     
+    # URL
+    url = json.loads(requests.get(catalog_address+"/service-info?name=ThingSpeak").text)["url_update"] 
+
     # Inizializza oggetto TS_Adaptor
-    tsa = TS_Adaptor(broker, port, topic, catalog_address)
+    tsa = TS_Adaptor(broker, port, topic, catalog_address, url)
 
     print("Adaptor started...")
 

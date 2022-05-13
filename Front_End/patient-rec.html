@@ -117,7 +117,7 @@
     
     <script type="text/javascript">
 
-        const baseUrl = 'http://127.0.0.1:8080/catalog_manager'
+        const baseUrl = 'http://127.0.0.1:8081/catalog_manager'
 
         let docsDropdown = document.getElementById('docs');
         docsDropdown.length = 0;
@@ -128,7 +128,7 @@
         docsDropdown.add(docsDefaultOption);
         docsDropdown.selectedIndex = 0;
 
-        var url = baseUrl+'/avail-docs';
+        var url = baseUrl+'/avail_docs';
 
         fetch(url)
             .then((response) => {
@@ -146,7 +146,7 @@
 
             })
 
-        url = baseUrl +'/avail-devs';
+        url = baseUrl +'/avail_devs';
 
         let devsDropdown = document.getElementById('devs');
         devsDropdown.length = 0;

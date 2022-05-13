@@ -3,7 +3,6 @@ import requests
 import cherrypy
 import re
 from catalog_manager import catalog
-from location_service import location_service
 
 class FrontEnd(object):
     exposed=True
