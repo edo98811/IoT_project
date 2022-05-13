@@ -122,7 +122,6 @@
         },
         "MQTT": {
             "broker": "test.mosquitto.org",
-            "dubbio": "non avevamo detto di mettere la port qui?",
             "baseTopic": "Iot_Helthcare",
             "port": 1883
         },
