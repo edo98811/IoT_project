@@ -10,14 +10,15 @@ from MyMQTT import *
 
 
 class TeleBot:
-    def __init__(self, token, broker, port, topic, catalog_address):
+    def __init__(self, token, broker, port, topics, catalog_address):
         self.tokenBot = token
         self.bot = telepot.Bot(self.tokenBot)
         self.catalog_address = catalog_address
         self.client = MyMQTT("TelegramBotIot", broker, port, self)
         self.client.start()
-        self.topic = topic
-        self.client.mySubscribe(topic)
+        self.topics = topics
+        for topic in topics:
+            self.client.mySubscribe(topic)
         MessageLoop(self.bot, {'chat': self.on_chat_message,
                                'callback_query': self.on_callback_query}).run_as_thread()
 
@@ -92,23 +93,27 @@ class TeleBot:
 
 
     ### Routine per messaggi di alert derivanti da Alert service tramite protocollo MQTT ###
-    
         def notify(self,topic,message):
             # leggo il messaggio ed estraggo il chat_ID del medico a cui deve essere mandata la notifica 
-            msg=json.loads(message)        
-            alert=msg["message"]
-            chat_ID = msg["chat_ID"]
-            patient_ID = msg["patient_ID"]
-            topic = topic.split("/")[-1]
+            msg=json.loads(message) 
+            
+            if topic == "Iot_Helthcare/weekly_report":
+                ...
 
-            if topic == "telebot/personal_alert":   
-                personal_alert=f"ATTENTION!!!\n{alert}"
-                self.bot.sendMessage(chat_ID, text=personal_alert)
+            elif topic == "Iot_Healthcare/alert":       
+                alert=msg["message"]
+                chat_ID = msg["chat_ID"]
+                patient_ID = msg["patient_ID"]
+                topic_spit = topic.split("/")[-1]
 
-            elif topic == "telebot/critical_alert":
-                patient_ID = msg["alert"]
-                critical_alert=f"ATTENTION {patient_ID}!!!\{alert}"
-                self.bot.sendMessage(chat_ID, text=critical_alert)
+                if topic_spit == "personal_alert":   
+                    personal_alert=f"ATTENTION!!!\n{alert}"
+                    self.bot.sendMessage(chat_ID, text=personal_alert)
+
+                elif topic_spit == "critical_alert":
+                    patient_ID = msg["alert"]
+                    critical_alert=f"ATTENTION {patient_ID}!!!\{alert}"
+                    self.bot.sendMessage(chat_ID, text=critical_alert)
 
             
 
@@ -128,8 +133,11 @@ if __name__ == "__main__":
     MQTT_info = json.loads(requests.get(catalog_address+"/service-info?name=MQTT").text)
     broker = MQTT_info["broker"]
     port = MQTT_info["port"]
-    topic =  json.loads(requests.get(catalog_address+"/service-info?name=alert_service").text)["topic"]
-    bot=TeleBot(token,broker,port, topic, catalog_address)
+
+    # creo lista di topic a cui il telebot fa da subscriber
+    services = ['alert_service', 'weekly_report']
+    topics =  [json.loads(requests.get(catalog_address+"/service-info?name="+s).text)["topic"] for s in services]
+    bot=TeleBot(token,broker,port, topics, catalog_address)
 
     print("Bot started ...")
     while True:
