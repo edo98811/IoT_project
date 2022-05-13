@@ -129,7 +129,7 @@
         "ThingSpeak": {
             "api_key": "WH6G4IW2A7D3JT6P",
             "topic": "service/#",
-            "url_weekly_report": "https://api.thingspeak.com/channels/<channel_id>/feeds.json?days=7 ",
+            "url_weekly_report": "https://api.thingspeak.com/channels/<ch_id>/feeds.json?days=7 ",
             "url_update":"https://api.thingspeak.com/channels/<ch_ID>/bulk_update.json"
         },
         "front_end":{
