@@ -8,17 +8,15 @@
             },
             "sensors": [
                 {
-                    "sensor_ID": "p_1_1",
-                    "sensor_type": "s_1",
+                    "type_ID": "s_1",
                     "is_critical": "critical",
                     "safe_range": [
-                        70,
-                        30
+                        30,
+                        70
                     ]
                 },
                 {
-                    "sensor_ID": "p_1_2",
-                    "sensor_type": "s_2",
+                    "type_ID": "s_2",
                     "is_critical": "not_critical",
                     "safe_range": [
                         130,
@@ -26,9 +24,8 @@
                     ]
                 },
                 {
-                    "sensor_ID": "p_1_3",
-                    "sensor_type": "s_3",
-                    "is_critical": "informative",
+                    "type_ID": "s_3",
+                    "is_critical": "personal",
                     "safe_range": [
                         130,
                         200
@@ -39,7 +36,8 @@
             "doctor_ID": "d_1",
             "device_connector": {
                 "service_ID": "dc_2_342312",
-                "topic": "service/dc_1"
+                "topic": "service/dc_1",
+                "port": "1883"
             }
         },
         {
@@ -50,8 +48,7 @@
             },
             "sensors": [
                 {
-                    "sensor_ID": "p_2_1",
-                    "sensor_type": "s_1",
+                    "type_ID": "s_1",
                     "is_critical": "critical",
                     "safe_range": [
                         70,
@@ -63,7 +60,8 @@
             "doctor_ID": "d_1",
             "device_connector": {
                 "service_ID": "dc_2_3242153",
-                "topic": "service/dc_2"
+                "topic": "service/dc_2",
+                "port": "1883"
             }
         },
         {
@@ -74,8 +72,7 @@
             },
             "sensors": [
                 {
-                    "sensor_ID": "p_3_1",
-                    "sensor_type": "s_2",
+                    "type_ID": "s_2",
                     "is_critical": "not_critical",
                     "safe_range": [
                         30.0,
@@ -83,8 +80,7 @@
                     ]
                 },
                 {
-                    "sensor_ID": "p_3_2",
-                    "sensor_type": "s_3",
+                    "type_ID": "s_3",
                     "is_critical": "",
                     "safe_range": []
                 }
@@ -93,7 +89,8 @@
             "doctor_ID": "d_2",
             "device_connector": {
                 "service_id": "",
-                "topic": "service/dc_3"
+                "topic": "service/dc_3",
+                "port": "1883"
             }
         },
         {
@@ -104,8 +101,7 @@
             },
             "sensors": [
                 {
-                    "sensor_ID": "p_4_1",
-                    "sensor_type": "s_1",
+                    "type_ID": "s_1",
                     "is_critical": "",
                     "safe_range": []
                 }
@@ -125,8 +121,7 @@
             },
             "sensors": [
                 {
-                    "sensor_ID": "p_5_1",
-                    "sensor_type": "s_1",
+                    "type_ID": "s_1",
                     "is_critical": "critical",
                     "safe_range": [
                         40.0,
@@ -134,14 +129,12 @@
                     ]
                 },
                 {
-                    "sensor_ID": "p_5_2",
-                    "sensor_type": "s_2",
+                    "type_ID": "s_2",
                     "is_critical": "",
                     "safe_range": []
                 },
                 {
-                    "sensor_ID": "p_5_3",
-                    "sensor_type": "s_3",
+                    "type_ID": "s_3",
                     "is_critical": "",
                     "safe_range": []
                 }
@@ -200,7 +193,7 @@
     "clinics": [
         {
             "clinic_ID": "cl_1",
-            "position": {
+            "location": {
                 "longitude": "40000",
                 "latitude": "013000"
             }
@@ -208,31 +201,30 @@
     ],
     "services": {
         "location_service": {
-            "type": "",
+            "service_ID":"location_service",
             "address": "/location_service"
         },
         "catalog_manager": {
-            "type": "",
+            "service_ID":"alert_service",
             "address": "/catalog_manager"
         },
         "alert_service": {
-            "type": "",
-            "address": "",
-            "topic": "telebot/critical_alert"
+            "service_ID":"alert_service",
+            "topic":"service/#",
+            "port":1883
         },
         "data_analysis": {
-            "type": "",
-            "address": ""
+            "service_ID":"data_analysis",
+            "topic":"service/#",
+            "port":1883
         },
         "telegram_bot": {
             "token": "5338835932:AAH8QcMIuA8moihJaomvumEspZsbHBzXtlw"
         }, 
         "MQTT": {
-            "broker": "test.mosquitto.org",
-            "port": 1883
+            "broker": "test.mosquitto.org"
         }
     },
     "base_host": "127.0.0.1",
-    "base_port": "9091"
-    
+    "base_port": "8080"
 }

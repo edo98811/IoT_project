@@ -12,70 +12,85 @@ class catalog():
     def __init__(self,catalog_file):
         self.catalog_file = catalog_file
 
-    def GET(self,*uri,**params): # come funzionano questi parametri?
+    def GET(self,*uri,**params): 
 
-        # device connector info per avviarsi 
+        # legge il catalog dal file json e lo carica in una variabile temporanea catalog 
+        with open(self.catalog_file,'r') as f:
+            catalog = json.load(f)
+
         if uri[0] == 'get_dc_info':
 
-            catalog = json.load(open(self.catalog_file,'r'))
-            p_ID = params['p_ID'] #cercare le info di un paziente conoscendo il suo ID, aggiungere try except magari 
-            # vediamo se funziona
-            pat = next((p for p in catalog['patients'] if p['patient_ID'] == p_ID ), None) # questa funzione crea un iterator della lista (un oggetto sostanzialmente che applica una funzione a qualche altro oggetto, in questo caso applica un controllo ad una lista)
+            # richiamato da device connector    
+
+            # questa funzione crea un iterator della lista e mi restituisce le informazioni 
+            # sul paziente identificato dal patient_ID passato alla funzione
+            # spiegato male: un iterator è un oggetto che applica una funzione ad un altro oggetto 
+            patient = next((p for p in catalog['patients'] if p['patient_ID'] == params['patient_ID'] ), None) 
 
             msg = {
-                "broker":pat["device_connector"]["broker"],
-                "port":pat["device_connector"]["port"],
-                "topic":pat["device_connector"]["topic"],
+                "broker":catalog["services"]["MQTT"]["broker"],
+                "port":patient["device_connector"]["port"],
+                "topic":patient["device_connector"]["topic"]
             }
+
             return json.dumps(msg)
 
-        #sensori elativi ad un paziente
-        elif uri[0] == 'get_sensors':
+        elif uri[0] == 'get_sensors':#sensori relativi ad un paziente
 
-            catalog = json.load(open(self.catalog_file,'r'))
-
-
-            p_ID = params['p_ID']
+            # richiamato da device connector
           
-            pat = next((p for p in catalog['patients'] if p['p_ID'] == p_ID ), None) #sempre solito metodo di iterazione
-            sensor_ids = pat["sensors"]
-            sensor_list = []
+            # prende le info del paziente a recupera la lista dei sensori
+            patient = next((p for p in catalog['patients'] if p['patient_ID'] == params['patient_ID'] ), None)
+            sensors_info = patient["sensors"]
+            sensors = []
 
-            for sensor_id in sensor_ids:
+            # itera lungo la lista dei sensori e prende le loro informazioni dal catalog
+            for s_info in sensors_info:
+                
+                # recupera le carattersitiche dei sensori
+                s_type = next((s for s in catalog["sensors_type"] if s['type_ID'] == s_info['type_ID'] ), None)
 
-                # questa funzione crea un iterator della lista (un oggetto sostanzialmente che applica una funzione a qualche altro oggetto, in questo caso applica un controllo ad una lista)
-                sensor_list.append(next((s for s in catalog['sensors'] if s['s_ID'] == sensor_id ), None))
-                # va ok perchè in ogni caso ce ne dobbe essere solo uno di sensore, quindi l'output è un elemento solo e lo aggiunge alla lista
+                # questo è il messaggio passato al sensor info del device connector
+                s_msg = {
+                    "type_ID":s_type["type_ID"],
+                    "type":s_type["type"],
+                    "range":s_type["range"],
+                    "safe_range":s_info["safe_range"],
+                    "unit":s_type["unit"]
+                }
 
-            return json.dumps(sensor_list)
+                # lo aggiunge ad una lista
+                sensors.append(s_msg)
 
-        #funzione per le cliniche
-        elif uri[0] == 'get_clinics':
+            # dato che la lista non si può mandare in un json creo un messaggio con una chiave associata alla lista
 
-            catalog = json.load(open(self.catalog_file,'r'))
+            msg ={
+                'sl':sensors
+            } 
+            return json.dumps(sensors)
 
-            clinics = catalog["clinics"]
+        elif uri[0] == 'get_clinics':#per le cliniche
 
-            return json.dumps(clinics)
+            # richiamata da location_service
+            return json.dumps(catalog["clinics"])
 
-        #per tutti i pazienti 
-        elif uri[0] == 'get_patients':
-            catalog = json.load(open(self.catalog_file,'r'))
+        elif uri[0] == 'get_patient_info':#get all patient info 
 
-            return json.dumps(catalog['patients'])
+            # richiamato da alert service
 
-        #per il dottore di un paziente
-        elif uri[0] == 'get_doctor':
+            msg = next((p for p in catalog['patients'] if p['patient_ID'] ==  params["patient_ID"]), None)  
+            return json.dumps(msg)
+               
+        elif uri[0] == 'get_doctor': #per il dottore associato ad un paziente
+            
+            # prima trova il paziente per cui devo ricercare il medico
+            patient = next((p for p in catalog['patients'] if p['patient_ID'] == params["patient_ID"] ), None) 
 
-            catalog = json.load(open(self.catalog_file,'r'))
+            # poi cerco le informazioni del medico salvate nella lista dei medici
+            msg = next((d for d in catalog['doctors'] if d['doctor_ID'] == patient["doctor_ID"]), None) 
 
-            p_ID = params["p_ID"] 
-            patient = next((p for p in catalog['patients'] if p['patient_ID'] == p_ID), None) # c'è un modo migliore per farlo l'avevo visto su internet
-            d_ID = patient["doctor_ID"]
-            doctor = next((d for d in catalog['doctors'] if d['doctor_ID'] == d_ID), None) # questa funzione crea un iterator della lista (un oggetto sostanzialmente che applica una funzione a qualche altro oggetto, in questo caso applica un controllo ad una lista)
+            return json.dumps(msg)
 
-            return json.dumps(doctor['address']) # se serve un campo in particolare
-    
         elif uri[0] == 'avail-docs':    # Per il riempimento del menù a tendina del form registrazione paziente
 
             # Estrae il catalog dal file
@@ -113,11 +128,31 @@ class catalog():
             with open(self.catalog_file,'r') as f: 
                 cat = json.load(f) 
 
+            # Costruisce la stringa da passare in risposta, contenente l'indirizzo del servizio richiesto
+            serviceAddress = "http://"+cat["base_host"]+":"+ cat["base_port"]+cat["services"][params["name"]]["address"]
             # Costruisce l'elemento che contiene le info dei servizi
             serviceInfo = cat["services"][params["name"]]
 
             return json.dumps(serviceInfo)
 
+        elif uri[0] == 'get_service_address':
+
+            # Costruisce l'elemento che contiene le info dei servizi
+            return "http://"+ catalog["base_host"]+":"+ catalog["base_port"]+catalog["services"][params["service_ID"]]["address"]
+
+        elif uri[0] == 'get_service_info':
+
+            return json.dumps(catalog["services"][params["service_ID"]])
+
+        elif uri[0] == 'get_MQTT':
+
+            return catalog["services"]["MQTT"]["broker"]
+        
+        elif uri[0] == 'get_critical_info':
+
+            patient = next((p for p in catalog['patients'] if p['patient_ID'] == params['patient_ID'] ), None)
+            return json.dumps(patient["sensors"])
+        
         else: 
             #cherrypyerror
             pass
@@ -130,15 +165,15 @@ class catalog():
                     
         if uri[0] == "p-rec":			#### ADD PATIENT ####	
 
-            # 	uri: /p-rec
-            # 	body del post:
-            # 		{
-            # 			name: ,
-            # 			surname: ,
-            # 			chatID: ,
-            # 			docID: ,
-            # 			devID: 
-            # 		})		
+                                        # 	uri: /p-rec
+                                        # 	body del post:
+                                        # 		{
+                                        # 			name: ,
+                                        # 			surname: ,
+                                        # 			chatID: ,
+                                        # 			docID: ,
+                                        # 			devID: 
+                                        # 		})		
             
             pats=catalog["patients"]
 
@@ -261,14 +296,14 @@ class catalog():
             
         elif uri[0] == "s-up":          #### UPDATE DEVICE ####
             
-            # 	uri: /s-up
-            # 	body del post:
-            # 		{
-            # 			name: ,
-            # 			surname: ,
-            # 			devID: ,
-            #           is_critical: ,
-            #           safe_range: ["min", "max"] 
+                                        # 	uri: /s-up
+                                        # 	body del post:
+                                        # 		{
+                                        # 			name: ,
+                                        # 			surname: ,
+                                        # 			devID: ,
+                                        #           is_critical: ,
+                                        #           safe_range: ["min", "max"] 
 
             # Legge il body del POST richiesto da 'patient-rec.html' e lo visualizza nel terminal
             devInfo=json.loads(cherrypy.request.body.read())
@@ -303,12 +338,6 @@ class catalog():
                 json.dump(catalog,f,indent=4)
 
             
-                    
-            
-
-    #addsensor
-    #addpatient
-    #adddoctor
-    #addclinic
+                
 
 #deve rispondere a: location, data analysis,alert e altre? serve importare le librerie nelle classi ? 

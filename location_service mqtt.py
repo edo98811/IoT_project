@@ -6,6 +6,7 @@ import requests
 import cherrypy
 
 
+
 class location_service():
     exposed=True
     def __init__(self,catalog_address):
@@ -52,16 +53,32 @@ class location_service():
 
         # estrae dal dizionario ricevuto la posizione e l'ID del paziente
         # il messaggio ora come ora è così strutturato (bisogna vedere cosa se ne farà del data analysis): 
-        # template messaggio: 
+        # template messaggio ricevuto: 
+                                # msg = {			
+                                # 'patient_ID':patient_ID,
+                                # 't':basetime,
+                                # 'e':[ 
+                                #       {               
+                                #         'n':sensor_ID,
+                                #         'vs':sensor_type,
+                                #         'v':'value',
+                                #         't':time,
+                                #         'u':unit
+                                #         },
+                                #         {               
+                                #         'n':sensor_ID,
+                                #         'vs':sensor_type,
+                                #         'v':'',
+                                #         't':time,
+                                #         'u':unit,
+                                #         },
+                                #   ]
+                                #   'location':{        #un problema concettuale è che avendo la posizione qui non serve forse chiamare il catalog service
+                                #       'latitude':0,
+                                #       'longitude':0
+                                #   } 
+                                # }
 
-            # msg = {
-            #         "patient_ID":patient_ID,
-            #         "location": {
-            #             "latitude":measures[0],
-            #             "longitude":measures[1]
-            #         }
-            #     }
-   
         patient_location = msg['location']
         patient_ID = msg['patient_ID']
 
@@ -76,7 +93,7 @@ class location_service():
                     #   },
                     #   ... ]
 
-        for i,clinic in enumerate(self.clinics): 
+        for clinic,i in enumerate(self.clinics): 
             
             clinic_location = clinic['clinic_location']
 

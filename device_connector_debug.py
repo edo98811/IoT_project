@@ -1,4 +1,3 @@
-# senza safe range e cambio di stato
 from copy import deepcopy
 import random
 from MyMQTT import *
@@ -50,7 +49,6 @@ class device_connector():                                                 #class
         # template messaggio pubblicato dal DC
         self._message = {			
             'bn':patient_ID,
-            'bt':self.basetime,
             't':self.basetime,
             'e':[]
 			}
