@@ -123,10 +123,6 @@ class catalog():
                                             # Restituisce l'intero dizionario relativo al servizio richiesto presente all'interno del catalog 
 
             return json.dumps(catalog["services"][params["service_ID"]])
-
-        elif uri[0] == 'get_MQTT':
-
-            return catalog["services"]["MQTT"]["broker"]
         
         elif uri[0] == 'get_critical_info':
 
