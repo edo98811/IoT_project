@@ -85,17 +85,17 @@ if __name__ =='__main__':
     host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
     port = cat["base_port"]
     catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
-####
+    ####
 
-    print(catalog_address)
-    location_address = r.get(catalog_address +"/get_service_address", params = {'service_ID':'location_service'}).text
+    location_service_info = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'location_service'}).text)
     connection_settings = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'data_analysis'}).text)
-    mqtt_broker = r.get(catalog_address +"/get_MQTT").text
+    mqtt_settings = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'MQTT'}).text)
     
-    topic = connection_settings['topic']
-    broker = mqtt_broker
-    port = connection_settings['port']
+    topic = f"{mqtt_settings['baseTopic']}/{connection_settings['topic']}"
+    broker = mqtt_settings['broker']
+    port = mqtt_settings['port']
     service_ID = connection_settings['service_ID']
+    location_address = f"{location_service_info['host']}:{location_service_info['port']}"
 
     service =  data_analysis_service(broker, port, service_ID, topic, catalog_address, location_address)
 

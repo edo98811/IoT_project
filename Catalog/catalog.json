@@ -98,8 +98,9 @@
     ],
     "services": {
         "location_service": {
-            "service_ID": "location_service",
-            "address": "/location_service"
+            "host": "127.0.0.1",
+            "port": "8083",
+            "service_ID": "location_service"
         },
         "catalog_manager": {
             "service_ID": "alert_service",
