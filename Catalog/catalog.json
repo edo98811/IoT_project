@@ -100,7 +100,8 @@
         "location_service": {
             "host": "127.0.0.1",
             "port": "8083",
-            "service_ID": "location_service"
+            "service_ID": "location_service",
+            "topic": "service/#"
         },
         "catalog_manager": {
             "service_ID": "alert_service",
@@ -109,10 +110,6 @@
         "alert_service": {
             "service_ID": "alert_service",
             "topic": "alert/#"
-        },
-        "data_analysis": {
-            "service_ID": "data_analysis",
-            "topic": "service/#"
         },
         "weekly_report": {
             "service_ID": "weekly_report",

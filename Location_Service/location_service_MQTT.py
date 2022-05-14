@@ -1,18 +1,25 @@
-from email import message
+
 from math import dist
 import json
 import time
 import requests as r
 import cherrypy
 
+from MyMQTT import *
+
 
 class location_service():
     exposed=True
-    def __init__(self,catalog_address):
+    def __init__(self,broker, port, service_ID, topic, catalog_address):
         self.catalog_address = catalog_address
         self.clinics = []
         self.patient_list = []
-    
+        self.loc_service = MyMQTT(service_ID, broker, int(port), self)
+        self.loc_service.start()
+        self.loc_service.mySubscribe(topic)
+        self.catalog_address = catalog_address # tutti gli indirizzi si potrebbero salvare nel catalog e prenderli all'inizio con una richiwsta e poi aggiungere un controllo negli errori nel caso 
+        self.location_service = location_service
+
     # deve ricevere: template messaggio inviato: (va mddificato di conseguenza)
                                 # message = {			
                                 # 'patient_ID':patient_ID,
@@ -143,7 +150,7 @@ class location_service():
 if __name__ == '__main__':
 
     ####       CODICE DI "DEBUG"                                                        # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
-    with open("catalog.json",'r') as f:                                                 # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+    with open("Catalog/catalog.json",'r') as f:                                                 # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
         cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
     host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
     port = cat["base_port"]

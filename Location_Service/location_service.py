@@ -13,11 +13,6 @@ class location_service():
         self.catalog_address = catalog_address
         self.clinics = []
         self.patient_list = []
-        self.loc_service = MyMQTT(( service_ID,broker, port, self))
-        self.loc_service.start()
-        self.loc_service.mySubscribe(topic)
-        self.catalog_address = catalog_address # tutti gli indirizzi si potrebbero salvare nel catalog e prenderli all'inizio con una richiwsta e poi aggiungere un controllo negli errori nel caso 
-        self.location_service = location_service
 
     # deve ricevere: template messaggio inviato: (va mddificato di conseguenza)
                                 # message = {			
