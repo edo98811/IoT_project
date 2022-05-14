@@ -1,9 +1,8 @@
-
 from math import dist
 import json
 import time
 from unicodedata import name
-import requests
+import requests as r
 import cherrypy
 
 
@@ -34,8 +33,8 @@ class location_service():
         if not self.clinics:
 
             #manda due richieste al catalog per la lista delle cliniche e dei pazienti (come scritte nel catalog)
-            self.clinics = json.loads(requests.get(self.catalog_address + '/get_clinics').text)
-            self.patient_list = json.loads(requests.get(self.catalog_address + '/get_patients').text)
+            self.clinics = json.loads(r.get(self.catalog_address + '/get_clinics').text)
+            self.patient_list = json.loads(r.get(self.catalog_address + '/get_patients').text)
 
             self.nearest = []
 
@@ -104,4 +103,38 @@ class location_service():
         self.nearest[p_index]['clinic_pos'] == self.clinics[nearest_index]['clinic_location']
         self.nearest[p_index]['clinic_address'] = 'alert/clinica1'
 
+
+#####################################################################################################
+
+
+if __name__ == '__main__':
+
+    ####       CODICE DI "DEBUG"                                                        # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
+    with open("catalog.json",'r') as f:                                                 # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+        cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
+    host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
+    port = cat["base_port"]
+    catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
+    ####
+    
+    # with open("./config.json",'r') as f:
+    #   catalog_address = json.load(f)["catalog_address"]
+    
+    settings = json.loads(r.get(f"{catalog_address}/get_service_info", params={'service_ID': 'location_service'}).text)
+
+    conf = {
+        '/': {
+                'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
+                'tool.session.on': True
+        }
+    }
+
+    cherrypy.tree.mount(location_service(catalog_address), '/', conf)
+      
+    cherrypy.config.update({'server.socket_host': settings['host'],
+                            'server.socket_port': int(settings['port'])})
+    # this is needed if you want to have the custom error page
+    # cherrypy.config.update({'error_page.400': error_page_400}) # potremmo metterla anche noi questa pagina
+    cherrypy.engine.start()
+    cherrypy.engine.block()
 
