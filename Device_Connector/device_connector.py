@@ -41,7 +41,7 @@ class device_connector():                                                 #class
     def __init__(self, broker, port, patient_ID, topic, catalog_address):
 
         # avvia la connessione MQTT
-        self.dc = MyMQTT(patient_ID, broker, port, self)
+        self.dc = MyMQTT(patient_ID, broker, int(port), self)
         self.dc.start()
         self.critical = 0
         self.topic = topic   
@@ -51,7 +51,7 @@ class device_connector():                                                 #class
         self._message = {			
             'bn':patient_ID,
             'bt':self.basetime,
-            't':self.basetime,
+            't':0,
             'e':[]
 			}
         self._message['e'].append({                          
@@ -100,23 +100,24 @@ class device_connector():                                                 #class
     # prende il valore del sensore e lo inserisce nel messaggio 
     def get_readings(self): 
 
+        # genera una posizione casuale vicina a quella attuale, latitudine e longitudine vengono modificati casualmente
+        self.message['e'][0]['v'] = self.message['e'][0]['v'] + random.randint(-10,+10) # ipotizzando che la posizione vari casualmente di questa quantità
+        self.message['e'][1]['v'] = self.message['e'][1]['v'] + random.randint(-10,+10)
+
+        # itera su tutti i sensori memorizzati e aggiorna il contenuto dei campi del message, poi lo manda
         for n,sensor in enumerate(self._sensors):
-            if self.critical == 0:
-                value = sensor.get_reading_safe() #
-            if self.critical == 1: 
-                value = sensor.get_reading_critical() #
-            self.message = deepcopy(self._message) # copia il template 
-            self.message['e'][n]['v'] = value
+            if n > 1:
+                if self.critical == 0:
+                    value = sensor.get_reading_safe() #
+                if self.critical == 1: 
+                    value = sensor.get_reading_critical() #
+                self.message = deepcopy(self._message) # copia il template 
+                self.message['e'][n]['v'] = value
 
         print("sensori funzionanti")
         self.message['t'] = time.time()-self.basetime 
 
-        # genera una posizione casuale vicina a quella attuale
-        # latitudine e longitudine modificati casualmente
-        self.message['location']['latitude'] = self.message['location']['latitude'] + random.randint(-10,+10) # ipotizzando che la posizione vari casualmente di questa quantità
-        self.message['location']['longitude'] = self.message['location']['latitude'] + random.randint(-10,+10)
-
-    # cambia lo stato di criticità delle letture che arrivano dal device connector 
+    # cambia lo stato di criticità delle letture che arrivano dal device connector (per debug)
     def change(self):
      if self.critical==0:
         self.critical=1

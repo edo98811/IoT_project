@@ -2,7 +2,6 @@
 from math import dist
 import json
 import time
-from unicodedata import name
 import requests
 import cherrypy
 
@@ -13,6 +12,26 @@ class location_service():
         self.catalog_address = catalog_address
         self.clinics = []
         self.patient_list = []
+    
+    # deve ricevere: template messaggio inviato: (va mddificato di conseguenza)
+                                # message = {			
+                                # 'patient_ID':patient_ID,
+                                # 't':basetime,
+                                # 'e':[ 
+                                #         'n':lat e lon,
+                                #         'v':'',
+                                #         },
+                                #         .... dal secondo elemento della lista in poi ci sono i sensori
+                                #       {               
+                                #         'n':sensor_type,
+                                #         'v':'',
+                                #         'u':unit,
+                                #       },
+                                #       {               
+                                #         'n':sensor_type,
+                                #         'v':'',
+                                #         'u':unit,
+                                #         },
 
     # restituisce la location di un paziente, richiamata da alert service
     def GET(self, *uri, **params): 
