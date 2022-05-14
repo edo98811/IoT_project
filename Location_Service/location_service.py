@@ -1,8 +1,10 @@
+
 from math import dist
 import json
 import time
-import requests as r
+import requests
 import cherrypy
+
 
 
 class location_service():
@@ -11,7 +13,7 @@ class location_service():
         self.catalog_address = catalog_address
         self.clinics = []
         self.patient_list = []
-    
+
     # deve ricevere: template messaggio inviato: (va mddificato di conseguenza)
                                 # message = {			
                                 # 'patient_ID':patient_ID,
@@ -31,7 +33,6 @@ class location_service():
                                 #         'v':'',
                                 #         'u':unit,
                                 #         },
-
     # restituisce la location di un paziente, richiamata da alert service
     def GET(self, *uri, **params): 
         patient_ID = params["patient_ID"]
@@ -52,8 +53,8 @@ class location_service():
         if not self.clinics:
 
             #manda due richieste al catalog per la lista delle cliniche e dei pazienti (come scritte nel catalog)
-            self.clinics = json.loads(r.get(self.catalog_address + '/get_clinics').text)
-            self.patient_list = json.loads(r.get(self.catalog_address + '/get_patients').text)
+            self.clinics = json.loads(requests.get(self.catalog_address + '/get_clinics').text)
+            self.patient_list = json.loads(requests.get(self.catalog_address + '/get_patients').text)
 
             self.nearest = []
 
@@ -71,16 +72,32 @@ class location_service():
 
         # estrae dal dizionario ricevuto la posizione e l'ID del paziente
         # il messaggio ora come ora è così strutturato (bisogna vedere cosa se ne farà del data analysis): 
-        # template messaggio: 
+        # template messaggio ricevuto: 
+                                # msg = {			
+                                # 'patient_ID':patient_ID,
+                                # 't':basetime,
+                                # 'e':[ 
+                                #       {               
+                                #         'n':sensor_ID,
+                                #         'vs':sensor_type,
+                                #         'v':'value',
+                                #         't':time,
+                                #         'u':unit
+                                #         },
+                                #         {               
+                                #         'n':sensor_ID,
+                                #         'vs':sensor_type,
+                                #         'v':'',
+                                #         't':time,
+                                #         'u':unit,
+                                #         },
+                                #   ]
+                                #   'location':{        #un problema concettuale è che avendo la posizione qui non serve forse chiamare il catalog service
+                                #       'latitude':0,
+                                #       'longitude':0
+                                #   } 
+                                # }
 
-            # msg = {
-            #         "patient_ID":patient_ID,
-            #         "location": {
-            #             "latitude":measures[0],
-            #             "longitude":measures[1]
-            #         }
-            #     }
-   
         patient_location = msg['location']
         patient_ID = msg['patient_ID']
 
@@ -95,7 +112,7 @@ class location_service():
                     #   },
                     #   ... ]
 
-        for i,clinic in enumerate(self.clinics): 
+        for clinic,i in enumerate(self.clinics): 
             
             clinic_location = clinic['clinic_location']
 
@@ -123,37 +140,4 @@ class location_service():
         self.nearest[p_index]['clinic_address'] = 'alert/clinica1'
 
 
-#####################################################################################################
-
-
-if __name__ == '__main__':
-
-    ####       CODICE DI "DEBUG"                                                        # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
-    with open("catalog.json",'r') as f:                                                 # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
-        cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
-    host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
-    port = cat["base_port"]
-    catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
-    ####
-    
-    # with open("./config.json",'r') as f:
-    #   catalog_address = json.load(f)["catalog_address"]
-    
-    settings = json.loads(r.get(f"{catalog_address}/get_service_info", params={'service_ID': 'location_service'}).text)
-
-    conf = {
-        '/': {
-                'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
-                'tool.session.on': True
-        }
-    }
-
-    cherrypy.tree.mount(location_service(catalog_address), '/', conf)
-      
-    cherrypy.config.update({'server.socket_host': settings['host'],
-                            'server.socket_port': int(settings['port'])})
-    # this is needed if you want to have the custom error page
-    # cherrypy.config.update({'error_page.400': error_page_400}) # potremmo metterla anche noi questa pagina
-    cherrypy.engine.start()
-    cherrypy.engine.block()
 
