@@ -2,8 +2,6 @@ import json
 import cherrypy
 import requests
 
-
-
 class FrontEnd:
     exposed=True
 
@@ -21,6 +19,11 @@ class FrontEnd:
 
         body = json.loads(cherrypy.request.body.read())
         requests.post(f"{catalog_address}/{uri[0]}", json=body)
+
+    def PUT(self, *uri, **params):
+
+        body = json.loads(cherrypy.request.body.read())
+        requests.put(f"{catalog_address}/{uri[0]}", json=body)
 
 #####################################################################################
 

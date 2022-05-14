@@ -10,10 +10,10 @@
             "sensors": [
                 {
                     "type_ID": "s_1",
-                    "is_critical": "critical",
+                    "is_critical": "not_critical",
                     "safe_range": [
-                        35.0,
-                        75.0
+                        30.0,
+                        70.0
                     ]
                 },
                 {

@@ -204,10 +204,11 @@ class catalog():
                 }
             }
 
+            # Aggiorna il catalog
             catalog["patients"].append(f_newPat)
 
                         
-            # Aggiorna 'catalog.json'
+            # Salva su file il catalog aggiornato
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
 
@@ -280,8 +281,14 @@ class catalog():
             # Aggiorna 'catalog.json'
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
-            
-        elif uri[0] == "s_up":          #### UPDATE DEVICE ####
+
+    def PUT(self,*uri,**params):
+        
+        # Estrae il catalog dal file
+        with open(self.catalog_file,'r') as f:
+            catalog = json.load(f)
+
+        if uri[0] == "s_up":          #### UPDATE DEVICE ####
             
                                         # 	uri: /s_up
                                         # 	body del post:
