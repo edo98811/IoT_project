@@ -166,18 +166,21 @@ if __name__ =='__main__':
     catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
 
 ####
-  
+
+    # with open("./config.json",'r') as f:
+    #   catalog_address = json.load(f)["catalog_address"]
+
     # Ottiene dal catalog l'indirizzo del servizio di location
-    
-    location_address = r.get(catalog_address +"/get_service_address", params = {'service_ID':'location_service'}).text # da modificare sul catalog
-    connection_settings = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'alert_service'}).text)
-    mqtt_broker = r.get(catalog_address +"/get_MQTT").text
+    location_service = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'location_service'}).text) # da modificare sul catalog
+    settings = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'alert_service'}).text)
+    mqtt_settings = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'MQTT'}).text)
     
     # carica i dati relativi al client MQTT e agli indirizzi del location service e del catalog manager
-    topic = connection_settings['topic']
-    broker = mqtt_broker
-    port = connection_settings['port']
-    service_ID = connection_settings['service_ID']
+    topic = f"{mqtt_settings['baseTopic']}/{settings['topic']}"
+    broker = mqtt_settings['broker']
+    port = mqtt_settings['port']
+    service_ID = settings['service_ID']
+    location_address = f"{location_service['host']}:{location_service['port']}"
 
     # avvia il servizio (subscriber MQTT)
     service =  alert_service(broker, port, service_ID, topic, location_address, catalog_address)
