@@ -107,8 +107,6 @@
 
     <script type="text/javascript">
 
-        const baseUrl = 'http://127.0.0.1:8080/catalog_manager'
-
         function sendPOSTrequest() {
             
             event.preventDefault();
@@ -118,7 +116,7 @@
             
             $.ajax({
                 type: "POST",
-                url: baseUrl+'/c-rec',
+                url: '/c_rec',
                 
                 data: JSON.stringify({
                     name: name,
@@ -136,4 +134,4 @@
         }
     </script>
 </body>
-</html>
+</html//127.0.0.1:8081/catalog_manager'

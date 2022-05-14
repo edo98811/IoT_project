@@ -138,7 +138,7 @@
 
                 const baseUrl = 'http://127.0.0.1:8081/catalog_manager'
 
-                url = baseUrl + '/avail-devs';
+                url = baseUrl + '/avail_devs';
 
                 let devsDropdown = document.getElementById('devs');
                 devsDropdown.length = 0;
@@ -177,8 +177,8 @@
                         
 
                         $.ajax({
-                                type: "POST",
-                                url: baseUrl + '/s-up',
+                                type: "PUT",
+                                url: '/s_up',
 
                                 data: JSON.stringify({
                                         name: name,

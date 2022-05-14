@@ -123,10 +123,6 @@ class catalog():
                                             # Restituisce l'intero dizionario relativo al servizio richiesto presente all'interno del catalog 
 
             return json.dumps(catalog["services"][params["service_ID"]])
-
-        elif uri[0] == 'get_MQTT':                  # per info su broker MQTT
-
-            return catalog["services"]["MQTT"]["broker"]
         
         elif uri[0] == 'get_critical_info':         # per info su criticità sensore (solo alert service)
 
@@ -143,9 +139,9 @@ class catalog():
         with open(self.catalog_file,'r') as f:
             catalog = json.load(f)
                     
-        if uri[0] == "p-rec":			#### ADD PATIENT ####
+        if uri[0] == "p_rec":			#### ADD PATIENT ####
 
-                                        # 	uri: /p-rec
+                                        # 	uri: /p_rec
                                         # 	body del post:
                                         # 		{
                                         # 			name: ,
@@ -159,7 +155,6 @@ class catalog():
 
             # Legge il body del POST richiesto da 'patient-rec.html' e lo visualizza nel terminal
             newPat=json.loads(cherrypy.request.body.read())
-            pprint(newPat)
 
             # CONTROLLO DA RISCRIVERE
             # # Se il paziente è gia registrato mostra un banner di errore e indica di compiere il log-in
@@ -168,12 +163,10 @@ class catalog():
             #         return f"Hi {newPat['name']}, you are already registered!\nTo add a new device, please log in and follow the procedure"
 
             # Definisce la lista di sensori del nuovo paziente
-            newPatDevs=[];i=0
+            newPatDevs=[]
             for s in newPat["devID"]:
-                i+=1
                 newDev={
-                    "sensor_ID": f"p_{len(pats)+1}_{i}",
-                    "sensor_type": s,
+                    "type_ID": s,
                     "is_critical": "",
                     "safe_range": []
                 }
@@ -189,10 +182,8 @@ class catalog():
             for i in range(len(newPatDevs)):
                 b[f"field{i+1}"] = [s["type"] for s in catalog["sensors_type"] if s["type_ID"] == newPat["devID"][i]][0]
             
-            # Richiesta POST per la creazione del canale su TS, e memorizzazion channel ID
+            # Richiesta POST per la creazione del canale su TS, e memorizzazione channel ID
             resp = json.loads(requests.post("https://api.thingspeak.com/channels.json",b).text)
-
-            pprint(resp)
             
             # Definisce la nuova scheda paziente e la inserisce nella variabile locale che rappresenta il catalog
             f_newPat={
@@ -208,20 +199,22 @@ class catalog():
                 "TS_rKey": [k["api_key"] for k in resp["api_keys"] if not k["write_flag"]][0],
                 "doctor_ID": newPat["docID"],
                 "device_connector": {
+                    "service_ID": "",
                     "topic": f"service/dc_{len(pats)+1}"
                 }
             }
 
+            # Aggiorna il catalog
             catalog["patients"].append(f_newPat)
 
                         
-            # Aggiorna 'catalog.json'
+            # Salva su file il catalog aggiornato
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
 
-        elif uri[0] == "d-rec":         #### ADD DOCTOR ####
+        elif uri[0] == "d_rec":         #### ADD DOCTOR ####
 
-                                        # 	uri: /d-rec
+                                        # 	uri: /d_rec
                                         # 	body del post:
                                         # 		{
                                         # 			name: ,
@@ -254,9 +247,9 @@ class catalog():
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
 
-        elif uri[0] == "c-rec":         #### ADD CLINIC ####
+        elif uri[0] == "c_rec":         #### ADD CLINIC ####
 
-                                        # 	uri: /c-rec
+                                        # 	uri: /c_rec
                                         # 	body del post:
                                         # 		{
                                         # 			name: ,
@@ -288,10 +281,16 @@ class catalog():
             # Aggiorna 'catalog.json'
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
+
+    def PUT(self,*uri,**params):
+        
+        # Estrae il catalog dal file
+        with open(self.catalog_file,'r') as f:
+            catalog = json.load(f)
+
+        if uri[0] == "s_up":          #### UPDATE DEVICE ####
             
-        elif uri[0] == "s-up":          #### UPDATE DEVICE ####
-            
-                                        # 	uri: /s-up
+                                        # 	uri: /s_up
                                         # 	body del post:
                                         # 		{
                                         # 			name: ,
@@ -315,7 +314,7 @@ class catalog():
             # Individua il sensore
             devInd = 0
             for dev in pat["sensors"]:
-                if dev["sensor_type"] == devInfo["devID"]:
+                if dev["type_ID"] == devInfo["devID"]:
                     break
                 devInd+=1
             dev = pat["sensors"][devInd]
@@ -338,7 +337,7 @@ if __name__ == '__main__':
     catalog_file = 'catalog.json'
 
     ####       CODICE DI "DEBUG"                                                        # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
-    with open("catalog.json",'r') as f:                                               # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+    with open("catalog.json",'r') as f:                                                 # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
         cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
     host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
     port = cat["base_port"]
@@ -348,17 +347,20 @@ if __name__ == '__main__':
     # with open("./config.json",'r') as f:
     #   catalog_address = json.load(f)["catalog_address"]
     
+    with open("catalog.json",'r') as f:
+        front_info = json.load(f)['services']['front_end']
+
     conf = {
         '/': {
                 'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
-                'tool.session.on': True
+                'tool.session.on': True,
+                'tools.response_headers.on': True,
+                'tools.response_headers.headers': [('Access-Control-Allow-Origin', f"http://{front_info['host']}:{front_info['port']}")],
         }
     }
 
     cherrypy.tree.mount(catalog(catalog_file), '/catalog_manager', conf)
-
-    # MONTARE IN MAIN DIVERSI
-       
+      
     cherrypy.config.update({'server.socket_host': host,
                             'server.socket_port': int(port)})
     # this is needed if you want to have the custom error page
