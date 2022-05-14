@@ -2,8 +2,7 @@ import json
 import time
 import requests
 
-from MQTT import *
-from TeleBot.MyMQTT import *   ### COSA SIGNIFICA????????? 
+from MyMQTT import *
 import requests as r
     
 class alert_service:
@@ -112,7 +111,6 @@ class alert_service:
                     "longitude":nearest_clinic['patient_pos']["longitude"]
                     },
                 "message":problem, # messaggio che verrà letto 
-                "doctor_contact":doctor["chat_ID"],
                 "doctor_name":doctor["name"], 
                 "chat_ID":doctor["chat_ID"]
             }
@@ -129,8 +127,7 @@ class alert_service:
             self.alert_service.myPublish(telebot_critical , msg)
             print ('message correctly sent')
         else: 
-            msg = {
-                "patient_problem":problem, 
+            msg = { 
                 "patient_ID":patient_ID,
                 "location":"not known",
                 "message":problem, # messaggio che verrà letto 
@@ -170,21 +167,19 @@ if __name__ =='__main__':
     catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
 
 ####
-
-    # with open("./config.json",'r') as f:
-    #   catalog_address = json.load(f)["catalog_address"]
-
+  
     # Ottiene dal catalog l'indirizzo del servizio di location
-    location_service = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'location_service'}).text) # da modificare sul catalog
-    settings = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'alert_service'}).text)
-    mqtt_settings = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'MQTT'}).text)
+    # s = requests.session() # session non dovrebbe servire a noi: https://realpython.com/python-requests/#the-session-object
+
+    location_address = r.get(catalog_address +"/get_service_address", params = {'service_ID':'location_service'}).text # da modificare sul catalog
+    connection_settings = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'alert_service'}).text)
+    mqtt_broker = r.get(catalog_address +"/get_MQTT").text
     
     # carica i dati relativi al client MQTT e agli indirizzi del location service e del catalog manager
-    topic = f"{mqtt_settings['baseTopic']}/{settings['topic']}"
-    broker = mqtt_settings['broker']
-    port = mqtt_settings['port']
-    service_ID = settings['service_ID']
-    location_address = f"{location_service['host']}:{location_service['port']}"
+    topic = connection_settings['topic']
+    broker = mqtt_broker
+    port = connection_settings['port']
+    service_ID = connection_settings['service_ID']
 
     # avvia il servizio (subscriber MQTT)
     service =  alert_service(broker, port, service_ID, topic, location_address, catalog_address)
