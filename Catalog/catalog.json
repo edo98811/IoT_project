@@ -147,11 +147,14 @@
             "topic": "service/#"
         },
         "catalog_manager": {
-            "service_ID": "alert_service",
+            "host": "127.0.0.1",
+            "port":"8086",
+            "service_ID": "catalog_manager",
             "address": "/catalog_manager"
         },
         "alert_service": {
             "service_ID": "alert_service",
+            "host": "127.0.0.1",
             "port":"8086",
             "topic": "alert/#"
         },

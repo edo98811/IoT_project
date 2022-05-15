@@ -33,7 +33,7 @@ class catalog():
             msg = {
                 "broker":catalog["services"]["MQTT"]["broker"],
                 "port":catalog["services"]["MQTT"]["port"],
-                "topic":catalog["services"]["MQTT"]["baseTopic"] + '/' + patient["device_connector"]["topic"]
+                "topic":f'{catalog["services"]["MQTT"]["baseTopic"]}/{patient["device_connector"]["topic"]}'
             }
 
             return json.dumps(msg)
