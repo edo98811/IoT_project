@@ -230,7 +230,6 @@ class catalog():
 
             # Legge il body del POST richiesto da 'patient-rec.html' e lo visualizza nel terminal
             newDoc=json.loads(cherrypy.request.body.read())
-            pprint(newDoc)
             
                 # CONTROLLO
             # # Se il paziente è gia registrato mostra un banner di errore e indica di compiere il log-in
@@ -305,7 +304,6 @@ class catalog():
 
             # Legge il body del POST richiesto da 'patient-rec.html' e lo visualizza nel terminal
             devInfo=json.loads(cherrypy.request.body.read())
-            pprint(devInfo)
 
             # Individua il paziente 
             patInd = 0
