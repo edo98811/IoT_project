@@ -154,7 +154,7 @@
             "service_ID": "alert_service",
             "host": "127.0.0.1",
             "port":"8086",
-            "topic": "alert/#"
+            "topic": "service/#"
         },
         "weekly_report": {
             "service_ID": "weekly_report",

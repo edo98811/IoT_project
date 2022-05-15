@@ -128,10 +128,11 @@ class catalog():
 
             return json.dumps(catalog["services"][params["service_ID"]])
         
-        elif uri[0] == 'get_critical_info':         # per info su criticità sensore (solo alert service)
+        elif uri[0] == 'get_critical_info':         # per info su criticità sensore (solo alert x   service)
 
             patient = next((p for p in catalog['patients'] if p['patient_ID'] == params['patient_ID'] ), None)
-            return json.dumps(patient["sensors"])
+            sensor_info = next((s for s in patient["sensors"] if s['type_ID'] == params['sensor_ID'] ), None)
+            return json.dumps(sensor_info)
         
         else: 
             #cherrypyerror

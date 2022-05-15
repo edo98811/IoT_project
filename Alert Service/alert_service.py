@@ -18,7 +18,7 @@ class alert_service:
         # messaggio ricevuto da device connector
         # template messaggio: 
                                 # message = {			
-                                # 'patient_ID':patient_ID,
+                                # 'bn':patient_ID,
                                 # 't':basetime,
                                 # 'e':[ 
                                 #         'n':lat e lon,
@@ -38,14 +38,15 @@ class alert_service:
 
 
         # prende le informazioni necessarie 
-        patient_ID = msg['patient_ID']
+        msg = json.loads(msg)
+        patient_ID = msg['bn']
         measures = msg['e'][2:-1] # le prime 2 sono la posizione
 
         # itera lungo le misurazioni dei singoli sensori e controlla la criticità associata ad essa, nel caso ci sia un problema richiama i metodi di notifica 
         # i metodi per le procedure di allerta sono definiti sotto 
         for measure in measures:
 
-            is_critical = json.loads(requests.get(self.catalog_address + '/get_critical_info', params= {'patient_ID':patient_ID, 's_ID':measure['n']}).text)
+            is_critical = json.loads(requests.get(self.catalog_address + '/get_critical_info', params= {'patient_ID':patient_ID, 'sensor_ID':measure['n']}).text)
             
                                 # messaggio ricevuto 
                                 # is_critical = {
@@ -73,7 +74,7 @@ class alert_service:
                         #messaggio che viene mandato insieme alla notifica
                         problem = f'reading {measure["n"]}: {measure["v"]} {measure["u"]} out of safe range'
                         self.critical_alert(patient_ID,problem) # a questo punto chiamo la funzione alert (basta richiamarlo ogni volta)
-                    
+                
 
     # allerta critica (medico e clinica)
     def critical_alert(self,patient_ID,problem):
@@ -171,15 +172,17 @@ if __name__ =='__main__':
     # Ottiene dal catalog l'indirizzo del servizio di location
     # s = requests.session() # session non dovrebbe servire a noi: https://realpython.com/python-requests/#the-session-object
 
-    location_address = r.get(catalog_address +"/get_service_address", params = {'service_ID':'location_service'}).text # da modificare sul catalog
-    connection_settings = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'alert_service'}).text)
-    mqtt_broker = r.get(catalog_address +"/get_MQTT").text
+    settings = json.loads(r.get(f"{catalog_address}/get_service_info", params={'service_ID': 'alert_service'}).text)
+    mqtt_settings = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'MQTT'}).text)
     
-    # carica i dati relativi al client MQTT e agli indirizzi del location service e del catalog manager
-    topic = connection_settings['topic']
-    broker = mqtt_broker
-    port = connection_settings['port']
-    service_ID = connection_settings['service_ID']
+    topic = f"{mqtt_settings['baseTopic']}/{settings['topic']}"
+    broker = mqtt_settings['broker']
+    port = mqtt_settings['port']
+    service_ID = settings['service_ID']
+
+    location_service_settings = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'location_service'}).text) # da modificare sul catalog
+
+    location_address = f'http://{location_service_settings["host"]}:{location_service_settings["port"]}/'
 
     # avvia il servizio (subscriber MQTT)
     service =  alert_service(broker, port, service_ID, topic, location_address, catalog_address)
