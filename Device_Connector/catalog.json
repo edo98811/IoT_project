@@ -104,6 +104,7 @@
         },
         "catalog_manager": {
             "service_ID": "alert_service",
+            "port": "8086",
             "address": "/catalog_manager"
         },
         "alert_service": {
