@@ -147,8 +147,6 @@
             "topic": "service/#"
         },
         "catalog_manager": {
-            "host": "127.0.0.1",
-            "port":"8086",
             "service_ID": "catalog_manager",
             "address": "/catalog_manager"
         },
