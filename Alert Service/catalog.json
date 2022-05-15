@@ -152,7 +152,6 @@
         },
         "alert_service": {
             "service_ID": "alert_service",
-            "port":"8086",
             "topic": "alert/#"
         },
         "weekly_report": {

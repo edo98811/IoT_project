@@ -22,7 +22,7 @@ class location_service():
 
     # deve ricevere: template messaggio inviato: (va mddificato di conseguenza)
                                 # message = {			
-                                # 'patient_ID':patient_ID,
+                                # 'bn':patient_ID,
                                 # 't':basetime,
                                 # 'e':[ 
                                 #         'n':lat e lon,
@@ -74,7 +74,7 @@ class location_service():
 
         measures = msg['e']
 
-        if measures[0]['n'] == 'lat' & measures[1]['n'] == 'lon':
+        if measures[0]['n'] == 'lat' and measures[1]['n'] == 'lon':
 
         # alla prima iterazione (cioè quando i dizionari di self.clinics e di patient list sono vuoti) li inizializza, questo non è nell'init perchè il catalog e il location 
         # vengono inizializzati insieme, quindi all'inizio il catalog non può rispondere alle richieste
@@ -99,11 +99,11 @@ class location_service():
                     })
 
             patient_location = {
-                "latitude":measures[0]["lat"],
-                "longitude":measures[1]["lat"]
+                "latitude":measures[0]["v"],
+                "longitude":measures[1]["v"]
                 }
 
-            patient_ID = msg['patient_ID']
+            patient_ID = msg['bn']
 
             # itera tra tutte le cliniche calcolando la distanza dal paziente per trovare quella più vicina
             # la lista delle cliniche ha questa struttura (come nel catalog):
@@ -118,13 +118,18 @@ class location_service():
 
             for i,clinic in enumerate(self.clinics): 
                 
-                clinic_location = clinic['clinic_location']
+                clinic_location = clinic['location']
 
                 #calcolo della piu vicina con la distanza euclidea
-                d = dist([patient_location['longitude'],patient_location['latitude']],[clinic_location["longitude"],clinic_location["latitude"]])
+                d = dist([int(patient_location['longitude']),int(patient_location['latitude'])],[int(clinic_location["longitude"]),int(clinic_location["latitude"])])
 
                 # se dist_temp è vuota (prima iterazione) la inizializza a d
-                if not dist_temp: dist_temp = d
+                try:
+                    dist_temp
+                except NameError:
+                    dist_temp = d
+
+                nearest_index = 0
 
                 # confronta sempre la distanza trovata con dist_temp e nel caso d sia inferiore
                 # (la nuova clinica più vicina è stata trovata) aggiorna dist_temp e salva l'indice della clinica
@@ -138,10 +143,12 @@ class location_service():
                     p_index = i
                 
             #aggiorna la posizione
-            self.nearest[p_index]['nearest'] == self.clinics[nearest_index]['clinic_id']
-            self.nearest[p_index]['patient_pos'] == msg['pos']
-            self.nearest[p_index]['clinic_pos'] == self.clinics[nearest_index]['clinic_location']
+            self.nearest[p_index]['nearest'] = self.clinics[nearest_index]['clinic_ID']
+            self.nearest[p_index]['patient_location'] = patient_location
+            self.nearest[p_index]['clinic_location'] = self.clinics[nearest_index]['location']
             self.nearest[p_index]['clinic_address'] = 'alert/clinica1'
+
+            #print (json.dumps(self.nearest))
 
 
 #####################################################################################################
@@ -150,7 +157,7 @@ class location_service():
 if __name__ == '__main__':
 
     ####       CODICE DI "DEBUG"                                                        # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
-    with open("Catalog/catalog.json",'r') as f:                                                 # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+    with open("catalog.json",'r') as f:                                                 # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
         cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
     host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
     port = cat["base_port"]

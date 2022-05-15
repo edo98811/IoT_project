@@ -1,8 +1,7 @@
 import json
 import requests
 import cherrypy
-from pprint import pprint
-
+import os
 # va aggiunto un controllo params in tutte le funzioni del codice
 
 # nell'uri metto solo il tipo di richiesta (quindi da chi viene) 
@@ -33,8 +32,8 @@ class catalog():
 
             msg = {
                 "broker":catalog["services"]["MQTT"]["broker"],
-                "port":patient["device_connector"]["port"],
-                "topic":patient["device_connector"]["topic"]
+                "port":catalog["services"]["MQTT"]["port"],
+                "topic":catalog["services"]["MQTT"]["baseTopic"] + '/' + patient["device_connector"]["topic"]
             }
 
             return json.dumps(msg)
@@ -51,7 +50,7 @@ class catalog():
             # itera lungo la lista dei sensori e prende le loro informazioni dal catalog
             for s_info in sensors_info:
                 
-                # recupera le carattersitiche dei sensori
+                # recupera le carattersitiche dei sensori 
                 s_type = next((s for s in catalog["sensors_type"] if s['type_ID'] == s_info['type_ID'] ), None)
 
                 # questo è il messaggio passato al sensor info del device connector
@@ -84,8 +83,13 @@ class catalog():
 
             msg = next((p for p in catalog['patients'] if p['patient_ID'] ==  params["patient_ID"]), None)  
             return json.dumps(msg)
+        elif uri[0] == 'get_patients':          # per tutte le info su un paziente singolo 
+
+            # richiamato da location service
+
+            return json.dumps(catalog['patients'])
                
-        elif uri[0] == 'get_doctor':                # per il dottore associato ad un paziente
+        elif uri[0] == 'get_doctor_info':                # per il dottore associato ad un paziente
             
             # prima trova il paziente per cui devo ricercare il medico
             patient = next((p for p in catalog['patients'] if p['patient_ID'] == params["patient_ID"] ), None) 
@@ -261,7 +265,7 @@ class catalog():
 
             # Legge il body del POST richiesto da 'patient-rec.html' e lo visualizza nel terminal
             newCls=json.loads(cherrypy.request.body.read())
-            pprint(newCls)
+            print(newCls)
 
                 # CONTROLLO
             # # Se la clinica è gia registrata mostra un banner di errore e indica di compiere il log-in
@@ -336,8 +340,8 @@ if __name__ == '__main__':
 
     catalog_file = 'catalog.json'
 
-    ####       CODICE DI "DEBUG"                                                        # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
-    with open("catalog.json",'r') as f:                                                 # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+    ####       CODICE DI "DEBUG"                                            # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
+    with open('catalog.json','r') as f:                                                 # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
         cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
     host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
     port = cat["base_port"]
@@ -347,7 +351,7 @@ if __name__ == '__main__':
     # with open("./config.json",'r') as f:
     #   catalog_address = json.load(f)["catalog_address"]
     
-    with open("catalog.json",'r') as f:
+    with open('catalog.json','r') as f:
         front_info = json.load(f)['services']['front_end']
 
     conf = {

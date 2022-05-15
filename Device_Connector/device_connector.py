@@ -1,8 +1,7 @@
 # senza safe range e cambio di stato
 from copy import deepcopy
 import random
-from TeleBot.MyMQTT import *
-from MQTT import *
+from MyMQTT import *
 import requests
 import json 
 import time
@@ -19,8 +18,7 @@ class sensor_def():                                                     ### defi
         
     # genera un numero casuale nel range impostato (self.range)
     def get_reading_safe(self):                                          
-        output = random.randint(self.safe_range[0],self.safe_range[1])
-        return output
+        return random.randint(self.safe_range[0],self.safe_range[1])
 
     ### serve a noi per simulare una lettura fuori range -> 
             # funziona cosi
@@ -29,11 +27,12 @@ class sensor_def():                                                     ### defi
             # dell'intervallo di funzionamento del sensore ma fuori dal range di sicurezza 
 
     def get_reading_alert(self):   
-        try:                                     
-            output = random.randint(self.safe_range[1],self.range[1])
+        try:      
+            # genera un segnale fuori dal range solo se il range effetivamente esiste (non se è 0 e 0)                            
+            return random.randint(self.safe_range[1],self.range[1])
         except:
-            output = random.randint(self.safe_range[0],self.safe_range[1])
-        return output
+            return random.randint(self.safe_range[0],self.safe_range[1])
+
     
 
 
@@ -99,7 +98,7 @@ class device_connector():                                                 #class
         
     # prende il valore del sensore e lo inserisce nel messaggio 
     def get_readings(self): 
-
+        self.message = deepcopy(self._message)
         # genera una posizione casuale vicina a quella attuale, latitudine e longitudine vengono modificati casualmente
         self.message['e'][0]['v'] = self.message['e'][0]['v'] + random.randint(-10,+10) # ipotizzando che la posizione vari casualmente di questa quantità
         self.message['e'][1]['v'] = self.message['e'][1]['v'] + random.randint(-10,+10)
@@ -110,8 +109,7 @@ class device_connector():                                                 #class
                 if self.critical == 0:
                     value = sensor.get_reading_safe() #
                 if self.critical == 1: 
-                    value = sensor.get_reading_critical() #
-                self.message = deepcopy(self._message) # copia il template 
+                    value = sensor.get_reading_alert() #e 
                 self.message['e'][n]['v'] = value
 
         print("sensori funzionanti")
@@ -156,7 +154,7 @@ class device_connector():                                                 #class
 if __name__ == '__main__':
     
 ####       CODICE DI "DEBUG"                                                            # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
-    with open("./catalog.json",'r') as f:                                               # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+    with open("catalog.json",'r') as f:                                               # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
         cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
     host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
     port = cat["base_port"]
@@ -167,7 +165,7 @@ if __name__ == '__main__':
     patient_ID = 'p_1'
     print(catalog_address)
     # manda una richiesta al catalog per i dati della connessione MQTT del device connector
-    pat_info = json.loads(requests.get(catalog_address + '/get_dc_info' ,params= {"patient_ID":patient_ID}).text)
+    pat_info = json.loads(requests.get(catalog_address + '/get_dc_info' , params= {"patient_ID":patient_ID}).text)
     # template messaggio ricevuto dal catalog
                                 # msg = {
                                 #             "broker":catalog["services"]["MQTT"]["broker"],
@@ -186,7 +184,7 @@ if __name__ == '__main__':
 
     count=30
     while True:
-        time.sleep(10)
+        time.sleep(1)
         print('started')
         count=count-1
         if count==1:
