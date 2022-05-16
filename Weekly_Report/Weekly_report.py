@@ -1,6 +1,7 @@
 from MyMQTT import *
 import requests
-import schedule
+import pprint
+#import schedule
 import time
 
 class WK_Report:
@@ -10,10 +11,10 @@ class WK_Report:
         self.client.start()
         self.topic = topic
         
-        self.url = url  
+        self._url = url  
 
 
-    def get_weekly_chart():
+    def weekly_report(self):
         # template url per i vari chart
         # https://api.thingspeak.com/channels/<CH_id>/charts/<field_id>?days=7       
 
@@ -24,39 +25,57 @@ class WK_Report:
         #   url_chart = ''
         # }
 
-        patients = json.loads(requests.get(catalog_address + '/get_patients').text)
 
+        patients = json.loads(requests.get(self.catalog_address + '/get_patients').text)
+        
+        # Definisce l'url 
+        for pat in patients:
 
+            newUrl = self._url 
+            uri = newUrl.split('/')
+            uri[-3] = str(pat['TS_chID']) 
+            # COME FARE PER QUANDO HO PIU' SENSORI E QUINDI PIU' URL PER PAZIENTE
+            newUrl = '/'.join(uri)
+            msg = {
+                "fullName":[f"{pat['personal_info']['name']} {pat['personal_info']['surname']}" ],
+                "docID":[pat['doctor_ID']],
+                "url_chart": [newUrl]
+            }
 
+        # messaggio mandato al medico 
+       
+        self.weekly_report.myPublish(self.topic, msg)
 
 
 
 if __name__ == "__main__":
 
     ####       CODICE DI "DEBUG"                                                        # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
-    with open("../catalog.json",'r') as f:                                              # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
-        cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
-    host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
-    port = cat['base_port']
-    catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
+    #with open("../catalog.json",'r') as f:                                              # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+    #    cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
+    #host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
+    #port = cat['base_port']
+    #catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
     ####
 
-    #with open("./config.json",'r') as f:
-    #    catalog_address = json.load(f)["catalog_address"]
+    with open("../config.json",'r') as f:
+        catalog_address = json.load(f)["catalog_address"]
 
     # Ottiene dal catalog l'indirizzo del servizio MQTT
-    MQTT_info = json.loads(requests.get(catalog_address+"/service-info?name=MQTT").text)
+    MQTT_info = json.loads(requests.get(catalog_address+"/get_service_info?name=MQTT").text)
     broker = MQTT_info["broker"]
     port = MQTT_info["port"]
+    base_Topic= MQTT_info["base_Topic"]
 
     # creo lista di topic a cui il telebot fa da subscriber
-    topic =  json.loads(requests.get(catalog_address+"/service-info?name=weekly_report").text)["topic"] 
+    topic =  [base_Topic + json.loads(requests.get(catalog_address+"/get_service_info?name=weekly_report").text)["topic"]]
 
     # ricerca dell'url a cui si farà la richiesta di get per avere i dati di ogni settimana
-    url = json.loads(requests.get(catalog_address+"/service-info?name=ThingSpeak").text)["url_weekly_report"] 
+    url = json.loads(requests.get(catalog_address+"/get_service_info?name=ThingSpeak").text)["url_weekly_report"]
 
     wkr = WK_Report(broker,port, topic, catalog_address, url)
-    schedule.every().monday.at("9:00").do(wkr.get_weekly_chart)
+    #schedule.every().monday.at("9:00").do(wkr.weekly_report)
+    wkr.weekly_report()
 
     print("Weekly Report started ...")
     while True:
