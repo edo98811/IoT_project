@@ -18,8 +18,8 @@ class location_service():
         self.loc_service.start()
         self.loc_service.mySubscribe(topic)
         self.catalog_address = catalog_address # tutti gli indirizzi si potrebbero salvare nel catalog e prenderli all'inizio con una richiwsta e poi aggiungere un controllo negli errori nel caso 
-        self.location_service = location_service
 
+        print(topic)
     # deve ricevere: template messaggio inviato: (va mddificato di conseguenza)
                                 # message = {			
                                 # 'bn':patient_ID,
@@ -43,12 +43,11 @@ class location_service():
     # restituisce la location di un paziente, richiamata da alert service
     def GET(self, *uri, **params): 
             
-        #estrae il dizionario relativo al paziente e lo restituisce alla clinica che dovrà fare un controllo sulla presenza o meno deella posizione calcolata
-        msg = next((p for p in self.nearest if p['patient_ID'] == params["patient_ID"]), None) 
-
-        return msg
+        #estrae il dizionario relativo al paziente e lo restituisce alla clinica corretta
+        return json.dumps(next((p for p in self.nearest if p['patient_ID'] == params["patient_ID"]), None))
 
     def notify(self, topic, msg):
+        print('funzionaa')
 
     # template messaggio ricevuto: 
                                 # message = {			
@@ -79,7 +78,7 @@ class location_service():
         # alla prima iterazione (cioè quando i dizionari di self.clinics e di patient list sono vuoti) li inizializza, questo non è nell'init perchè il catalog e il location 
         # vengono inizializzati insieme, quindi all'inizio il catalog non può rispondere alle richieste
             if not self.clinics:
-
+                print(msg)
                 #manda due richieste al catalog per la lista delle cliniche e dei pazienti (come scritte nel catalog)
                 self.clinics = json.loads(r.get(self.catalog_address + '/get_clinics').text)
                 self.patient_list = json.loads(r.get(self.catalog_address + '/get_patients').text)
@@ -146,9 +145,10 @@ class location_service():
             self.nearest[p_index]['nearest'] = self.clinics[nearest_index]['clinic_ID']
             self.nearest[p_index]['patient_location'] = patient_location
             self.nearest[p_index]['clinic_location'] = self.clinics[nearest_index]['location']
-            self.nearest[p_index]['clinic_address'] = 'alert/clinica1'
+            self.nearest[p_index]['clinic_topic'] = self.clinics[nearest_index]['clinic_topic'] # aggiungere il basetopic
 
-            #print (json.dumps(self.nearest))
+            print (json.dumps(self.nearest))
+            time.sleep(0.1)
 
 
 #####################################################################################################

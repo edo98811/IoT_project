@@ -185,7 +185,7 @@ if __name__ == '__main__':
     count=30
     while True:
         time.sleep(1)
-        print('started')
+        print(count)
         count=count-1
         if count==1:
             device_connector1.change()
