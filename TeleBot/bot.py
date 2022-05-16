@@ -5,7 +5,7 @@ from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 import json
 import requests
 import time
-from TeleBot.MyMQTT import *
+from MyMQTT import *
 
 
 class TeleBot:
@@ -121,7 +121,7 @@ class TeleBot:
 if __name__ == "__main__":
 
     ####       CODICE DI "DEBUG"                                                        # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
-    with open("../catalog.json",'r') as f:                                              # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+    with open("catalog.json",'r') as f:                                              # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
         cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
     host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
     port = cat['base_port']

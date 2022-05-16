@@ -58,7 +58,7 @@ if __name__ == "__main__":
     #catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
     ####
 
-    with open("../config.json",'r') as f:
+    with open("config.json",'r') as f:
         catalog_address = json.load(f)["catalog_address"]
 
     # Ottiene dal catalog l'indirizzo del servizio MQTT
