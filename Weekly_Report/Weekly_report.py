@@ -1,5 +1,6 @@
 from MyMQTT import *
 import requests
+import schedule
 import time
 
 class WK_Report:
@@ -12,10 +13,18 @@ class WK_Report:
         self.url = url  
 
 
-        
+    def get_weekly_chart():
+        # template url per i vari chart
+        # https://api.thingspeak.com/channels/<CH_id>/charts/<field_id>?days=7       
 
+        # template messaggio di cui fare il publish per il telegram bot
+        # {
+        #   pat_full_name = ''
+        #   doc_chat_id = ''
+        #   url_chart = ''
+        # }
 
-
+        patients = json.loads(requests.get(catalog_address + '/get_patients').text)
 
 
 
@@ -47,6 +56,7 @@ if __name__ == "__main__":
     url = json.loads(requests.get(catalog_address+"/service-info?name=ThingSpeak").text)["url_weekly_report"] 
 
     wkr = WK_Report(broker,port, topic, catalog_address, url)
+    schedule.every().monday.at("9:00").do(wkr.get_weekly_chart)
 
     print("Weekly Report started ...")
     while True:

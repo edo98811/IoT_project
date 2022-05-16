@@ -39,7 +39,7 @@ class TeleBot:
         elif message == '/report':
             # in caso il medico scelga questa key bisogna resituirgli la lista di tutti i suoi pazienti
             # dal chat_id risalgo al nome del medico
-            doctors = json.loads(requests.get(catalog_address + '/avail-docs').text)
+            doctors = json.loads(requests.get(catalog_address + '/avail_docs').text)
             doctor_id = doctors["docID"][doctors["chatID"].index(str(chat_ID))]
             # a partire dal doctor id scorro la lista dei pazienti e tengo solamente coloro che hanno quel dottore 
             patients = json.loads(requests.get(catalog_address + '/get_patients').text)
