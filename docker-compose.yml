@@ -1,0 +1,18 @@
+version: '3.4'
+services:
+  super-app-location:
+    build: ./n
+    ports:
+      - "3000:3000"
+  super-app-catalog:
+    build: ./dotnet
+    ports:
+    - "8080:80"
+  super-app-alert:
+    build: ./python
+    ports:
+    - "8080:80"
+  super-app-front-end:
+    build: ./php
+    ports:
+    - "8000:80"
