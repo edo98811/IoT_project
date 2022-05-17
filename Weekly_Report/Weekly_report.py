@@ -51,27 +51,27 @@ class WK_Report:
 if __name__ == "__main__":
 
     ####       CODICE DI "DEBUG"                                                        # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
-    #with open("../catalog.json",'r') as f:                                              # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
-    #    cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
-    #host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
-    #port = cat['base_port']
-    #catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
+    with open("../Catalog/catalog.json",'r') as f:                                              # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+        cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
+    host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
+    port = cat['base_port']
+    catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
     ####
 
-    with open("config.json",'r') as f:
-        catalog_address = json.load(f)["catalog_address"]
+    #with open("config.json",'r') as f:
+    #    catalog_address = json.load(f)["catalog_address"]
 
     # Ottiene dal catalog l'indirizzo del servizio MQTT
-    MQTT_info = json.loads(requests.get(catalog_address+"/get_service_info?name=MQTT").text)
+    MQTT_info = json.loads(requests.get(catalog_address+"/get_service_info", params =  {'service_ID':'MQTT'}).text)
     broker = MQTT_info["broker"]
     port = MQTT_info["port"]
-    base_Topic= MQTT_info["base_Topic"]
+    base_Topic= MQTT_info["baseTopic"]
 
     # creo lista di topic a cui il telebot fa da subscriber
-    topic =  [base_Topic + json.loads(requests.get(catalog_address+"/get_service_info?name=weekly_report").text)["topic"]]
+    topic =  [base_Topic + json.loads(requests.get(catalog_address+"/get_service_info", params =  {'service_ID':'weekly_report'}).text)["topic"]]
 
     # ricerca dell'url a cui si farà la richiesta di get per avere i dati di ogni settimana
-    url = json.loads(requests.get(catalog_address+"/get_service_info?name=ThingSpeak").text)["url_weekly_report"]
+    url = json.loads(requests.get(catalog_address+"/get_service_info", params =  {'service_ID':'Thingspeak'}).text)["url_weekly_report"]
 
     wkr = WK_Report(broker,port, topic, catalog_address, url)
     #schedule.every().monday.at("9:00").do(wkr.weekly_report)

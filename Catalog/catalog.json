@@ -10,7 +10,7 @@
             "sensors": [
                 {
                     "type_ID": "s_1",
-                    "is_critical": "not_critical",
+                    "is_critical": "critical",
                     "safe_range": [
                         30.0,
                         70.0
@@ -20,16 +20,16 @@
                     "type_ID": "s_2",
                     "is_critical": "not_critical",
                     "safe_range": [
-                        130,
-                        200
+                        130.0,
+                        200.0
                     ]
                 },
                 {
                     "type_ID": "s_3",
                     "is_critical": "personal",
                     "safe_range": [
-                        130,
-                        200
+                        130.0,
+                        200.0
                     ]
                 }
             ],
@@ -41,47 +41,27 @@
                 "service_ID": "dc_2_342312",
                 "topic": "service/dc_1"
             }
-            
         },
         {
             "patient_ID": "p_2",
             "personal_info": {
-                "name": "Elena",
-                "surname": "Balestrieri",
-                "chat_ID": "456213"
+                "name": "Davide",
+                "surname": "D'Adamo",
+                "chat_ID": "327778115"
             },
             "sensors": [
                 {
                     "type_ID": "s_1",
-                    "is_critical": "not_critical",
-                    "safe_range": [
-                        30.0,
-                        70.0
-                    ]
-                },
-                {
-                    "type_ID": "s_2",
-                    "is_critical": "not_critical",
-                    "safe_range": [
-                        130,
-                        200
-                    ]
-                },
-                {
-                    "type_ID": "s_3",
-                    "is_critical": "personal",
-                    "safe_range": [
-                        130,
-                        200
-                    ]
+                    "is_critical": "",
+                    "safe_range": []
                 }
             ],
-            "TS_chID": 1726296,
-            "TS_wKey": "O0J9EJEEKK4M0N43",
-            "TS_rKey": "82M0DY5FZ2TCJOKU",
-            "doctor_ID": "d_1",
+            "TS_chID": 1738212,
+            "TS_wKey": "9J32418LJQHS2MEZ",
+            "TS_rKey": "BUIEI4TYDMHVPGE7",
+            "doctor_ID": "d_2",
             "device_connector": {
-                "service_ID": "dc_2_332312",
+                "service_ID": "",
                 "topic": "service/dc_2"
             }
         }
@@ -91,13 +71,13 @@
             "doctor_ID": "d_1",
             "name": "Pinco",
             "surname": "Pallino",
-            "chatID": "769841234"
+            "chat_ID": "769841234"
         },
         {
             "doctor_ID": "d_2",
             "name": "Marco",
             "surname": "Gagliardi",
-            "chatID": "612859950"
+            "chat_ID": "612859950"
         }
     ],
     "sensors_type": [
@@ -105,8 +85,8 @@
             "type_ID": "s_1",
             "type": "Heart rate monitor",
             "range": [
-                60,
-                180
+                60.0,
+                180.0
             ],
             "unit": "bpm"
         },
@@ -114,8 +94,8 @@
             "type_ID": "s_2",
             "type": "Glucosimeter",
             "range": [
-                20,
-                300
+                20.0,
+                300.0
             ],
             "unit": "mg/l"
         },
@@ -123,8 +103,8 @@
             "type_ID": "s_3",
             "type": "Sensorized courset",
             "range": [
-                10,
-                300
+                0,
+                1
             ],
             "unit": "v"
         }
@@ -136,7 +116,8 @@
             "location": {
                 "longitude": "40000",
                 "latitude": "013000"
-            }
+            },
+            "clinic_topic": "alert/clinica1"
         }
     ],
     "services": {
@@ -147,13 +128,15 @@
             "topic": "service/#"
         },
         "catalog_manager": {
+            "host": "127.0.0.1",
+            "port": "8081",
             "service_ID": "catalog_manager",
             "address": "/catalog_manager"
         },
         "alert_service": {
             "service_ID": "alert_service",
             "host": "127.0.0.1",
-            "port":"8086",
+            "port": "8086",
             "topic": "service/#"
         },
         "weekly_report": {
@@ -161,7 +144,9 @@
             "topic": "weekly_report"
         },
         "telegram_bot": {
-            "token": "5338835932:AAH8QcMIuA8moihJaomvumEspZsbHBzXtlw"
+            "token": "5338835932:AAH8QcMIuA8moihJaomvumEspZsbHBzXtlw",
+            "personal_alert_topic": "telebot/personal_alert",
+            "critical_alert_topic": "telebot/critical_alert"
         },
         "MQTT": {
             "broker": "test.mosquitto.org",
@@ -171,7 +156,7 @@
         "ThingSpeak": {
             "api_key": "WH6G4IW2A7D3JT6P",
             "topic": "service/#",
-            "url_weekly_report": " https://api.thingspeak.com/channels/<CH_id>/charts/<field_id>?days=7" ,
+            "url_weekly_report": "https://api.thingspeak.com/channels/<CH_id>/charts/<field_id>?days=7",
             "url_update": "https://api.thingspeak.com/channels/<ch_ID>/bulk_update.json"
         },
         "front_end": {

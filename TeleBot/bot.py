@@ -93,27 +93,28 @@ class TeleBot:
 
     ### Routine per messaggi di alert derivanti da Alert service tramite protocollo MQTT ###
         def notify(self,topic,message):
+           
             # leggo il messaggio ed estraggo il chat_ID del medico a cui deve essere mandata la notifica 
             msg=json.loads(message) 
             topic_weekly = json.loads(requests.get(catalog_address+"/service-info?name=weekly_report").text)["topic"]
             topic_alert = json.loads(requests.get(catalog_address+"/service-info?name=alert_servcice").text)["topic"]
-            if topic == topic_weekly:
-                ...
+            #if topic == topic_weekly:
+            #    ...
 
-            elif topic == topic_alert:       
-                alert=msg["message"]
-                chat_ID = msg["chat_ID"]
-                patient_ID = msg["patient_ID"]
-                topic_spit = topic.split("/")[-1]
+            #if topic == topic_alert:       
+            alert=msg["message"]
+            chat_ID = msg["chat_ID"]
+            patient_ID = msg["patient_ID"]
+            topic_spit = topic.split("/")[-1]
 
-                if topic_spit == "personal_alert":   
-                    personal_alert=f"ATTENTION!!!\n{alert}"
-                    self.bot.sendMessage(chat_ID, text=personal_alert)
+            if topic_spit == "personal_alert":   
+                personal_alert=f"ATTENTION!!!\n{alert}"
+                self.bot.sendMessage(chat_ID, text=personal_alert)
 
-                elif topic_spit == "critical_alert":
-                    patient_ID = msg["alert"]
-                    critical_alert=f"ATTENTION {patient_ID}!!!\{alert}"
-                    self.bot.sendMessage(chat_ID, text=critical_alert)
+            elif topic_spit == "critical_alert":
+                patient_ID = msg["alert"]
+                critical_alert=f"ATTENTION {patient_ID}!!!\{alert}"
+                self.bot.sendMessage(chat_ID, text=critical_alert)
 
             
 
@@ -121,7 +122,7 @@ class TeleBot:
 if __name__ == "__main__":
 
     ####       CODICE DI "DEBUG"                                                        # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
-    with open("catalog.json",'r') as f:                                              # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+    with open("../Catalog/catalog.json",'r') as f:                                              # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
         cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
     host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
     port = cat['base_port']
@@ -132,15 +133,15 @@ if __name__ == "__main__":
     #    catalog_address = json.load(f)["catalog_address"]
 
     # Ottiene dal catalog l'indirizzo del servizio di telegram bot e di comunicazione MQTT
-    token = json.loads(requests.get(catalog_address+"/get_service_info?name=telegram_bot").text)["token"]
-    MQTT_info = json.loads(requests.get(catalog_address+"/get_service_info?name=MQTT").text)
+    token = json.loads(requests.get(catalog_address+"/get_service_info",params =  {'service_ID':'telegram_bot'}).text)["token"]
+    MQTT_info = json.loads(requests.get(catalog_address+"/get_service_info",params =  {'service_ID':'MQTT'}).text)
     broker = MQTT_info["broker"]
     port = MQTT_info["port"]
-    base_Topic= MQTT_info["base_Topic"]
+    base_Topic= MQTT_info["baseTopic"]
 
     # creo lista di topic a cui il telebot fa da subscriber
     services = ['alert_service', 'weekly_report']
-    topics =  [base_Topic + json.loads(requests.get(catalog_address+"/get_service_info?name="+s).text)["topic"] for s in services]
+    topics =  [base_Topic + json.loads(requests.get(catalog_address+"/get_service_info", params = {'service_ID':s}).text)["topic"] for s in services]
 
     bot=TeleBot(token,broker,port, topics, catalog_address)
 
