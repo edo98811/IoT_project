@@ -42,48 +42,6 @@
                 "topic": "service/dc_1"
             }
             
-        },
-        {
-            "patient_ID": "p_2",
-            "personal_info": {
-                "name": "Elena",
-                "surname": "Balestrieri",
-                "chat_ID": "456213"
-            },
-            "sensors": [
-                {
-                    "type_ID": "s_1",
-                    "is_critical": "critical",
-                    "safe_range": [
-                        30.0,
-                        70.0
-                    ]
-                },
-                {
-                    "type_ID": "s_2",
-                    "is_critical": "not_critical",
-                    "safe_range": [
-                        130.0,
-                        200.0
-                    ]
-                },
-                {
-                    "type_ID": "s_3",
-                    "is_critical": "personal",
-                    "safe_range": [
-                        130.0,
-                        200.0
-                    ]
-                }
-            ],
-            "TS_chID": 1726296,
-            "TS_wKey": "O0J9EJEEKK4M0N43",
-            "TS_rKey": "82M0DY5FZ2TCJOKU",
-            "doctor_ID": "d_1",
-            "device_connector": {
-                "service_ID": "dc_2_332312",
-                "topic": "service/dc_2"
-            }
         }
     ],
     "doctors": [
@@ -91,13 +49,13 @@
             "doctor_ID": "d_1",
             "name": "Pinco",
             "surname": "Pallino",
-            "TS_chID": "769841234"
+            "chat_ID": "769841234"
         },
         {
             "doctor_ID": "d_2",
             "name": "Marco",
             "surname": "Gagliardi",
-            "TS_chID": "612859950"
+            "chat_ID": "612859950"
         }
     ],
     "sensors_type": [

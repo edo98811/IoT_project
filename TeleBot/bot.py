@@ -93,27 +93,28 @@ class TeleBot:
 
     ### Routine per messaggi di alert derivanti da Alert service tramite protocollo MQTT ###
         def notify(self,topic,message):
+           
             # leggo il messaggio ed estraggo il chat_ID del medico a cui deve essere mandata la notifica 
             msg=json.loads(message) 
             topic_weekly = json.loads(requests.get(catalog_address+"/service-info?name=weekly_report").text)["topic"]
             topic_alert = json.loads(requests.get(catalog_address+"/service-info?name=alert_servcice").text)["topic"]
-            if topic == topic_weekly:
-                ...
+            #if topic == topic_weekly:
+            #    ...
 
-            elif topic == topic_alert:       
-                alert=msg["message"]
-                chat_ID = msg["chat_ID"]
-                patient_ID = msg["patient_ID"]
-                topic_spit = topic.split("/")[-1]
+            #if topic == topic_alert:       
+            alert=msg["message"]
+            chat_ID = msg["chat_ID"]
+            patient_ID = msg["patient_ID"]
+            topic_spit = topic.split("/")[-1]
 
-                if topic_spit == "personal_alert":   
-                    personal_alert=f"ATTENTION!!!\n{alert}"
-                    self.bot.sendMessage(chat_ID, text=personal_alert)
+            if topic_spit == "personal_alert":   
+                personal_alert=f"ATTENTION!!!\n{alert}"
+                self.bot.sendMessage(chat_ID, text=personal_alert)
 
-                elif topic_spit == "critical_alert":
-                    patient_ID = msg["alert"]
-                    critical_alert=f"ATTENTION {patient_ID}!!!\{alert}"
-                    self.bot.sendMessage(chat_ID, text=critical_alert)
+            elif topic_spit == "critical_alert":
+                patient_ID = msg["alert"]
+                critical_alert=f"ATTENTION {patient_ID}!!!\{alert}"
+                self.bot.sendMessage(chat_ID, text=critical_alert)
 
             
 
