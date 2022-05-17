@@ -54,7 +54,7 @@ if __name__=='__main__':
 				k=1
 				print('Your clinics is subscriber!')
 				# carica i dati relativi al client MQTT e agli indirizzi del location service e del catalog manager
-				topic = connection_settings["topic"].split('/')[0]+'/'+p["clinic_ID"]
+				topic = p["clinic_topic"]
 				broker=MQTT_info["broker"]
 				port = MQTT_info['port']
 				service_ID = p["clinic_ID"]
