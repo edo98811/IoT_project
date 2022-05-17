@@ -47,10 +47,8 @@ class alert_service:
         # i metodi per le procedure di allerta sono definiti sotto 
         print(measures)
         sensor_info_list = json.loads(requests.get(self.catalog_address + '/get_critical_info', params= {'patient_ID':patient_ID}).text)["sensors"]
-
     
         for measure in measures:
-
 
             is_critical = next((s for s in sensor_info_list if s['type_ID'] == measure['n'] ), None)
             print(f'{measure["n"]} - {patient_ID} - {is_critical["is_critical"]}')
@@ -93,7 +91,7 @@ class alert_service:
         # template del messaggio ricevuto 
                                 # msg = {
                                 #   'name':''
-                                #   'chat_ID':''
+                                #   'TS_chID':''
                                 # }
 
         # get al location service per informazioni di contatto della 
@@ -122,7 +120,7 @@ class alert_service:
                     },
                 "message":problem, # messaggio che verrà letto 
                 "doctor_name":doctor["name"], 
-                "chat_ID":doctor["chat_ID"]
+                "TS_chID":doctor["TS_chID"]
             }
 
             # contact info della clinica
@@ -141,7 +139,7 @@ class alert_service:
                 "patient_ID":patient_ID,
                 "location":"not known",
                 "message":problem, # messaggio che verrà letto 
-                "chat_ID":doctor["chat_ID"]
+                "TS_chID":doctor["TS_chID"]
             }
 
             # messaggio mandato al medico 
@@ -160,7 +158,7 @@ class alert_service:
         # messaggio
         msg = {
             "message":problem,   
-            "chat_ID":patient["TS_chID"]
+            "TS_chID":patient["TS_chID"]
         }
 
         # messaggio mandato al paziente (da aggiornare)

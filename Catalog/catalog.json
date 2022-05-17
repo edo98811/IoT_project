@@ -91,13 +91,13 @@
             "doctor_ID": "d_1",
             "name": "Pinco",
             "surname": "Pallino",
-            "chat_ID": "769841234"
+            "TS_chID": "769841234"
         },
         {
             "doctor_ID": "d_2",
             "name": "Marco",
             "surname": "Gagliardi",
-            "chat_ID": "612859950"
+            "TS_chID": "612859950"
         }
     ],
     "sensors_type": [
