@@ -148,6 +148,9 @@
             "personal_alert_topic": "telebot/personal_alert",
             "critical_alert_topic": "telebot/critical_alert"
         },
+        "Clinics_client":{
+            "url_maps":"https://www.latlong.net/c/?lat=&long="
+        },
         "MQTT": {
             "broker": "test.mosquitto.org",
             "baseTopic": "Iot_Healthcare",

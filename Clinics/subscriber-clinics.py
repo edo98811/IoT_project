@@ -4,7 +4,7 @@ import time
 import requests as r
 
 class Clinica1(object):					#Subscriber Clinica Alert
-	def __init__(self, clientID, topic,broker,port):
+	def __init__(self, clientID, topic,broker,port,catalog_address):
 		self.clinican=MyMQTT(clientID,broker,port,self)
 		self.topic=topic
 
@@ -25,7 +25,11 @@ class Clinica1(object):					#Subscriber Clinica Alert
 		chat_id=msg['chat_ID']
 		print(f'ATTENTION!\n The patient {patientID} needs an ambulance at the coordinates lat:{latitudine} long:{longitudine}!\n Suffers from {problema} , contact his Doctor {doctor} chat ID number:{chat_id}')
 		#stampo a video l'indirizzo del bot che conduce alla mappa
-		print(f'\n https://www.latlong.net/c/?lat={latitudine}&long={longitudine}')
+		#print(f'\n https://www.latlong.net/c/?lat=&long=')
+		url_maps= (json.loads(r.get(catalog_address+"/get_service_info",params={'service_ID':'Clinics_client'}).text)['url_maps']).split('&')
+		print (f'{url_maps[0]}{latitudine}&{url_maps[1]}{longitudine}')
+
+
 
 if __name__=='__main__':
 	# catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
@@ -55,7 +59,7 @@ if __name__=='__main__':
 				port = MQTT_info['port']
 				service_ID = p["clinic_ID"]
 
-				c=Clinica1(service_ID,topic,broker,port)
+				c=Clinica1(service_ID,topic,broker,port,catalog_address)
 				c.start()
 
 				done=False
