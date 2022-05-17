@@ -17,7 +17,8 @@ class sensor_def():                                                     ### defi
         self.unit = unit
         
     # genera un numero casuale nel range impostato (self.range)
-    def get_reading_safe(self):                                          
+    def get_reading_safe(self):       
+        #print(self.sensor_type_ID + '  '+ str(self.safe_range[0]) + ' ' + str(self.safe_range[1]) + ' alert range ' + str(self.range[0]) + '-'+ str(self.range[1]))                                   
         value =  random.randint(self.safe_range[0],self.safe_range[1])
         print (value)
         return value
@@ -178,7 +179,6 @@ if __name__ == '__main__':
                                 #             "port":catalog["device_connector"]["port"],
                                 #             "topic":pat["device_connector"]["topic"],
                                 #         }
-    
     # Definizione del DC_1
     print(json.dumps(patient_info ))
     device_connector1 = device_connector(patient_info ["broker"], patient_info ["port"], patient_ID, patient_info ["topic"],catalog_address)
@@ -189,20 +189,22 @@ if __name__ == '__main__':
     print(patient_info )
     device_connector2 = device_connector(patient_info ["broker"], patient_info ["port"], patient_ID, patient_info ["topic"], catalog_address)
 
-    count=30
+    count = 3
     while True:
-        time.sleep(1)
-        print(count)
-        count=count-1
+        time.sleep(15)
         if count==1:
             device_connector1.change()
             device_connector2.change()
         if count==0:
             device_connector1.change()
             device_connector2.change()
-            count=30
+            count=3
+
         device_connector1.get_readings()
         device_connector1.send()
+
         device_connector2.get_readings()
         device_connector2.send()
 
+        print(count)
+        count=count-1
