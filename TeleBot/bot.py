@@ -127,8 +127,8 @@ if __name__ == "__main__":
     catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
     ####
 
-    #with open("./config.json",'r') as f:
-    #    catalog_address = json.load(f)["catalog_address"]
+    with open("./config.json",'r') as f:
+        catalog_address = json.load(f)["catalog_address"]
 
     # Ottiene dal catalog l'indirizzo del servizio di telegram bot e di comunicazione MQTT
     token = json.loads(requests.get(catalog_address+"/get_service_info",params =  {'service_ID':'telegram_bot'}).text)["token"]
