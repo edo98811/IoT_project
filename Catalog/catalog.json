@@ -120,7 +120,7 @@
                 "longitude": "40000",
                 "latitude": "013000"
             },
-            "clinic_topic": "alert/clinica1"
+            "clinic_topic": "alert/cl_1"
         }
     ],
     "services": {
@@ -153,6 +153,9 @@
             "personal_alert_topic": "telebot/personal_alert",
             "critical_alert_topic": "telebot/critical_alert",
             "weekly_report_topic": "weekly_report"
+        },
+        "Clinics_client":{
+            "url_maps":"https://www.latlong.net/c/?lat=&long="
         },
         "MQTT": {
             "broker": "test.mosquitto.org",
