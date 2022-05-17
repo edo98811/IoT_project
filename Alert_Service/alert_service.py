@@ -12,6 +12,7 @@ class alert_service:
         self.alert_service.mySubscribe(topic)
         self.catalog_address = catalog_address 
         self.location_service = location_service
+        self.baseTopic = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'MQTT'}).text)["baseTopic"]
 
     def notify(self, topic, msg): 
 
@@ -134,8 +135,9 @@ class alert_service:
 
             # messaggio mandato al medico
             telebot_critical = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'telegram_bot'}).text)["critical_alert_topic"]
-            self.alert_service.myPublish(telebot_critical , msg)
+            self.alert_service.myPublish(basetopic + '/' + telebot_critical , msg)
             print (f'message correctly sent - topic:{telebot_critical}')
+        
         else: 
             msg = { 
                 "patient_ID":patient_ID,
@@ -146,7 +148,7 @@ class alert_service:
 
             # messaggio mandato al medico 
             telebot_critical = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'telegram_bot'}).text)["critical_alert_topic"]
-            self.alert_service.myPublish(telebot_critical , msg)
+            self.alert_service.myPublish(self.baseTopic+ '/' + telebot_critical , msg)
 
             print ('error: patient location unknown') # in questo caso manda solo un messaggio la medico (non è aggiornata la posizione del paziente)
 
@@ -160,12 +162,13 @@ class alert_service:
         # messaggio
         msg = {
             "message":problem,   
-            "chat_ID":patient["TS_chID"]
+            "chat_ID":patient["personal_info"]["chat_ID"]
         }
 
         # messaggio mandato al paziente (da aggiornare)
         telebot_personal = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'telegram_bot'}).text)["personal_alert_topic"]
-        self.alert_service.myPublish(telebot_personal , msg)
+        
+        self.alert_service.myPublish(self.baseTopic + '/' + telebot_personal , msg)
 
 
 if __name__ =='__main__':

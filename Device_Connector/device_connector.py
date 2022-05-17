@@ -17,8 +17,7 @@ class sensor_def():                                                     ### defi
         self.unit = unit
         
     # genera un numero casuale nel range impostato (self.range)
-    def get_reading_safe(self):       
-        print(self.sensor_type_ID + '  '+ str(self.safe_range[0]) + ' ' + str(self.safe_range[1]) + ' alert range ' + str(self.range[0]) + '-'+ str(self.range[1]))                                   
+    def get_reading_safe(self):                                          
         value =  random.randint(self.safe_range[0],self.safe_range[1])
         print (value)
         return value

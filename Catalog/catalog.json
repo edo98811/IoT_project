@@ -52,8 +52,11 @@
             "sensors": [
                 {
                     "type_ID": "s_1",
-                    "is_critical": "",
-                    "safe_range": []
+                    "is_critical": "critical",
+                    "safe_range": [
+                        60,
+                        130
+                    ]
                 }
             ],
             "TS_chID": 1738212,
@@ -69,9 +72,9 @@
     "doctors": [
         {
             "doctor_ID": "d_1",
-            "name": "Pinco",
-            "surname": "Pallino",
-            "chat_ID": "769841234"
+            "name": "Edoardo",
+            "surname": "Filippi",
+            "chat_ID": "365867979"
         },
         {
             "doctor_ID": "d_2",
@@ -139,14 +142,17 @@
             "port": "8086",
             "topic": "service/#"
         },
+        "clinic_client": {
+            "url": ""
+        },
         "weekly_report": {
-            "service_ID": "weekly_report",
-            "topic": "weekly_report"
+            "service_ID": "weekly_report"
         },
         "telegram_bot": {
             "token": "5338835932:AAH8QcMIuA8moihJaomvumEspZsbHBzXtlw",
             "personal_alert_topic": "telebot/personal_alert",
-            "critical_alert_topic": "telebot/critical_alert"
+            "critical_alert_topic": "telebot/critical_alert",
+            "weekly_report_topic": "weekly_report"
         },
         "MQTT": {
             "broker": "test.mosquitto.org",
