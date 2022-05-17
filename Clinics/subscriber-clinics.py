@@ -42,7 +42,6 @@ if __name__=='__main__':
   
     # Ottiene dal catalog l'indirizzo del servizio di location
     # s = requests.session() # session non dovrebbe servire a noi: https://realpython.com/python-requests/#the-session-object
-	connection_settings = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'alert_service'}).text)
 	MQTT_info = json.loads(r.get(catalog_address+"/get_service_info",params={'service_ID':'MQTT'}).text)
 	info_clinics=json.loads(r.get(catalog_address +"/get_clinics").text)
 
