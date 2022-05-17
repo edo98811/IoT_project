@@ -73,7 +73,7 @@ class location_service():
 
         measures = msg['e']
 
-        if measures[0]['n'] == 'lat' and measures[1]['n'] == 'lon':
+        if measures[0]['v'] and measures[1]['v']:
 
         # alla prima iterazione (cioè quando i dizionari di self.clinics e di patient list sono vuoti) li inizializza, questo non è nell'init perchè il catalog e il location 
         # vengono inizializzati insieme, quindi all'inizio il catalog non può rispondere alle richieste
