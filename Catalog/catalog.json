@@ -163,7 +163,7 @@
         },
         "telegram_bot": {
             "token": "5338835932:AAH8QcMIuA8moihJaomvumEspZsbHBzXtlw",
-            "personal_alert_topic":"telebot/_alert",
+            "personal_alert_topic":"telebot/personal_alert",
             "critical_alert_topic":"telebot/critical_alert"
         },
         "MQTT": {
