@@ -12,6 +12,7 @@ class alert_service:
         self.alert_service.mySubscribe(topic)
         self.catalog_address = catalog_address 
         self.location_service = location_service
+        self.baseTopic = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'MQTT'}).text)["baseTopic"]
 
     def notify(self, topic, msg): 
 
@@ -53,7 +54,7 @@ class alert_service:
 
 
             is_critical = next((s for s in sensor_info_list if s['type_ID'] == measure['n'] ), None)
-            print(f'{measure["n"]}{patient_ID}')
+            print(f'{measure["n"]} - {patient_ID} - {is_critical["is_critical"]}')
         
                                 # messaggio ricevuto 
                                 # is_critical = {
@@ -86,6 +87,7 @@ class alert_service:
     # allerta critica (medico e clinica)
     def critical_alert(self,patient_ID,problem):
 
+        print(f'critical alert{patient_ID} - {problem}')
         # get al catalog per informazioni di contatto del medico 
         doctor = json.loads(r.get(self.catalog_address + '/get_doctor_info',params = {"patient_ID":patient_ID}).text)
 
@@ -110,10 +112,12 @@ class alert_service:
 
         # nel caso in cui il campo nearest sia vuoto non entra in questo blocco e non manda il messaggio (non si conosce la posizione della clinica)
         if nearest_clinic['nearest']:    
-           
+            patient_info = json.loads(r.get(self.catalog_address + '/get_patient_info',params = {"patient_ID":patient_ID}).text)
+   
             # messaggio da mandare alla clinica e al medico
             msg = {
                 "patient_ID":patient_ID,
+                "full name": f"{patient_info['personal_info']['name']} {patient_info['personal_info']['name']}",
                 "patient_location":
                     {
                     "latitude":nearest_clinic['patient_location']['latitude'],
@@ -133,11 +137,13 @@ class alert_service:
 
             # messaggio mandato al medico
             telebot_critical = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'telegram_bot'}).text)["critical_alert_topic"]
-            self.alert_service.myPublish(telebot_critical , msg)
-            print ('message correctly sent')
+            self.alert_service.myPublish(basetopic + '/' + telebot_critical , msg)
+            print (f'message correctly sent - topic:{telebot_critical}')
+        
         else: 
             msg = { 
                 "patient_ID":patient_ID,
+                "full name": f"{patient_info['personal_info']['name']} {patient_info['personal_info']['name']}",
                 "location":"not known",
                 "message":problem, # messaggio che verrà letto 
                 "chat_ID":doctor["chat_ID"]
@@ -145,7 +151,7 @@ class alert_service:
 
             # messaggio mandato al medico 
             telebot_critical = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'telegram_bot'}).text)["critical_alert_topic"]
-            self.alert_service.myPublish(telebot_critical , msg)
+            self.alert_service.myPublish(self.baseTopic+ '/' + telebot_critical , msg)
 
             print ('error: patient location unknown') # in questo caso manda solo un messaggio la medico (non è aggiornata la posizione del paziente)
 
@@ -153,23 +159,25 @@ class alert_service:
     def personal_alert(self,patient_ID,problem):
 
         # get al catalog per informazioni di contatto del paziente
-        patient = json.loads(r.get(self.catalog_address + '/get_patient',params = {"patient_ID":patient_ID}).text)
+        print(f'personal alert - {patient_ID} - {problem}')
+        patient = json.loads(r.get(self.catalog_address + '/get_patient_info',params = {"patient_ID":patient_ID}).text)
 
         # messaggio
         msg = {
             "message":problem,   
-            "chat_ID":patient["chat_ID"]
+            "chat_ID":patient["personal_info"]["chat_ID"]
         }
 
         # messaggio mandato al paziente (da aggiornare)
-        telebot_personal = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'telegram_bot'}).text)["_alert_topic"]
-        self.alert_service.myPublish(telebot_personal , msg)
+        telebot_personal = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'telegram_bot'}).text)["personal_alert_topic"]
+        
+        self.alert_service.myPublish(self.baseTopic + '/' + telebot_personal , msg)
 
 
 if __name__ =='__main__':
 
 ####       CODICE DI "DEBUG"                                                            # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
-    with open("catalog.json",'r') as f:                                               # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+    with open("../Catalog/catalog.json",'r') as f:                                               # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
         cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
     host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
     port = cat["base_port"]

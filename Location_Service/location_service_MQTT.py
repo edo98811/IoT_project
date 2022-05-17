@@ -73,7 +73,7 @@ class location_service():
 
         measures = msg['e']
 
-        if measures[0]['n'] == 'lat' and measures[1]['n'] == 'lon':
+        if measures[0]['v'] and measures[1]['v']:
 
         # alla prima iterazione (cioè quando i dizionari di self.clinics e di patient list sono vuoti) li inizializza, questo non è nell'init perchè il catalog e il location 
         # vengono inizializzati insieme, quindi all'inizio il catalog non può rispondere alle richieste
@@ -157,7 +157,7 @@ class location_service():
 if __name__ == '__main__':
 
     ####       CODICE DI "DEBUG"                                                        # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
-    with open("catalog.json",'r') as f:                                                 # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+    with open("../Catalog/catalog.json",'r') as f:                                                 # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
         cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
     host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
     port = cat["base_port"]

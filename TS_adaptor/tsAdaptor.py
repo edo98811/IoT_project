@@ -81,7 +81,7 @@ class TS_Adaptor:
 if __name__ == "__main__":
 
     ####       CODICE DI "DEBUG"                                                            # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
-    with open("../catalog.json",'r') as f:                                                  # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+    with open("../Catalog/catalog.json",'r') as f:                                                  # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
         cat = json.load(f)                                                                  # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
     host = cat["base_host"]                                                                 # tutti i codici si adattano al cambio
     port = cat["base_port"]
@@ -89,16 +89,16 @@ if __name__ == "__main__":
     ####
 
     # Ottiene informazioni per la connessione MQTT
-    mqtt = json.loads(requests.get(catalog_address+'/service-info?name=MQTT').text)
+    mqtt = json.loads(requests.get(catalog_address+"/get_service_info",params =  {'service_ID':'MQTT'}).text)
     broker = mqtt['broker']
     port = mqtt['port']
 
     # Topic
-    base_Topic= mqtt["base_Topic"]
-    topic = f"{base_Topic}/{json.loads(requests.get(catalog_address+'/service-info?name=ThingSpeakAdaptor').text)['topic']}"
+    base_Topic= mqtt["baseTopic"]
+    topic = f"{base_Topic}/{json.loads(requests.get(catalog_address+'/get_service_info',params =  {'service_ID':'ThingSpeak'}).text)['topic']}"
     
     # URL
-    url = json.loads(requests.get(catalog_address+"/service-info?name=ThingSpeak").text)["url_update"] 
+    url = json.loads(requests.get(catalog_address+"/get_service_info",params =  {'service_ID':'ThingSpeak'}).text)["url_update"] 
 
     # Inizializza oggetto TS_Adaptor
     tsa = TS_Adaptor(broker, port, topic, catalog_address, url)

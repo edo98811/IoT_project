@@ -9,16 +9,18 @@ import time
 
 
 class sensor_def():                                                     ### definisce un nuovo sensore
-    def __init__(self, sensor_type, sensor_ID, range, safe_range, unit):
+    def __init__(self, sensor_type, sensor_type_ID, range, safe_range, unit):
         self.sensor_type = sensor_type
-        self.sensor_ID = sensor_ID
+        self.sensor_type_ID = sensor_type_ID
         self.range = range
         self.safe_range = safe_range
         self.unit = unit
         
     # genera un numero casuale nel range impostato (self.range)
     def get_reading_safe(self):                                          
-        return random.randint(self.safe_range[0],self.safe_range[1])
+        value =  random.randint(self.safe_range[0],self.safe_range[1])
+        print (value)
+        return value
 
     ### serve a noi per simulare una lettura fuori range -> 
             # funziona cosi
@@ -66,7 +68,7 @@ class device_connector():                                                 #class
 
         #prende dal catalog i sensori assegnati a questo device connector 
         sensors = json.loads(requests.get(catalog_address + '/get_sensors',params= {'patient_ID':patient_ID}).text) #chiede la lista dei sensori del patient id che gli passo  
-
+        print(json.dumps(sensors))
                                 # sensors = [{
                                 #       "type": sensor["sensor_type"],
                                 #       "ID": sensor["sensor_ID"]
@@ -86,6 +88,7 @@ class device_connector():                                                 #class
         for sensor in sensors:
 
             # utilizzando la classe sensor_def definisce i sensori associati al device connector
+            #print(sensor['type_ID']+sensor['type']+sensor["range"]+ sensor["safe_range"]+ sensor["unit"])
             s = sensor_def(sensor['type_ID'],sensor['type'],sensor["range"], sensor["safe_range"], sensor["unit"])
             self._sensors.append(s)
 
@@ -95,6 +98,7 @@ class device_connector():                                                 #class
                 'v':'',#value
                 'u':s.unit
             })
+        print(self._message)
         
     # prende il valore del sensore e lo inserisce nel messaggio 
     def get_readings(self): 
@@ -105,22 +109,24 @@ class device_connector():                                                 #class
 
         # itera su tutti i sensori memorizzati e aggiorna il contenuto dei campi del message, poi lo manda
         for n,sensor in enumerate(self._sensors):
-            if n > 1:
-                if self.critical == 0:
-                    value = sensor.get_reading_safe() #
-                if self.critical == 1: 
-                    value = sensor.get_reading_alert() #e 
-                self.message['e'][n]['v'] = value
+            if self.critical == 0:
+                value = sensor.get_reading_safe() 
+            if self.critical == 1: 
+                value = sensor.get_reading_alert()
+            print(value)
+            self.message['e'][n+2]['v'] = value
+            print(n)
 
-        print("sensori funzionanti")
+        #print("sensori funzionanti")
         self.message['t'] = time.time()-self.basetime 
+        print(self.message)
 
     # cambia lo stato di criticità delle letture che arrivano dal device connector (per debug)
     def change(self):
      if self.critical==0:
         self.critical=1
      else:      
-        self.critical==0
+        self.critical=0
 
     #pubblica il messaggio scritto in get_readings
     def send(self):
@@ -154,7 +160,7 @@ class device_connector():                                                 #class
 if __name__ == '__main__':
     
 ####       CODICE DI "DEBUG"                                                            # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
-    with open("catalog.json",'r') as f:                                               # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+    with open("../Catalog/catalog.json",'r') as f:                                               # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
         cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
     host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
     port = cat["base_port"]
