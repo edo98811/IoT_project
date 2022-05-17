@@ -165,7 +165,7 @@ if __name__ == '__main__':
     patient_ID = 'p_1'
     print(catalog_address)
     # manda una richiesta al catalog per i dati della connessione MQTT del device connector
-    pat_info = json.loads(requests.get(catalog_address + '/get_dc_info' , params= {"patient_ID":patient_ID}).text)
+    patient_info  = json.loads(requests.get(catalog_address + '/get_dc_info' , params= {"patient_ID":patient_ID}).text)
     # template messaggio ricevuto dal catalog
                                 # msg = {
                                 #             "broker":catalog["services"]["MQTT"]["broker"],
@@ -174,13 +174,14 @@ if __name__ == '__main__':
                                 #         }
     
     # Definizione del DC_1
-    device_connector1 = device_connector(pat_info["broker"], pat_info["port"], patient_ID, pat_info["topic"],catalog_address)
+    print(json.dumps(patient_info ))
+    device_connector1 = device_connector(patient_info ["broker"], patient_info ["port"], patient_ID, patient_info ["topic"],catalog_address)
     
     # per simulare un sistema più complesso viene inizializzato un secondo device connector che funzionerà in parallelo al primo 
     patient_ID = 'p_2'
-    pat_info = json.loads(requests.get(catalog_address + '/get_dc_info' ,params = {"patient_ID":patient_ID}).text)
-    print(pat_info)
-    device_connector2 = device_connector(pat_info["broker"], pat_info["port"], patient_ID, pat_info["topic"], catalog_address)
+    patient_info  = json.loads(requests.get(catalog_address + '/get_dc_info' ,params = {"patient_ID":patient_ID}).text)
+    print(patient_info )
+    device_connector2 = device_connector(patient_info ["broker"], patient_info ["port"], patient_ID, patient_info ["topic"], catalog_address)
 
     count=30
     while True:
