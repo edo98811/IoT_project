@@ -91,13 +91,13 @@
             "doctor_ID": "d_1",
             "name": "Pinco",
             "surname": "Pallino",
-            "chat_ID": "769841234"
+            "TS_chID": "769841234"
         },
         {
             "doctor_ID": "d_2",
             "name": "Marco",
             "surname": "Gagliardi",
-            "chat_ID": "612859950"
+            "TS_chID": "612859950"
         }
     ],
     "sensors_type": [
@@ -123,8 +123,8 @@
             "type_ID": "s_3",
             "type": "Sensorized courset",
             "range": [
-                10.0,
-                300.0
+                0,
+                1
             ],
             "unit": "v"
         }
@@ -148,6 +148,8 @@
             "topic": "service/#"
         },
         "catalog_manager": {
+            "host": "127.0.0.1",
+            "port": "8081",
             "service_ID": "catalog_manager",
             "address": "/catalog_manager"
         },
@@ -174,7 +176,7 @@
         "ThingSpeak": {
             "api_key": "WH6G4IW2A7D3JT6P",
             "topic": "service/#",
-            "url_weekly_report": " https://api.thingspeak.com/channels/<CH_id>/charts/<field_id>?days=7" ,
+            "url_weekly_report": "https://api.thingspeak.com/channels/<CH_id>/charts/<field_id>?days=7" ,
             "url_update": "https://api.thingspeak.com/channels/<ch_ID>/bulk_update.json"
         },
         "front_end": {
