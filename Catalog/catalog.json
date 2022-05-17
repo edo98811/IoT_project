@@ -123,8 +123,8 @@
             "type_ID": "s_3",
             "type": "Sensorized courset",
             "range": [
-                10.0,
-                300.0
+                0,
+                1
             ],
             "unit": "v"
         }
