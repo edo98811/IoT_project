@@ -4,7 +4,7 @@ import time
 import requests as r
 
 class Clinica1(object):					#Subscriber Clinica Alert
-	def __init__(self, clientID, topic,broker,port):
+	def __init__(self, clientID, topic,broker,port,catalog_address):
 		self.clinican=MyMQTT(clientID,broker,port,self)
 		self.topic=topic
 
@@ -15,6 +15,7 @@ class Clinica1(object):					#Subscriber Clinica Alert
 
 
 	def notify(self,topic, msg):
+		#Messaggio ricevuto dall'Alert Service
 		msg=json.loads(msg)
 		patientID=msg['p_ID']
 		latitudine=msg['patient_location']['latitude']
@@ -23,28 +24,26 @@ class Clinica1(object):					#Subscriber Clinica Alert
 		doctor=msg['doctor_name']
 		chat_id=msg['chat_ID']
 		print(f'ATTENTION!\n The patient {patientID} needs an ambulance at the coordinates lat:{latitudine} long:{longitudine}!\n Suffers from {problema} , contact his Doctor {doctor} chat ID number:{chat_id}')
-		print(f'\n https://www.latlong.net/c/?lat={latitudine}&long={longitudine}')
+		#stampo a video l'indirizzo del bot che conduce alla mappa
+		#print(f'\n https://www.latlong.net/c/?lat=&long=')
+		url_maps= (json.loads(r.get(catalog_address+"/get_service_info",params={'service_ID':'Clinics_client'}).text)['url_maps']).split('&')
+		print (f'{url_maps[0]}{latitudine}&{url_maps[1]}{longitudine}')
+
+
 
 if __name__=='__main__':
-	# dati= json.load(open("settings_as.json","r"))
-	# topic = dati['topic']
-	# broker = dati['broker']
-	# port = dati['port']
-	# service_ID = dati['service_ID']
-
-####       CODICE DI "DEBUG"                                                            # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
-	with open("../Catalog/catalog.json",'r') as f:                                               # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+	# catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
+	with open("config.json",'r') as f:                                               # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
 		cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
-	host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
-	port = cat["base_port"]
-	catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
+
+	catalog_address = cat["catalog_address"]
 
 ####
   
     # Ottiene dal catalog l'indirizzo del servizio di location
     # s = requests.session() # session non dovrebbe servire a noi: https://realpython.com/python-requests/#the-session-object
-	connection_settings = json.loads(r.get(catalog_address +"/get_service_info?", params = {'service_ID':'alert_service'}).text)
-	mqtt_broker = r.get(catalog_address +"/get_MQTT").text
+	connection_settings = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'alert_service'}).text)
+	MQTT_info = json.loads(r.get(catalog_address+"/get_service_info",params={'service_ID':'MQTT'}).text)
 	info_clinics=json.loads(r.get(catalog_address +"/get_clinics").text)
 
 	while True:
@@ -55,12 +54,12 @@ if __name__=='__main__':
 				k=1
 				print('Your clinics is subscriber!')
 				# carica i dati relativi al client MQTT e agli indirizzi del location service e del catalog manager
-				topic = (connection_settings['topic'].split('/'))[0]+'/'+p["clinic_ID"]
-				broker = mqtt_broker
-				port = connection_settings['port']
+				topic = connection_settings["topic"].split('/')[0]+'/'+p["clinic_ID"]
+				broker=MQTT_info["broker"]
+				port = MQTT_info['port']
 				service_ID = p["clinic_ID"]
 
-				c=Clinica1(service_ID,topic,broker,port)
+				c=Clinica1(service_ID,topic,broker,port,catalog_address)
 				c.start()
 
 				done=False
