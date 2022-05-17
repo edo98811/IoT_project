@@ -112,10 +112,12 @@ class alert_service:
 
         # nel caso in cui il campo nearest sia vuoto non entra in questo blocco e non manda il messaggio (non si conosce la posizione della clinica)
         if nearest_clinic['nearest']:    
-           
+            patient_info = json.loads(r.get(self.catalog_address + '/get_patient_info',params = {"patient_ID":patient_ID}).text)
+   
             # messaggio da mandare alla clinica e al medico
             msg = {
                 "patient_ID":patient_ID,
+                "full name": f"{patient_info['personal_info']['name']} {patient_info['personal_info']['name']}",
                 "patient_location":
                     {
                     "latitude":nearest_clinic['patient_location']['latitude'],
@@ -141,6 +143,7 @@ class alert_service:
         else: 
             msg = { 
                 "patient_ID":patient_ID,
+                "full name": f"{patient_info['personal_info']['name']} {patient_info['personal_info']['name']}",
                 "location":"not known",
                 "message":problem, # messaggio che verrà letto 
                 "chat_ID":doctor["chat_ID"]
