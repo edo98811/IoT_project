@@ -53,7 +53,7 @@ class alert_service:
 
 
             is_critical = next((s for s in sensor_info_list if s['type_ID'] == measure['n'] ), None)
-            print(f'{measure["n"]}{patient_ID}')
+            print(f'{measure["n"]} - {patient_ID} - {is_critical["is_critical"]}')
         
                                 # messaggio ricevuto 
                                 # is_critical = {
@@ -86,6 +86,7 @@ class alert_service:
     # allerta critica (medico e clinica)
     def critical_alert(self,patient_ID,problem):
 
+        print(f'critical alert{patient_ID} - {problem}')
         # get al catalog per informazioni di contatto del medico 
         doctor = json.loads(r.get(self.catalog_address + '/get_doctor_info',params = {"patient_ID":patient_ID}).text)
 
@@ -134,7 +135,7 @@ class alert_service:
             # messaggio mandato al medico
             telebot_critical = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'telegram_bot'}).text)["critical_alert_topic"]
             self.alert_service.myPublish(telebot_critical , msg)
-            print ('message correctly sent')
+            print (f'message correctly sent - topic:{telebot_critical}')
         else: 
             msg = { 
                 "patient_ID":patient_ID,
@@ -153,16 +154,17 @@ class alert_service:
     def personal_alert(self,patient_ID,problem):
 
         # get al catalog per informazioni di contatto del paziente
-        patient = json.loads(r.get(self.catalog_address + '/get_patient',params = {"patient_ID":patient_ID}).text)
+        print(f'personal alert - {patient_ID} - {problem}')
+        patient = json.loads(r.get(self.catalog_address + '/get_patient_info',params = {"patient_ID":patient_ID}).text)
 
         # messaggio
         msg = {
             "message":problem,   
-            "chat_ID":patient["chat_ID"]
+            "chat_ID":patient["TS_chID"]
         }
 
         # messaggio mandato al paziente (da aggiornare)
-        telebot_personal = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'telegram_bot'}).text)["_alert_topic"]
+        telebot_personal = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'telegram_bot'}).text)["personal_alert_topic"]
         self.alert_service.myPublish(telebot_personal , msg)
 
 
