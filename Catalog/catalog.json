@@ -148,6 +148,8 @@
             "topic": "service/#"
         },
         "catalog_manager": {
+            "host": "127.0.0.1",
+            "port": "8081",
             "service_ID": "catalog_manager",
             "address": "/catalog_manager"
         },
@@ -174,7 +176,7 @@
         "ThingSpeak": {
             "api_key": "WH6G4IW2A7D3JT6P",
             "topic": "service/#",
-            "url_weekly_report": " https://api.thingspeak.com/channels/<CH_id>/charts/<field_id>?days=7" ,
+            "url_weekly_report": "https://api.thingspeak.com/channels/<CH_id>/charts/<field_id>?days=7" ,
             "url_update": "https://api.thingspeak.com/channels/<ch_ID>/bulk_update.json"
         },
         "front_end": {
