@@ -6,7 +6,7 @@ from MyMQTT import *
 import requests as r
     
 class alert_service:
-    def __init__(self, broker, port, ID, topic,catalog_address,location_service):
+    def __init__(self, broker, port, ID, topic,location_service,catalog_address):
         self.alert_service = MyMQTT(ID, broker, int(port), self)
         self.alert_service.start()
         self.alert_service.mySubscribe(topic)
@@ -37,17 +37,24 @@ class alert_service:
                                 #         },
 
 
-        # prende le informazioni necessarie 
+        # prende le informazioni necessarie
+        print(msg) 
         msg = json.loads(msg)
         patient_ID = msg['bn']
-        measures = msg['e'][2:-1] # le prime 2 sono la posizione
+        measures = msg['e'][2:] # le prime 2 sono la posizione
 
         # itera lungo le misurazioni dei singoli sensori e controlla la criticità associata ad essa, nel caso ci sia un problema richiama i metodi di notifica 
         # i metodi per le procedure di allerta sono definiti sotto 
+        print(measures)
+        sensor_info_list = json.loads(requests.get(self.catalog_address + '/get_critical_info', params= {'patient_ID':patient_ID}).text)["sensors"]
+
+    
         for measure in measures:
 
-            is_critical = json.loads(requests.get(self.catalog_address + '/get_critical_info', params= {'patient_ID':patient_ID, 'sensor_ID':measure['n']}).text)
-            
+
+            is_critical = next((s for s in sensor_info_list if s['type_ID'] == measure['n'] ), None)
+            print(f'{measure["n"]} - {patient_ID} - {is_critical["is_critical"]}')
+        
                                 # messaggio ricevuto 
                                 # is_critical = {
                                 #  "type_ID": "s_1",
@@ -55,32 +62,33 @@ class alert_service:
                                 # 'is_critical':
                                 # }
 
-            if is_critical["is_critial"] == "not_critical":
+            if is_critical["is_critical"] == "not_critical":
                 pass
 
             else: 
-                if measure['v'] > is_critical['safe_range'][1] | measure['v'] < is_critical['safe_range'][0]:
+                if float(measure['v']) > float(is_critical['safe_range'][1]) or float(measure['v']) < float(is_critical['safe_range'][0]):
 
                     # se la misurazione è informativa (allerta solo al paziente)
-                    if is_critical["is_critial"] == "personal":
+                    if is_critical["is_critical"] == "personal":
                         
                         #messaggio che viene mandato insieme alla notifica
                         problem = f'reading {measure["n"]}: {measure["v"]} {measure["u"]} out of safe range'
                         self.personal_alert(patient_ID,problem)
 
                     # se la misuzione è critica (allerta a clinica e medico)
-                    if is_critical["is_critial"] == "critical":
+                    if is_critical["is_critical"] == "critical":
 
                         #messaggio che viene mandato insieme alla notifica
                         problem = f'reading {measure["n"]}: {measure["v"]} {measure["u"]} out of safe range'
                         self.critical_alert(patient_ID,problem) # a questo punto chiamo la funzione alert (basta richiamarlo ogni volta)
                 
-
+            time.sleep(0.1)
     # allerta critica (medico e clinica)
     def critical_alert(self,patient_ID,problem):
 
+        print(f'critical alert{patient_ID} - {problem}')
         # get al catalog per informazioni di contatto del medico 
-        doctor = json.loads(r.get(self.catalog_address + 'get_doctor',data = {"patient_ID":patient_ID}).text)
+        doctor = json.loads(r.get(self.catalog_address + '/get_doctor_info',params = {"patient_ID":patient_ID}).text)
 
         # template del messaggio ricevuto 
                                 # msg = {
@@ -88,16 +96,17 @@ class alert_service:
                                 #   'chat_ID':''
                                 # }
 
-        # get al location service per informazioni di contatto della clinica
-        nearest_clinic = json.loads(r.get(self.location_service, data = {"patient_ID":patient_ID}).text)
+        # get al location service per informazioni di contatto della 
+        print(self.location_service)
+        nearest_clinic = json.loads(r.get(self.location_service, params = {"patient_ID":patient_ID}).text)
 
         # template messaggio ricevuto:
                                 # msg = {
                                 #     'patient_ID':patient['patient_ID'],
                                 #     'clinic_pos':'',
-                                #     'patient_pos':'',
+                                #     'patient_location':'',
                                 #     'nearest':'',
-                                #     'clinic_chat_ID':"" 
+                                #     'clinic_topic':"" 
                                 #     })
 
         # nel caso in cui il campo nearest sia vuoto non entra in questo blocco e non manda il messaggio (non si conosce la posizione della clinica)
@@ -108,8 +117,8 @@ class alert_service:
                 "patient_ID":patient_ID,
                 "patient_location":
                     {
-                    "latitude":nearest_clinic['patient_pos']['latitude'],
-                    "longitude":nearest_clinic['patient_pos']["longitude"]
+                    "latitude":nearest_clinic['patient_location']['latitude'],
+                    "longitude":nearest_clinic['patient_location']["longitude"]
                     },
                 "message":problem, # messaggio che verrà letto 
                 "doctor_name":doctor["name"], 
@@ -117,16 +126,16 @@ class alert_service:
             }
 
             # contact info della clinica
-            nearest_clinic_chat_ID = nearest_clinic['clinic_chat_ID']
-            clinic_basetopic = json.loads(r.get(self.location_service, data = {"patient_ID":patient_ID}).text)["clinics_bt"]
+            nearest_clinic_topic = nearest_clinic['clinic_topic']
+            basetopic = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'MQTT'}).text)["baseTopic"]
 
             # messaggio mandato alla clinica
-            self.alert_service.myPublish(clinic_basetopic + '/'+ nearest_clinic_chat_ID, msg)
+            self.alert_service.myPublish(basetopic + '/'+ nearest_clinic_topic, msg)
 
             # messaggio mandato al medico
-            telebot_critical = json.loads(r.get(self.location_service, data = {"patient_ID":patient_ID}).text)["critical_alert_topic"]
+            telebot_critical = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'telegram_bot'}).text)["critical_alert_topic"]
             self.alert_service.myPublish(telebot_critical , msg)
-            print ('message correctly sent')
+            print (f'message correctly sent - topic:{telebot_critical}')
         else: 
             msg = { 
                 "patient_ID":patient_ID,
@@ -136,7 +145,7 @@ class alert_service:
             }
 
             # messaggio mandato al medico 
-            telebot_critical = json.loads(r.get(self.location_service, data = {"patient_ID":patient_ID}).text)["critical_alert_topic"]
+            telebot_critical = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'telegram_bot'}).text)["critical_alert_topic"]
             self.alert_service.myPublish(telebot_critical , msg)
 
             print ('error: patient location unknown') # in questo caso manda solo un messaggio la medico (non è aggiornata la posizione del paziente)
@@ -145,16 +154,17 @@ class alert_service:
     def personal_alert(self,patient_ID,problem):
 
         # get al catalog per informazioni di contatto del paziente
-        patient = json.loads(r.get(self.catalog_address + 'get_patient',data = {"patient_ID":patient_ID}).text)
+        print(f'personal alert - {patient_ID} - {problem}')
+        patient = json.loads(r.get(self.catalog_address + '/get_patient_info',params = {"patient_ID":patient_ID}).text)
 
         # messaggio
         msg = {
             "message":problem,   
-            "chat_ID":patient["chat_ID"]
+            "chat_ID":patient["TS_chID"]
         }
 
         # messaggio mandato al paziente (da aggiornare)
-        telebot_personal = json.loads(r.get(self.location_service, data = {"patient_ID":patient_ID}).text)["personal_alert_topic"]
+        telebot_personal = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'telegram_bot'}).text)["personal_alert_topic"]
         self.alert_service.myPublish(telebot_personal , msg)
 
 
@@ -182,13 +192,13 @@ if __name__ =='__main__':
 
     location_service_settings = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'location_service'}).text) # da modificare sul catalog
 
-    location_address = f'http://{location_service_settings["host"]}:{location_service_settings["port"]}/'
-
+    location_address = f'http://{location_service_settings["host"]}:{location_service_settings["port"]}'
+    print(location_address)
     # avvia il servizio (subscriber MQTT)
     service =  alert_service(broker, port, service_ID, topic, location_address, catalog_address)
 
     # mantiene il servizio attivo
     done = False
     while not done:
-        time.sleep(1)
+        time.sleep(2)
 
