@@ -106,7 +106,7 @@ class catalog():
             options = {
                 "fullName":[f"{doc['name']} {doc['surname']}" for doc in docs],
                 "docID":[doc['doctor_ID'] for doc in docs],
-                "chatID": [doc["chatID"]for doc in docs]
+                "chatID": [doc["chat_ID"]for doc in docs]
             }
         
             return json.dumps(options).encode('utf8')
