@@ -142,9 +142,6 @@
             "port": "8086",
             "topic": "service/#"
         },
-        "clinic_client": {
-            "url": ""
-        },
         "weekly_report": {
             "service_ID": "weekly_report"
         },
