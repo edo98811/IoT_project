@@ -145,4 +145,4 @@ if __name__ == "__main__":
 
     print("Bot started ...")
     while True:
-        time.sleep(3)
+        time.sleep(4)
