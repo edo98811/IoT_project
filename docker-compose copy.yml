@@ -1,0 +1,18 @@
+version: '3.4'
+services:
+  super-app-location:
+    build: ./location
+    ports:
+    - "8084:80"
+  super-app-catalog:
+    build: ./catalog
+    ports:
+    - "8081:80"
+  super-app-alert:
+    build: ./alert_service
+    ports:
+    - "8086:80"
+  super-app-front-end:
+    build: ./front_end
+    ports:
+    - "8082:80"

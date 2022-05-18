@@ -79,12 +79,13 @@ class catalog():
 
         elif uri[0] == 'get_patient_info':          # per tutte le info su un paziente singolo 
 
+
             # richiamato da alert service
 
             msg = next((p for p in catalog['patients'] if p['patient_ID'] ==  params["patient_ID"]), None)  
             return json.dumps(msg)
-
-        elif uri[0] == 'get_patients':          # per ottenere la lista dei pazienti e le loro info
+        
+        elif uri[0] == 'get_patients':          # per tutte le info su un paziente singolo 
 
             # richiamato da location service
 
