@@ -2,18 +2,16 @@
 FROM python:latest
 
 # Switch to app directory
-WORKDIR /Location_service
+WORKDIR /Alert_service
 
 # Copy the requirements in to the app
 COPY requirements.txt ./
 
 # Install dependencies
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy everything else
 COPY . .
 
 #Run the python script
-ENTRYPOINT [ "python", "location_service_MQTT.py" ]
-
-EXPOSE 82
+ENTRYPOINT [ "python", "alert_service.py" ]

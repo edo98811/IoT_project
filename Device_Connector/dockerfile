@@ -17,4 +17,4 @@ COPY . .
 ENTRYPOINT [ "python", "device_connector.py" ]
 
 
-EXPOSE 80
+EXPOSE 81

@@ -126,12 +126,12 @@
     "services": {
         "location_service": {
             "host": "127.0.0.1",
-            "port": "8083",
+            "port": "8082",
             "service_ID": "location_service",
             "topic": "service/#"
         },
         "catalog_manager": {
-            "host": "172.17.0.0",
+            "host": "127.0.0.1",
             "port": "8081",
             "service_ID": "catalog_manager",
             "address": "/catalog_manager"
