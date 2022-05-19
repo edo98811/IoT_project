@@ -126,7 +126,7 @@
     "services": {
         "location_service": {
             "host": "127.0.0.1",
-            "port": "8082",
+            "port": "8083",
             "service_ID": "location_service",
             "topic": "service/#"
         },
@@ -169,7 +169,5 @@
             "host": "127.0.0.1",
             "port": "8082"
         }
-    },
-    "base_host": "127.0.0.1",
-    "base_port": "8081"
+    }
 }
