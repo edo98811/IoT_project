@@ -160,14 +160,16 @@ class device_connector():                                                 #class
 
 if __name__ == '__main__':
     
-####       CODICE DI "DEBUG"                                                            # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
-    with open("../Catalog/catalog.json",'r') as f:                                               # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
-        cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
-    host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
-    port = cat["base_port"]
-    catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
+####       CODICE DI "DEBUG" 
+                                                            # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
+#    with open("../Catalog/catalog.json",'r') as f:                                               # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+#        cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
+#    host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
+#    port = cat["base_port"]
+#    catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
 ####
 
+    catalog_address = 'http://127.0.0.1:8081/catalog_manager'
     # Di default il DC sa a quale paziente è associato, dunzue il patient_ID è definito all'interno del suo codice
     patient_ID = 'p_1'
     print(catalog_address)

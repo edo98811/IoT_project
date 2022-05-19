@@ -1,11 +1,13 @@
 version: '3.4'
 services:
   super-app-location:
+  
     build: ./location
     ports:
     - "8084:80"
   super-app-catalog:
     build: ./catalog
+    network_mode: host
     ports:
     - "8081:80"
   super-app-alert:

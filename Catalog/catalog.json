@@ -126,7 +126,7 @@
     "services": {
         "location_service": {
             "host": "127.0.0.1",
-            "port": "8084",
+            "port": "8083",
             "service_ID": "location_service",
             "topic": "service/#"
         },
@@ -139,7 +139,7 @@
         "alert_service": {
             "service_ID": "alert_service",
             "host": "127.0.0.1",
-            "port": "8086",
+            "port": "8084",
             "topic": "service/#"
         },
         "weekly_report": {
@@ -170,6 +170,6 @@
             "port": "8082"
         }
     },
-    "base_host": "172.17.0.0",
+    "base_host": "127.0.0.1",
     "base_port": "8081"
 }
