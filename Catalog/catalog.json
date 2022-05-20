@@ -74,7 +74,7 @@
             "doctor_ID": "d_1",
             "name": "Edoardo",
             "surname": "Filippi",
-            "chat_ID": "365867979"
+            "chat_ID": "327778115"
         },
         {
             "doctor_ID": "d_2",
@@ -162,8 +162,8 @@
         "ThingSpeak": {
             "api_key": "WH6G4IW2A7D3JT6P",
             "topic": "service/#",
-            "url_weekly_report": "https://api.thingspeak.com/channels/<CH_id>/charts/<field_id>?days=7",
-            "url_get_data": "https://thingspeak.com/channels/{chID}/charts/{i}?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15",
+            "url_weekly_report": "https://api.thingspeak.com/channels/{chID}/charts/{i}?days=7",
+            "url_get_data": "https://thingspeak.com/channels/{ID}/charts/{i}?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15",
             "url_update": "https://api.thingspeak.com/channels/<ch_ID>/bulk_update.json"
         },
         "front_end": {
