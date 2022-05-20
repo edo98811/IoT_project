@@ -84,13 +84,13 @@ class catalog():
             msg = next((p for p in catalog['patients'] if p['patient_ID'] ==  params["patient_ID"]), None)  
             return json.dumps(msg)
 
-        elif uri[0] == 'get_patients':          # per ottenere la lista dei pazienti e le loro info
+        elif uri[0] == 'get_patients':              # per ottenere la lista dei pazienti e le loro info
 
             # richiamato da location service
 
             return json.dumps(catalog['patients'])
                
-        elif uri[0] == 'get_doctor_info':                # per il dottore associato ad un paziente
+        elif uri[0] == 'get_doctor_info':           # per il dottore associato ad un paziente
             
             # prima trova il paziente per cui devo ricercare il medico
             patient = next((p for p in catalog['patients'] if p['patient_ID'] == params["patient_ID"] ), None) 
