@@ -52,7 +52,7 @@
             "sensors": [
                 {
                     "type_ID": "s_1",
-                    "is_critical": "critical",
+                    "is_critical": "personal",
                     "safe_range": [
                         60,
                         130
@@ -163,6 +163,7 @@
             "api_key": "WH6G4IW2A7D3JT6P",
             "topic": "service/#",
             "url_weekly_report": "https://api.thingspeak.com/channels/<CH_id>/charts/<field_id>?days=7",
+            "url_get_data": "https://thingspeak.com/channels/{chID}/charts/{i}?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15",
             "url_update": "https://api.thingspeak.com/channels/<ch_ID>/bulk_update.json"
         },
         "front_end": {
