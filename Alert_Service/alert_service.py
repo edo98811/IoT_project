@@ -172,7 +172,7 @@ class alert_service:
         }
 
         # messaggio mandato al paziente (da aggiornare)
-        telebot_personal = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'telegram_bot'}).text)["personal_alert_topic"]
+        telebot_personal = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'telegram_bot'}).text)["critical_alert_topic"]
         
         self.alert_service.myPublish(self.baseTopic + '/' + telebot_personal , msg)
 
