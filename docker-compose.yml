@@ -7,14 +7,6 @@ services:
     build: ./Catalog
     network_mode: host
 
-  device_conn:
-    container_name: device_connector
-    image: device_connector_1
-    build: ./Device_Connector
-    network_mode: host
-    depends_on:
-      - catalog
-
   location_service:
     container_name: location_service
     image: location_service_1
