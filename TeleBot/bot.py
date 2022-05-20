@@ -1,4 +1,5 @@
 from operator import imod
+from pprint import pprint
 import telepot
 from telepot.loop import MessageLoop
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
@@ -96,19 +97,26 @@ class TeleBot:
         
         # leggo il messaggio ed estraggo il chat_ID del medico a cui deve essere mandata la notifica 
         msg=json.loads(message) 
-        
-        print(json.dumps(msg))
-        #if topic == topic_alert:       
+             
         alert=msg["message"]
         chat_ID = msg["chat_ID"]
         patient_ID = msg["patient_ID"]
         topic_spit = topic.split("/")[-1]
 
-        if topic_spit == "personal_alert":   
+        personal_alert = json.loads(requests.get(catalog_address +"/get_service_info", params = {'service_ID':'telegram_bot'}).text)["personal_alert_topic"]
+        personal_alert = personal_alert.split("/")[-1]
+        
+        critical_alert = json.loads(requests.get(catalog_address +"/get_service_info", params = {'service_ID':'telegram_bot'}).text)["personal_alert_topic"]
+        critical_alert = critical_alert.split("/")[-1]
+        
+        print(personal_alert)
+
+        if topic_spit == personal_alert:   
             personal_alert=f"ATTENTION!!!\n{alert}"
+            print(personal_alert)
             self.bot.sendMessage(chat_ID, text=personal_alert)
 
-        elif topic_spit == "critical_alert":
+        elif topic_spit == critical_alert:
             patient_ID = msg["patient_ID"]
             critical_alert=f"ATTENTION {patient_ID}!!!\n{alert}"
             self.bot.sendMessage(chat_ID, text=critical_alert)
@@ -127,8 +135,8 @@ if __name__ == "__main__":
     catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
     ####
 
-    with open("./config.json",'r') as f:
-        catalog_address = json.load(f)["catalog_address"]
+    #with open("./config.json",'r') as f:
+    #    catalog_address = json.load(f)["catalog_address"]
 
     # Ottiene dal catalog l'indirizzo del servizio di telegram bot e di comunicazione MQTT
     token = json.loads(requests.get(catalog_address+"/get_service_info",params =  {'service_ID':'telegram_bot'}).text)["token"]

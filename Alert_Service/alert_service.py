@@ -48,19 +48,20 @@ class alert_service:
         # i metodi per le procedure di allerta sono definiti sotto 
         print(measures)
         sensor_info_list = json.loads(requests.get(self.catalog_address + '/get_critical_info', params= {'patient_ID':patient_ID}).text)["sensors"]
+        sensor_info = json.loads(r.get(self.catalog_address + '/get_sensor_info',params = {"patient_ID":patient_ID}).text)
 
     
-        for measure in measures:
+        for n,measure in enumerate(measures):
 
 
             is_critical = next((s for s in sensor_info_list if s['type_ID'] == measure['n'] ), None)
             print(f'{measure["n"]} - {patient_ID} - {is_critical["is_critical"]}')
         
-                                # messaggio ricevuto 
-                                # is_critical = {
-                                #  "type_ID": "s_1",
-                                # 'safe_range':[numero1, numero2]
-                                # 'is_critical':
+                                # Dmessaggio ricevuto 
+                                #       is_critical = {
+                                #        "type_ID": "s_1",
+                                #       'safe_range':[numero1, numero2]
+                                #       'is_critical':
                                 # }
 
             if is_critical["is_critical"] == "not_critical":
@@ -68,22 +69,24 @@ class alert_service:
 
             else: 
                 if float(measure['v']) > float(is_critical['safe_range'][1]) or float(measure['v']) < float(is_critical['safe_range'][0]):
+                    
+                    patient_info = json.loads(r.get(self.catalog_address + '/get_patient_info',params = {"patient_ID":patient_ID}).text)
+                    problem = f"{patient_info['personal_info']['name']} {patient_info['personal_info']['name']} (p_ID: {patient_ID})- reading {sensor_info[n]['type']}: {measure['v']} {measure['u']} out of safe range"
 
                     # se la misurazione è informativa (allerta solo al paziente)
                     if is_critical["is_critical"] == "personal":
                         
                         #messaggio che viene mandato insieme alla notifica
-                        problem = f'reading {measure["n"]}: {measure["v"]} {measure["u"]} out of safe range'
                         self.personal_alert(patient_ID,problem)
 
                     # se la misuzione è critica (allerta a clinica e medico)
                     if is_critical["is_critical"] == "critical":
 
                         #messaggio che viene mandato insieme alla notifica
-                        problem = f'reading {measure["n"]}: {measure["v"]} {measure["u"]} out of safe range'
+                        
+                        #problem = f'reading {measure["n"]}: {measure["v"]} {measure["u"]} out of safe range'
                         self.critical_alert(patient_ID,problem) # a questo punto chiamo la funzione alert (basta richiamarlo ogni volta)
                 
-            time.sleep(0.1)
     # allerta critica (medico e clinica)
     def critical_alert(self,patient_ID,problem):
 
@@ -169,7 +172,7 @@ class alert_service:
         }
 
         # messaggio mandato al paziente (da aggiornare)
-        telebot_personal = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'telegram_bot'}).text)["personal_alert_topic"]
+        telebot_personal = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'telegram_bot'}).text)["critical_alert_topic"]
         
         self.alert_service.myPublish(self.baseTopic + '/' + telebot_personal , msg)
 
