@@ -1,0 +1,17 @@
+# Get the python image
+FROM python:latest
+
+# Switch to app directory
+WORKDIR /TeleBot
+
+# Copy the requirements in to the app
+COPY requirements.txt ./
+
+# Install dependencies
+RUN pip install -r requirements.txt
+
+# Copy everything else
+COPY . .
+
+#Run the python script
+ENTRYPOINT [ "python", "bot.py" ]

@@ -1,5 +1,5 @@
 
-from math import dist
+import math
 import json
 import time
 import requests as r
@@ -120,7 +120,7 @@ class location_service():
                 clinic_location = clinic['location']
 
                 #calcolo della piu vicina con la distanza euclidea
-                d = dist([int(patient_location['longitude']),int(patient_location['latitude'])],[int(clinic_location["longitude"]),int(clinic_location["latitude"])])
+                d = math.dist([int(patient_location['longitude']),int(patient_location['latitude'])],[int(clinic_location["longitude"]),int(clinic_location["latitude"])])
 
                 # se dist_temp è vuota (prima iterazione) la inizializza a d
                 try:
@@ -157,14 +157,14 @@ class location_service():
 if __name__ == '__main__':
 
     ####       CODICE DI "DEBUG"                                                        # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
-    with open("../Catalog/catalog.json",'r') as f:                                                 # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
-        cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
+    with open("config.json",'r') as f:                                                 # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+        cat = json.load(f)                                                           # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
     host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
     port = cat["base_port"]
-    catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
+    catalog_address = "http://"+host+":"+port+ cat["address"]
     ####
     
-    settings = json.loads(r.get(f"{catalog_address}/get_service_info", params={'service_ID': 'location_service'}).text)
+    settings = json.loads(r.get(catalog_address + "/get_service_info", params={'service_ID': 'location_service'}).text)
     mqtt_settings = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'MQTT'}).text)
     
     topic = f"{mqtt_settings['baseTopic']}/{settings['topic']}"

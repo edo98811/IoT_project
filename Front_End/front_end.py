@@ -18,8 +18,9 @@ class FrontEnd:
     def POST(self, *uri, **params):
 
         body = json.loads(cherrypy.request.body.read())
-        requests.post(f"{catalog_address}/{uri[0]}", json=body)
-
+        resp = requests.post(f"{catalog_address}/{uri[0]}", json=body)
+        return resp
+        
     def PUT(self, *uri, **params):
 
         body = json.loads(cherrypy.request.body.read())
@@ -31,11 +32,11 @@ class FrontEnd:
 if __name__ == '__main__':
 
     ####       CODICE DI "DEBUG"                        # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
-    with open("../Catalog/catalog.json",'r') as f:               # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
-        cat = json.load(f)                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
+    with open("config.json",'r') as f:               # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+        cat  = json.load(f)                        # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
     host = cat["base_host"]                             # tutti i codici si adattano al cambio
     port = cat["base_port"]
-    catalog_address = f"http://{host}:{port}{cat['services']['catalog_manager']['address']}"
+    catalog_address = f"http://{host}:{port}{cat['address']}"
 
     # Corregge i 'baseUrl' in tutti i file html che fanno richieste di GET al catalog_manager
     # Per i post viene adottata la strategia indicata dal prof. Orlando, ma per i get di riempimento 
