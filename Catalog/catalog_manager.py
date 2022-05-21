@@ -299,7 +299,7 @@ class catalog():
             pats = catalog["patients"]
             body = json.loads(cherrypy.request.body.read())
 
-            pat2del = [p for p in pats if p['personal info']['name']+p['personal info']['surname'] == body['name']+body['surname']][0]
+            pat2del = [p for p in pats if p['personal_info']['name']+p['personal_info']['surname'] == body['name']+body['surname']][0]
             chan2del = pat2del['TS_chID']
             APIkey = catalog['services']['ThingSpeak']
             i = pats.index(pat2del)
@@ -340,7 +340,7 @@ class catalog():
             pats = catalog['patients']
             stillPats = [p for p in pats if p['doctor_ID'] == docID]
 
-            if not stillPats == 0:
+            if not stillPats:
                 docs.pop(i)
             else:
                 # Sono ancora iscritti pazienti a cui è assegnato il medico
@@ -366,7 +366,7 @@ class catalog():
             body = json.loads(cherrypy.request.body.read())
 
             cl2del = [c for c in cls if c['name'] == body['name']][0]
-            i = docs.index(cl2del)
+            i = cls.index(cl2del)
 
             cls.pop(i)
 
