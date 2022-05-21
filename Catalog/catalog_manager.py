@@ -193,7 +193,7 @@ class catalog():
             
             # Definisce la nuova scheda paziente e la inserisce nella variabile locale che rappresenta il catalog
             f_newPat={
-                "patient_ID": f"p_{len(pats)+1}",
+                "patient_ID": f"p_{pats[-1]['patient_ID'].split('_')[-1]+1}",
                 "personal_info": {
                     "name": newPat["name"],
                     "surname": newPat["surname"],
@@ -206,7 +206,7 @@ class catalog():
                 "doctor_ID": newPat["docID"],
                 "device_connector": {
                     "service_ID": "",
-                    "topic": f"service/dc_{len(pats)+1}"
+                    "topic": f"service/dc_{pats[-1]['patient_ID'].split('_')[-1]+1}"
                 }
             }
 
@@ -241,7 +241,7 @@ class catalog():
 
             # Definisce la nuova scheda dottore e la inserisce nella variabile locale che rappresenta il catalog
             f_newDoc={
-                "doctor_ID": f"d_{len(docs)+1}",
+                "doctor_ID": f"d_{docs[-1]['doctor_ID'].split('_')[-1]+1}",
                 "name": newDoc["name"],
                 "surname": newDoc["surname"],
                 "chatID" : newDoc["chatID"]
@@ -276,7 +276,7 @@ class catalog():
 
             # Definisce la nuova scheda dottore e la inserisce nella variabile locale che rappresenta il catalog
             f_newCls={
-                "clinic_ID": f"d_{len(cls)+1}",
+                "clinic_ID": f"d_{cls[-1]['clinic_ID'].split('_')[-1]+1}",
                 "clinic_name": newCls["name"],
                 "lon": newCls["lon"],
                 "lat" : newCls["lat"]
@@ -286,6 +286,104 @@ class catalog():
             # Aggiorna 'catalog.json'
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
+
+        elif uri[0] == "p_del":         #### DELETE PATIENT ####
+
+                                        # 	uri: /p_del
+                                        # 	body del post:
+                                        # 		{
+                                        # 			name: ,
+                                        # 			surname: 
+                                        # 		})
+            
+            pats = catalog["patients"]
+            body = json.loads(cherrypy.request.body.read())
+
+            pat2del = [p for p in pats if p['personal_info']['name']+p['personal_info']['surname'] == body['name']+body['surname']][0]
+            chan2del = pat2del['TS_chID']
+            APIkey = catalog['services']['ThingSpeak']
+            i = pats.index(pat2del)
+
+            # Eliminazione della scheda paziente
+            pats.pop(i) 
+
+            # Eliminazione canale TS
+            TS_uri = catalog['services']['ThingSpeak']['url_delete_channel'].split('/')
+            TS_uri[-1] = f"{pat2del['TS_chID']}.json"
+            url = '/'.join(TS_uri)
+            requests.delete(url,json={'api_key':catalog['services']['ThingSpeak']['api_key']})
+
+            # Aggiorna il catalog
+            catalog["patients"] = pats
+
+                        
+            # Salva su file il catalog aggiornato
+            with open(self.catalog_file,'w') as f:
+                json.dump(catalog,f,indent=4)
+
+        elif uri[0] == "d_del":         #### DELETE DOCTOR ####
+        
+                                        # 	uri: /d_del
+                                        # 	body del post:
+                                        # 		{
+                                        # 			name: ,
+                                        # 			surname: 
+                                        # 		})
+            
+            docs = catalog['doctors']
+            body = json.loads(cherrypy.request.body.read())
+
+            doc2del = [d for d in docs if d['name']+d['surname'] == body['name']+body['surname']][0]
+            i = docs.index(doc2del)
+            docID = doc2del['doctor_ID']
+
+            pats = catalog['patients']
+            stillPats = [p for p in pats if p['doctor_ID'] == docID]
+
+            if not stillPats:
+                docs.pop(i)
+            else:
+                # Sono ancora iscritti pazienti a cui è assegnato il medico
+                # che si vuole eliminare, restituire un messaggio di errore
+                raise cherrypy.HTTPError(message='The doctor has still patients subscribed to the platform')
+
+            # Aggiorna il catalog
+            catalog["doctors"] = docs
+                        
+            # Salva su file il catalog aggiornato
+            with open(self.catalog_file,'w') as f:
+                json.dump(catalog,f,indent=4)
+
+        elif uri[0] == "c_del":         #### DELETE CLINIC ####
+
+                                        # 	uri: /c_del
+                                        # 	body del post:
+                                        # 		{
+                                        # 			name: 
+                                        # 		})
+                    
+            cls = catalog['clinics']
+            body = json.loads(cherrypy.request.body.read())
+
+            cl2del = [c for c in cls if c['name'] == body['name']][0]
+            i = cls.index(cl2del)
+
+            cls.pop(i)
+
+            # Aggiorna il catalog
+            catalog["clinics"] = cls
+                        
+            # Salva su file il catalog aggiornato
+            with open(self.catalog_file,'w') as f:
+                json.dump(catalog,f,indent=4)
+
+
+
+            
+
+
+
+
 
     def PUT(self,*uri,**params):
         
@@ -332,7 +430,7 @@ class catalog():
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
 
-
+            
 #####################################################################################################
 
 

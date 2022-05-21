@@ -3,6 +3,7 @@ import requests
 import pprint
 #import schedule
 import time
+from copy import deepcopy
 
 class WK_Report:
     def __init__(self, broker, port, topic, catalog_address, url):
@@ -12,6 +13,13 @@ class WK_Report:
         self.topic = topic
         
         self._url = url  
+        self._msg = {
+            'chat_ID': ... ,
+            'full_name': ... ,
+            'sensors' : [ ... ],
+            'urls' : [ ... ]
+                  }
+
 
 
     def weekly_report(self):
@@ -27,25 +35,21 @@ class WK_Report:
 
 
         patients = json.loads(requests.get(self.catalog_address + '/get_patients').text)
-        
+        docs = json.loads(requests.get(f"{self.catalog_address}/avail_docs").text)
         # Definisce l'url 
         for pat in patients:
 
-            newUrl = self._url 
-            uri = newUrl.split('/')
-            uri[-3] = str(pat['TS_chID']) 
-            # COME FARE PER QUANDO HO PIU' SENSORI E QUINDI PIU' URL PER PAZIENTE
-            newUrl = '/'.join(uri)
-            msg = {
-                "fullName":[f"{pat['personal_info']['name']} {pat['personal_info']['surname']}" ],
-                "docID":[pat['doctor_ID']],
-                "url_chart": [newUrl]
-            }
+            msg = deepcopy(self._msg) 
+            msg['chat_ID'] = docs['chatID'][docs['docID'].index(pat['doctor_ID'])]
+            msg['full_name'] = f"{pat['personal_info']['name']} {pat['personal_info']['surname']}"
 
-        # messaggio mandato al medico 
-       
-        self.weekly_report.myPublish(self.topic, msg)
+            avail_sens = json.loads(requests.get(f"{catalog_address}/avail_devs").text)
 
+            msg['sensors'] = [avail_sens['fullName'][avail_sens['devID'].index(s['type_ID'])] for s in pat['sensors']]
+            chID = pat['TS_chID']
+            msg['urls'] = [eval(f"f'{self._url}'") for i,chID in zip(range(1,len(msg['sensors'])+1),[pat['TS_chID']]*len(msg['sensors']))]
+
+            self.client.myPublish(self.topic, msg)
 
 
 if __name__ == "__main__":
@@ -68,13 +72,14 @@ if __name__ == "__main__":
     base_Topic= MQTT_info["baseTopic"]
 
     # creo lista di topic a cui il telebot fa da subscriber
-    topic =  [base_Topic + json.loads(requests.get(catalog_address+"/get_service_info", params =  {'service_ID':'weekly_report'}).text)["topic"]]
+    topic =  base_Topic + '/' + json.loads(requests.get(catalog_address+"/get_service_info", params =  {'service_ID':'telegram_bot'}).text)["weekly_report_topic"]
 
     # ricerca dell'url a cui si farà la richiesta di get per avere i dati di ogni settimana
-    url = json.loads(requests.get(catalog_address+"/get_service_info", params =  {'service_ID':'Thingspeak'}).text)["url_weekly_report"]
+    url = json.loads(requests.get(catalog_address+"/get_service_info", params =  {'service_ID':'ThingSpeak'}).text)["url_weekly_report"]
 
     wkr = WK_Report(broker,port, topic, catalog_address, url)
     #schedule.every().monday.at("9:00").do(wkr.weekly_report)
+    time.sleep(3)
     wkr.weekly_report()
 
     print("Weekly Report started ...")

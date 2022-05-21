@@ -41,32 +41,6 @@
                 "service_ID": "dc_2_342312",
                 "topic": "service/dc_1"
             }
-        },
-        {
-            "patient_ID": "p_2",
-            "personal_info": {
-                "name": "Davide",
-                "surname": "D'Adamo",
-                "chat_ID": "327778115"
-            },
-            "sensors": [
-                {
-                    "type_ID": "s_1",
-                    "is_critical": "critical",
-                    "safe_range": [
-                        60,
-                        130
-                    ]
-                }
-            ],
-            "TS_chID": 1738212,
-            "TS_wKey": "9J32418LJQHS2MEZ",
-            "TS_rKey": "BUIEI4TYDMHVPGE7",
-            "doctor_ID": "d_2",
-            "device_connector": {
-                "service_ID": "",
-                "topic": "service/dc_2"
-            }
         }
     ],
     "doctors": [
@@ -74,7 +48,7 @@
             "doctor_ID": "d_1",
             "name": "Edoardo",
             "surname": "Filippi",
-            "chat_ID": "365867979"
+            "chat_ID": "327778115"
         },
         {
             "doctor_ID": "d_2",
@@ -151,8 +125,8 @@
             "critical_alert_topic": "telebot/critical_alert",
             "weekly_report_topic": "weekly_report"
         },
-        "Clinics_client":{
-            "url_maps":"https://www.latlong.net/c/?lat=&long="
+        "Clinics_client": {
+            "url_maps": "https://www.latlong.net/c/?lat=&long="
         },
         "MQTT": {
             "broker": "test.mosquitto.org",
@@ -162,8 +136,10 @@
         "ThingSpeak": {
             "api_key": "WH6G4IW2A7D3JT6P",
             "topic": "service/#",
-            "url_weekly_report": "https://api.thingspeak.com/channels/<CH_id>/charts/<field_id>?days=7",
-            "url_update": "https://api.thingspeak.com/channels/<ch_ID>/bulk_update.json"
+            "url_weekly_report": "https://api.thingspeak.com/channels/{chID}/charts/{i}?days=7",
+            "url_get_data": "https://thingspeak.com/channels/{ID}/charts/{i}?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15",
+            "url_update": "https://api.thingspeak.com/channels/<ch_ID>/bulk_update.json",
+            "url_delete_channel": "https://api.thingspeak.com/channels/<channel_id>.json"
         },
         "front_end": {
             "host": "127.0.0.1",

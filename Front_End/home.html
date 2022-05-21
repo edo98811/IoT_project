@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+                integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
     <title>Homepage</title>
 
     <style>
@@ -29,9 +33,8 @@
 
         .rec-form{
             position: absolute;
-            top: 50%;
             left: 50%;
-            transform: translate(-50%,-50%);
+            transform: translate(-50%,0%);
             width: 600px;
         }
 
@@ -78,7 +81,7 @@
     <div class="rec-form">
     <h1>Our service - Home page</h1>
         
-    <hr>
+    <!-- <hr> -->
     
     <form action="clinician-page.html">
         <button>Clinician private page</button>
@@ -93,6 +96,113 @@
     <form action="clinics-rec.html">
         <button>Clinics registration</button>
     </form>
+
+    <hr>
+
+    <h2>Users unsubcription</h2>
+
+    <form onsubmit="sendPOSTrequest_clDel()">
+        <h3>Clinic unsubscription</h3>
+        
+        <input type="text" id="clName" placeholder="Clinic name" required>
+        
+        <button type="submit">Unsubscribe clinic from service</button>
+    </form>
+
+    <form onsubmit="sendPOSTrequest_patDel()">
+        <h3>Patient unsubscription</h3>
+
+        <input type="text" id="patName" placeholder="Patient name" required>
+        <input type="text" id="patSurname" placeholder="Patient surname" required>
+        
+        <button type="submit">Unsubscribe patient from service</button>
+    </form>
+
+    <form onsubmit="sendPOSTrequest_docDel()">
+            <h3>Doctor unsubscription</h3>
+            
+            <input type="text" id="docName" placeholder="Doctor name" required>
+            <input type="text" id="docSurname" placeholder="Doctor surname" required>
+            
+            <button type="submit">Unsubscribe doctor from service</button>
+    </form>
+
+    <hr>
+
+    <p id="confirm"></p>
     </div>
+
+    <script type="text/javascript">
+
+        function sendPOSTrequest_clDel() {
+
+            event.preventDefault();
+            name = $("#clName").val();
+
+            $.ajax({
+                    type: "POST",
+                    url: '/c_del',
+
+                    data: JSON.stringify({
+                            name: name
+                    }),
+                    contentType: "text/plain",
+                    dataType: "text",
+                    success: function() {
+                            let confirmMsg = document.getElementById('confirm');
+                            confirmMsg.innerText = 'Clinic '+name+' successfully unsubscribed!'
+                    }
+
+            });
+        }
+
+        function sendPOSTrequest_patDel() {
+
+            event.preventDefault();
+            name = $("#patName").val();
+            surname = $("#patSurname").val();
+
+            $.ajax({
+                    type: "POST",
+                    url: '/p_del',
+
+                    data: JSON.stringify({
+                            name: name,
+                            surname: surname
+                    }),
+                    contentType: "text/plain",
+                    dataType: "text",
+                    success: function() {
+                            let confirmMsg = document.getElementById('confirm');
+                            confirmMsg.innerText = 'Patient '+name+' '+surname+' successfully unsubscribed!'
+                    }
+
+                });
+        }
+
+        function sendPOSTrequest_docDel() {
+
+            event.preventDefault();
+            name = $("#docName").val();
+            surname = $("#docSurname").val();
+
+            $.ajax({
+                    type: "POST",
+                    url: '/d_del',
+
+                    data: JSON.stringify({
+                            name: name,
+                            surname: surname
+                    }),
+                    contentType: "text/plain",
+                    dataType: "text",
+                    success: function(response) {
+                            let confirmMsg = document.getElementById('confirm');
+                            confirmMsg.innerText = 'Doctor '+name+' '+surname+' successfully unsubscribed!'
+                    }
+            });
+        }
+
+    </script>
 </body>
 </html>
