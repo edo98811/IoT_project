@@ -1,5 +1,5 @@
 # Get the python image
-FROM python:3.7.13-slim
+FROM python:latest
 
 # Switch to app directory
 WORKDIR /Catalog
@@ -16,4 +16,4 @@ COPY . .
 #Run the python script
 ENTRYPOINT [ "python", "catalog_manager.py" ]
 
-EXPOSE 80
+EXPOSE 8081

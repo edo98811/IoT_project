@@ -16,4 +16,4 @@ COPY . .
 #Run the python script
 ENTRYPOINT [ "python", "location_service_MQTT.py" ]
 
-EXPOSE 82
+EXPOSE 8083

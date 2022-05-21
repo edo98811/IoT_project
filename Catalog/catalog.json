@@ -125,25 +125,28 @@
     ],
     "services": {
         "location_service": {
-            "host": "127.0.0.1",
+            "host": "location_service",
             "port": "8083",
             "docker_alias":"location_service:82",
             "service_ID": "location_service",
             "topic": "service/#"
         },
         "catalog_manager": {
-            "host": "127.0.0.1",
+            "host": "catalog",
             "port": "8081",
-            "docker_alias":"catalog:80",
             "service_ID": "catalog_manager",
             "address": "/catalog_manager"
         },
         "alert_service": {
             "service_ID": "alert_service",
-            "host": "127.0.0.1",
+            "host": "alert_service",
             "port": "8084",
-            "docker_alias":"alert_service:83",
             "topic": "service/#"
+        },
+        "front_end": {
+            "host": "front_end",
+            "port": "8082",
+            "docker_alias":"front_end"
         },
         "weekly_report": {
             "service_ID": "weekly_report"
@@ -167,11 +170,6 @@
             "topic": "service/#",
             "url_weekly_report": "https://api.thingspeak.com/channels/<CH_id>/charts/<field_id>?days=7",
             "url_update": "https://api.thingspeak.com/channels/<ch_ID>/bulk_update.json"
-        },
-        "front_end": {
-            "host": "127.0.0.1",
-            "port": "8082",
-            "docker_alias":"front_end"
         }
     }
 }

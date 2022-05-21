@@ -158,13 +158,13 @@ if __name__ == '__main__':
 
     ####       CODICE DI "DEBUG"                                                        # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
     with open("config.json",'r') as f:                                                 # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
-        catalog_address = json.load(f)["catalog_address"]                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
-    #host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
-    #port = cat["base_port"]
-    #catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
+        cat = json.load(f)                                                           # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
+    host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
+    port = cat["base_port"]
+    catalog_address = "http://"+host+":"+port+ cat["address"]
     ####
     
-    settings = json.loads(r.get(f"{catalog_address}/get_service_info", params={'service_ID': 'location_service'}).text)
+    settings = json.loads(r.get(catalog_address + "/get_service_info", params={'service_ID': 'location_service'}).text)
     mqtt_settings = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'MQTT'}).text)
     
     topic = f"{mqtt_settings['baseTopic']}/{settings['topic']}"

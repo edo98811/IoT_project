@@ -2,7 +2,7 @@
 FROM python:latest
 
 # Switch to app directory
-WORKDIR /device_connector
+WORKDIR /TeleBot
 
 # Copy the requirements in to the app
 COPY requirements.txt ./
@@ -14,7 +14,4 @@ RUN pip install -r requirements.txt
 COPY . .
 
 #Run the python script
-ENTRYPOINT [ "python", "device_connector.py" ]
-
-
-EXPOSE 80
+ENTRYPOINT [ "python", "bot.py" ]

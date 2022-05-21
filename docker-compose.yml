@@ -5,32 +5,98 @@ services:
     container_name: catalog
     image: catalog_1
     build: ./Catalog
-    #network_mode: host
+    networks:
+      - project
     ports:
-      - "8081:80"
+      - "8081:8081"
+    expose:
+      - 8081
+
 
   location_service:
     container_name: location_service
     image: location_service_1
     build: ./Location_service
+    networks:
+      - project
     #network_mode: host
     depends_on:
       - catalog
+    healthcheck:
+      test: ["CMD", "curl" , "-f", "http://catalog:8081/catalog_manager/get_sensors?patient_ID=p_1"]
+    expose:
+      - 8083
 
-  # alert-service:
-  #   container_name: alert_service
-  #   image: alert_service_1
-  #   build: ./alert_service
-  #   #network_mode: host
-  #   depends_on:
-  #     - catalog
-  #     - location_service
-    #networks:
-    #  default:
-    #    ipv4_address: 172.23.0.25
+  front_end:
+    container_name: front_end
+    image: front_end_1
+    build: ./front_end
+    networks:
+      - project
+    #network_mode: host
+    depends_on:
+      - catalog
+    healthcheck:
+      test: ["CMD", "curl" , "-f", "http://catalog:8081/catalog_manager/get_sensors?patient_ID=p_1"]
+    ports:
+      - "8082:8082"
+    expose:
+      - 8082
 
-# networks:
-#   default:
-#     ipam:
-#       config:
-#         - subnet: 172.23.0.0/24
+
+  alert_service:
+    container_name: alert_service
+    image: alert_service_1
+    build: ./Alert_service
+    networks:
+      - project
+    #network_mode: host
+    depends_on:
+      - catalog
+    healthcheck:
+      test: ["CMD", "curl" , "-f", "http://catalog:8081/catalog_manager/get_sensors?patient_ID=p_1"]
+    expose:
+      - 8084
+
+  telebot:
+    container_name: Telebot
+    image: telebot_1
+    build: ./Telebot
+    networks:
+      - project
+    #network_mode: host
+    depends_on:
+      - catalog
+    healthcheck:
+      test: ["CMD", "curl" , "-f", "http://catalog:8081/catalog_manager/get_sensors?patient_ID=p_1"]
+
+
+  tsAdaptor:
+    container_name: tsAdaptor
+    image: tsadaptor_1
+    build: ./ts_Adaptor
+    networks:
+      - project
+    #network_mode: host
+    depends_on:
+      - catalog
+    healthcheck:
+      test: ["CMD", "curl" , "-f", "http://catalog:8081/catalog_manager/get_sensors?patient_ID=p_1"]
+
+
+  Weekly_report:
+    container_name: Weekly_report
+    image: weekly_report_1
+    build: ./Weekly_report
+    networks:
+      - project
+    #network_mode: host
+    depends_on:
+      - catalog
+    healthcheck:
+      test: ["CMD", "curl" , "-f", "http://catalog:8081/catalog_manager/get_sensors?patient_ID=p_1"]
+
+
+networks:
+  project:
+    driver: bridge

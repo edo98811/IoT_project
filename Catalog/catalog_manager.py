@@ -343,10 +343,10 @@ if __name__ == '__main__':
 
                                
     with open('config.json','r') as f:                                               
-        catalog_address = json.load(f)["catalog_address"]                                                      
-    # host = cat["base_host"]                                                        
-    # port = cat["base_port"]
-    # catalog_address = "http://"+host+":"+port+cat["address"]
+        cat = json.load(f)                                                    
+    host = cat["base_host"]                                                        
+    port = cat["base_port"]
+    catalog_address = "http://"+host+":"+port+cat["address"]
 
     print(catalog_address)
     # with open("./config.json",'r') as f:
@@ -366,8 +366,8 @@ if __name__ == '__main__':
 
     cherrypy.tree.mount(catalog(catalog_file), '/catalog_manager', conf)
       
-    #cherrypy.config.update({'server.socket_host': host,
-    #                        'server.socket_port': int(port)})
+    cherrypy.config.update({'server.socket_host': host,
+                            'server.socket_port': int(port)})
     # this is needed if you want to have the custom error page
     # cherrypy.config.update({'error_page.400': error_page_400}) # potremmo metterla anche noi questa pagina
     cherrypy.engine.start()
