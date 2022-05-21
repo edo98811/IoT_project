@@ -164,7 +164,8 @@
             "topic": "service/#",
             "url_weekly_report": "https://api.thingspeak.com/channels/{chID}/charts/{i}?days=7",
             "url_get_data": "https://thingspeak.com/channels/{ID}/charts/{i}?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15",
-            "url_update": "https://api.thingspeak.com/channels/<ch_ID>/bulk_update.json"
+            "url_update": "https://api.thingspeak.com/channels/<ch_ID>/bulk_update.json",
+            "url_delete_channel": "https://api.thingspeak.com/channels/<channel_id>.json"
         },
         "front_end": {
             "host": "127.0.0.1",
