@@ -18,8 +18,9 @@ class FrontEnd:
     def POST(self, *uri, **params):
 
         body = json.loads(cherrypy.request.body.read())
-        requests.post(f"{catalog_address}/{uri[0]}", json=body)
-
+        resp = requests.post(f"{catalog_address}/{uri[0]}", json=body)
+        return resp
+        
     def PUT(self, *uri, **params):
 
         body = json.loads(cherrypy.request.body.read())

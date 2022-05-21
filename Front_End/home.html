@@ -196,11 +196,10 @@
                     }),
                     contentType: "text/plain",
                     dataType: "text",
-                    success: function() {
+                    success: function(response) {
                             let confirmMsg = document.getElementById('confirm');
                             confirmMsg.innerText = 'Doctor '+name+' '+surname+' successfully unsubscribed!'
                     }
-
             });
         }
 

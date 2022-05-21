@@ -345,7 +345,7 @@ class catalog():
             else:
                 # Sono ancora iscritti pazienti a cui è assegnato il medico
                 # che si vuole eliminare, restituire un messaggio di errore
-                pass
+                raise cherrypy.HTTPError(message='The doctor has still patients subscribed to the platform')
 
             # Aggiorna il catalog
             catalog["doctors"] = docs
