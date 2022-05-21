@@ -1,0 +1,33 @@
+version: '3.4'
+services:
+
+  catalog:
+    container_name: catalog
+    image: catalog_1
+    build: ./Catalog
+    network_mode: host
+
+  location_service:
+    container_name: location_service
+    image: location_service_1
+    build: ./Location_service
+    network_mode: host
+    depends_on:
+      - catalog
+
+  alert-service:
+    container_name: alert_service
+    image: alert_service_1
+    build: ./alert_service
+    network_mode: host
+    depends_on:
+      - catalog
+      - location_service
+      
+  device_conn:
+    container_name: device_connector
+    image: device_connector_1
+    build: ./Device_Connector
+    network_mode: host
+    depends_on:
+      - catalog

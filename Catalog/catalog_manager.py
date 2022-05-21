@@ -79,12 +79,18 @@ class catalog():
 
         elif uri[0] == 'get_patient_info':          # per tutte le info su un paziente singolo 
 
+
             # richiamato da alert service
 
             msg = next((p for p in catalog['patients'] if p['patient_ID'] ==  params["patient_ID"]), None)  
             return json.dumps(msg)
+<<<<<<< HEAD
 
         elif uri[0] == 'get_patients':              # per ottenere la lista dei pazienti e le loro info
+=======
+        
+        elif uri[0] == 'get_patients':              # per tutte le info su un paziente singolo 
+>>>>>>> origin/dockerizzazione
 
             # richiamato da location service
 
@@ -438,19 +444,19 @@ if __name__ == '__main__':
 
     catalog_file = 'catalog.json'
 
-    ####       CODICE DI "DEBUG"                                            # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
-    with open('catalog.json','r') as f:                                                 # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
-        cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
-    host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
+                               
+    with open('config.json','r') as f:                                               
+        cat = json.load(f)                                                    
+    host = cat["base_host"]                                                        
     port = cat["base_port"]
-    catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
-    ####
-    
+    catalog_address = "http://"+host+":"+port+cat["address"]
+
+    print(catalog_address)
     # with open("./config.json",'r') as f:
     #   catalog_address = json.load(f)["catalog_address"]
     
     with open('catalog.json','r') as f:
-        front_info = json.load(f)['services']['front_end']
+                front_info = json.load(f)['services']['front_end']
 
     conf = {
         '/': {

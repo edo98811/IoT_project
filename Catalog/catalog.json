@@ -99,22 +99,28 @@
     ],
     "services": {
         "location_service": {
-            "host": "127.0.0.1",
-            "port": "8084",
+            "host": "location_service",
+            "port": "8083",
+            "docker_alias":"location_service:82",
             "service_ID": "location_service",
             "topic": "service/#"
         },
         "catalog_manager": {
-            "host": "127.0.0.1",
+            "host": "catalog",
             "port": "8081",
             "service_ID": "catalog_manager",
             "address": "/catalog_manager"
         },
         "alert_service": {
             "service_ID": "alert_service",
-            "host": "127.0.0.1",
-            "port": "8086",
+            "host": "alert_service",
+            "port": "8084",
             "topic": "service/#"
+        },
+        "front_end": {
+            "host": "front_end",
+            "port": "8082",
+            "docker_alias":"front_end"
         },
         "weekly_report": {
             "service_ID": "weekly_report"
@@ -136,6 +142,7 @@
         "ThingSpeak": {
             "api_key": "WH6G4IW2A7D3JT6P",
             "topic": "service/#",
+<<<<<<< HEAD
             "url_weekly_report": "https://api.thingspeak.com/channels/{chID}/charts/{i}?days=7",
             "url_get_data": "https://thingspeak.com/channels/{ID}/charts/{i}?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15",
             "url_update": "https://api.thingspeak.com/channels/<ch_ID>/bulk_update.json",
@@ -144,8 +151,10 @@
         "front_end": {
             "host": "127.0.0.1",
             "port": "8082"
+=======
+            "url_weekly_report": "https://api.thingspeak.com/channels/<CH_id>/charts/<field_id>?days=7",
+            "url_update": "https://api.thingspeak.com/channels/<ch_ID>/bulk_update.json"
+>>>>>>> origin/dockerizzazione
         }
-    },
-    "base_host": "127.0.0.1",
-    "base_port": "8081"
+    }
 }
