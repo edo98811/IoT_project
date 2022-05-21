@@ -313,6 +313,49 @@ class catalog():
             url = '/'.join(TS_uri)
             requests.delete(url,json={'api_key':catalog['services']['ThingSpeak']['api_key']})
 
+            # Aggiorna il catalog
+            catalog["patients"] = pats
+
+                        
+            # Salva su file il catalog aggiornato
+            with open(self.catalog_file,'w') as f:
+                json.dump(catalog,f,indent=4)
+
+        elif uri[0] == "d_del":         #### DELETE DOCTOR ####
+        
+                                        # 	uri: /d_del
+                                        # 	body del post:
+                                        # 		{
+                                        # 			name: ,
+                                        # 			surname: 
+                                        # 		})
+            
+            docs = catalog['doctors']
+            body = json.loads(cherrypy.request.body.read())
+
+            doc2del = [d for d in docs if d['name']+d['surname'] == body['name']+body['surname']][0]
+            i = docs.index(doc2del)
+            docID = doc2del['doctor_ID']
+
+            pats = catalog['patients']
+            stillPats = [p for p in pats if p['doctor_ID'] == docID]
+
+            if not stillPats == 0:
+                docs.pop(i)
+            else:
+                # Sono ancora iscritti pazienti a cui è assegnato il medico
+                # che si vuole eliminare, restituire un messaggio di errore
+                pass
+
+            # Aggiorna il catalog
+            catalog["doctors"] = docs
+                        
+            # Salva su file il catalog aggiornato
+            with open(self.catalog_file,'w') as f:
+                json.dump(catalog,f,indent=4)
+
+            
+
 
 
 

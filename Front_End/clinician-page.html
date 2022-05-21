@@ -130,10 +130,23 @@
                 <hr>
 
                 <form onsubmit="sendPOSTrequest_patDel()">
+                        <h2>Patient unsubscription</h2>
+
                         <input type="text" id="patName" placeholder="Patient name" required>
                         <input type="text" id="patSurname" placeholder="Patient surname" required>
                         
                         <button type="submit">Unsubscribe patient from service</button>
+                </form>
+
+                <hr>
+
+                <form onsubmit="sendPOSTrequest_docDel()">
+                        <h2>Doctor unsubscription</h2>
+                        
+                        <input type="text" id="docName" placeholder="Doctor name" required>
+                        <input type="text" id="docSurname" placeholder="Doctor surname" required>
+                        
+                        <button type="submit">Unsubscribe doctor from service</button>
                 </form>
 
                 <hr>
@@ -229,6 +242,30 @@
                                 success: function() {
                                         let confirmMsg = document.getElementById('confirm');
                                         confirmMsg.innerText = 'Patient '+name+' '+surname+' successfully unsubscribed!'
+                                }
+
+                        });
+                }
+
+                function sendPOSTrequest_docDel() {
+
+                        event.preventDefault();
+                        name = $("#docName").val();
+                        surname = $("#docSurname").val();
+
+                        $.ajax({
+                                type: "POST",
+                                url: '/d_del',
+
+                                data: JSON.stringify({
+                                        name: name,
+                                        surname: surname
+                                }),
+                                contentType: "text/plain",
+                                dataType: "text",
+                                success: function() {
+                                        let confirmMsg = document.getElementById('confirm');
+                                        confirmMsg.innerText = 'Doctor '+name+' '+surname+' successfully unsubscribed!'
                                 }
 
                         });
