@@ -127,6 +127,17 @@
 
                 </form>
 
+                <hr>
+
+                <form onsubmit="sendPOSTrequest_patDel()">
+                        <input type="text" id="patName" placeholder="Patient name" required>
+                        <input type="text" id="patSurname" placeholder="Patient surname" required>
+                        
+                        <button type="submit">Unsubscribe patient from service</button>
+                </form>
+
+                <hr>
+
                 <p id="confirm"></p>
 
                 <form action="home.html">
@@ -194,6 +205,30 @@
                                         $("#reset").click();
                                         let confirmMsg = document.getElementById('confirm');
                                         confirmMsg.innerText = 'Sensor ('+sensor.text+') successfully updated!'
+                                }
+
+                        });
+                }
+                
+                function sendPOSTrequest_patDel() {
+
+                        event.preventDefault();
+                        name = $("#patName").val();
+                        surname = $("#patSurname").val();
+
+                        $.ajax({
+                                type: "POST",
+                                url: '/p_del',
+
+                                data: JSON.stringify({
+                                        name: name,
+                                        surname: surname
+                                }),
+                                contentType: "text/plain",
+                                dataType: "text",
+                                success: function() {
+                                        let confirmMsg = document.getElementById('confirm');
+                                        confirmMsg.innerText = 'Patient '+name+' '+surname+' successfully unsubscribed!'
                                 }
 
                         });
