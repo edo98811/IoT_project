@@ -354,6 +354,31 @@ class catalog():
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
 
+        elif uri[0] == "c_del":         #### DELETE CLINIC ####
+
+                                        # 	uri: /c_del
+                                        # 	body del post:
+                                        # 		{
+                                        # 			name: 
+                                        # 		})
+                    
+            cls = catalog['clinics']
+            body = json.loads(cherrypy.request.body.read())
+
+            cl2del = [c for c in cls if c['name'] == body['name']][0]
+            i = docs.index(cl2del)
+
+            cls.pop(i)
+
+            # Aggiorna il catalog
+            catalog["clinics"] = cls
+                        
+            # Salva su file il catalog aggiornato
+            with open(self.catalog_file,'w') as f:
+                json.dump(catalog,f,indent=4)
+
+
+
             
 
 
