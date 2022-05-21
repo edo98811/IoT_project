@@ -48,7 +48,7 @@ class alert_service:
         # i metodi per le procedure di allerta sono definiti sotto 
         print(measures)
         sensor_info_list = json.loads(requests.get(self.catalog_address + '/get_critical_info', params= {'patient_ID':patient_ID}).text)["sensors"]
-        sensor_info = json.loads(r.get(self.catalog_address + '/get_sensor_info',params = {"patient_ID":patient_ID}).text)
+        sensor_info = json.loads(r.get(self.catalog_address + '/get_sensors',params = {"patient_ID":patient_ID}).text)
 
     
         for n,measure in enumerate(measures):
