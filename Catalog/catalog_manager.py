@@ -84,13 +84,8 @@ class catalog():
 
             msg = next((p for p in catalog['patients'] if p['patient_ID'] ==  params["patient_ID"]), None)  
             return json.dumps(msg)
-<<<<<<< HEAD
-
-        elif uri[0] == 'get_patients':              # per ottenere la lista dei pazienti e le loro info
-=======
         
         elif uri[0] == 'get_patients':              # per tutte le info su un paziente singolo 
->>>>>>> origin/dockerizzazione
 
             # richiamato da location service
 
