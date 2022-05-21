@@ -41,32 +41,6 @@
                 "service_ID": "dc_2_342312",
                 "topic": "service/dc_1"
             }
-        },
-        {
-            "patient_ID": "p_2",
-            "personal_info": {
-                "name": "Davide",
-                "surname": "D'Adamo",
-                "chat_ID": "327778115"
-            },
-            "sensors": [
-                {
-                    "type_ID": "s_1",
-                    "is_critical": "personal",
-                    "safe_range": [
-                        60,
-                        130
-                    ]
-                }
-            ],
-            "TS_chID": 1738212,
-            "TS_wKey": "9J32418LJQHS2MEZ",
-            "TS_rKey": "BUIEI4TYDMHVPGE7",
-            "doctor_ID": "d_2",
-            "device_connector": {
-                "service_ID": "",
-                "topic": "service/dc_2"
-            }
         }
     ],
     "doctors": [
