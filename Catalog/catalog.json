@@ -127,12 +127,14 @@
         "location_service": {
             "host": "127.0.0.1",
             "port": "8083",
+            "docker_alias":"location_service:82",
             "service_ID": "location_service",
             "topic": "service/#"
         },
         "catalog_manager": {
             "host": "127.0.0.1",
             "port": "8081",
+            "docker_alias":"catalog:80",
             "service_ID": "catalog_manager",
             "address": "/catalog_manager"
         },
@@ -140,6 +142,7 @@
             "service_ID": "alert_service",
             "host": "127.0.0.1",
             "port": "8084",
+            "docker_alias":"alert_service:83",
             "topic": "service/#"
         },
         "weekly_report": {
@@ -167,7 +170,8 @@
         },
         "front_end": {
             "host": "127.0.0.1",
-            "port": "8082"
+            "port": "8082",
+            "docker_alias":"front_end"
         }
     }
 }

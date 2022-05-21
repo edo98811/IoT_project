@@ -17,8 +17,7 @@ class sensor_def():                                                     ### defi
         self.unit = unit
         
     # genera un numero casuale nel range impostato (self.range)
-    def get_reading_safe(self):       
-        #print(self.sensor_type_ID + '  '+ str(self.safe_range[0]) + ' ' + str(self.safe_range[1]) + ' alert range ' + str(self.range[0]) + '-'+ str(self.range[1]))                                   
+    def get_reading_safe(self):                                          
         value =  random.randint(self.safe_range[0],self.safe_range[1])
         print (value)
         return value
@@ -160,16 +159,14 @@ class device_connector():                                                 #class
 
 if __name__ == '__main__':
     
-####       CODICE DI "DEBUG" 
-                                                            # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
-    with open("config.json",'r') as f:                                               # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
-        catalog_address = json.load(f)["catalog_address"]                                                            # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
-#    host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
-#    port = cat["base_port"]
-#    catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
+####       CODICE DI "DEBUG"                                                            # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
+    with open("../Catalog/catalog.json",'r') as f:                                               # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
+        cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
+    host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
+    port = cat["base_port"]
+    catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
 ####
 
-    #catalog_address = 'http://127.0.0.1:8081/catalog_manager'
     # Di default il DC sa a quale paziente è associato, dunzue il patient_ID è definito all'interno del suo codice
     patient_ID = 'p_1'
     print(catalog_address)
@@ -181,6 +178,7 @@ if __name__ == '__main__':
                                 #             "port":catalog["device_connector"]["port"],
                                 #             "topic":pat["device_connector"]["topic"],
                                 #         }
+    
     # Definizione del DC_1
     print(json.dumps(patient_info ))
     device_connector1 = device_connector(patient_info ["broker"], patient_info ["port"], patient_ID, patient_info ["topic"],catalog_address)
@@ -191,22 +189,20 @@ if __name__ == '__main__':
     print(patient_info )
     device_connector2 = device_connector(patient_info ["broker"], patient_info ["port"], patient_ID, patient_info ["topic"], catalog_address)
 
-    count = 3
+    count=30
     while True:
-        time.sleep(15)
+        time.sleep(3)
+        print(count)
+        count=count-1
         if count==1:
             device_connector1.change()
             device_connector2.change()
         if count==0:
             device_connector1.change()
             device_connector2.change()
-            count=3
-
+            count=30
         device_connector1.get_readings()
         device_connector1.send()
-
         device_connector2.get_readings()
         device_connector2.send()
 
-        print(count)
-        count=count-1

@@ -1,5 +1,5 @@
 {
-    "catalog_address":"http://127.0.0.1:8081/catalog_manager",
+    "catalog_address":"http://catalog:80/catalog_manager",
     "base_host":"127.0.0.1",
     "base_port":"8081",
     "address":"/catalog_manager"

@@ -15,3 +15,5 @@ COPY . .
 
 #Run the python script
 ENTRYPOINT [ "python", "alert_service.py" ]
+
+EXPOSE 83
