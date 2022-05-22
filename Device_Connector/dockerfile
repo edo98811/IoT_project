@@ -15,6 +15,3 @@ COPY . .
 
 #Run the python script
 ENTRYPOINT [ "python", "device_connector.py" ]
-
-
-EXPOSE 80
