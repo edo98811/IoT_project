@@ -29,26 +29,25 @@ class TS_Adaptor:
         # self._message = {			
         #     'bn': "",               #patientID
         #     'bt': 0,                #basetime
-        #     'e': [],                #event objects array
-        #     'latitude': 0,       
-        #     'longitude': 0           #position data
+        #     't' : 0,                #timestamp
+        #     'e': []                #event objects array
 		# 	}
 
         # # template messaggio del sensore        
-        #     self._message['e'].append({                            
-        #         'n': s.sensor_ID,       #resource name
-        #         'vs': s.sensor_type,    #buh type_ID
+        #     self._message['e'] = [
+        #       {'n': 'lat', 'v': 7}, {'n': 'lon', 'v': 0},
+        #       append({                            
+        #         'n': s.sensor_type,       #resource name
         #         'v': 0,                 #value
-        #         't': 0,                 #timestamp
         #         'u': json.loads(requests.get(catalog_address+"/sensor-general-info", params={"type":s.sensor_type}).text)["unit"]
-        }#     })
+        }#      })
 
 
     def notify(self,topic,message):
         
         # Converte il messaggio in formato json
         message = json.loads(message)
-
+        
         # Ottiene il json del paziente da cui arriva il messaggio
         dc = int(topic.split('_')[-1])-1
         pat = json.loads(requests.get(catalog_address+'/get_patients').text)[dc]
@@ -65,16 +64,19 @@ class TS_Adaptor:
 
         inUpdates = deepcopy(self._inUpdates)
         bt = message['bt']
-        inUpdates['created_at'] = str(bt + message['e'][0]['t']).split('.')[0]
+        inUpdates['created_at'] = str(bt + message['t']).split('.')[0]
 
-        for s in message['e']:
-            i = s['n'].split('_')[-1]
+        fields = [s['type_ID'] for s in pat['sensors']]
+
+        for s in message['e'][2:]:
+            i = fields.index(s['n'])+1
             exec(f"inUpdates['field{i}'] = {s['v']}")
 
         body['updates'].append(inUpdates)
 
         # Inoltra la richiesta di POST
-        requests.post(newUrl,json=body)
+        resp = requests.post(newUrl,json=body)
+        print(f"{message['bn']} data updated")
 
 ##################################################################################################
 
@@ -102,10 +104,10 @@ if __name__ == "__main__":
 
     # Inizializza oggetto TS_Adaptor
     tsa = TS_Adaptor(broker, port, topic, catalog_address, url)
-
+    print(f"{broker}:{port}/{topic}\n\n{url} ")
     print("Adaptor started...")
 
     while True:
         time.sleep(3)
-        print('.')
+        print('...')
 

@@ -42,7 +42,6 @@ if __name__=='__main__':
   
     # Ottiene dal catalog l'indirizzo del servizio di location
     # s = requests.session() # session non dovrebbe servire a noi: https://realpython.com/python-requests/#the-session-object
-	connection_settings = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'alert_service'}).text)
 	MQTT_info = json.loads(r.get(catalog_address+"/get_service_info",params={'service_ID':'MQTT'}).text)
 	info_clinics=json.loads(r.get(catalog_address +"/get_clinics").text)
 
@@ -54,7 +53,7 @@ if __name__=='__main__':
 				k=1
 				print('Your clinics is subscriber!')
 				# carica i dati relativi al client MQTT e agli indirizzi del location service e del catalog manager
-				topic = connection_settings["topic"].split('/')[0]+'/'+p["clinic_ID"]
+				topic = p["clinic_topic"]
 				broker=MQTT_info["broker"]
 				port = MQTT_info['port']
 				service_ID = p["clinic_ID"]

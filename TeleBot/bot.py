@@ -1,4 +1,5 @@
 from operator import imod
+from pprint import pprint
 import telepot
 from telepot.loop import MessageLoop
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
@@ -80,11 +81,14 @@ class TeleBot:
         # ho trovato il paziente selezionato dal medico tramite inline Keyboard e restituisco una nuova inline keyboard
         # con i possibili sensori tra cui il medico deve scegliere (rimandare all'URL di thingspeak)
         question = 'Select the sensor you are interest about'
+        _url = json.loads(requests.get(f"{catalog_address}/get_service_info", params={"service_ID":"ThingSpeak"}).text)["url_get_data"]
         
         self.bot.sendMessage(chat_ID, text=question,
         reply_markup=InlineKeyboardMarkup(
             inline_keyboard=[
-                list(map(lambda c,i: InlineKeyboardButton(text=str(c), url=f"https://thingspeak.com/channels/{chID}/charts/{i}?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"), sensNames,range(1,len(sensNames)+1)))
+                list(map(
+                    lambda c,i,ID: InlineKeyboardButton(text=str(c), url=eval(f"f'{_url}'")), 
+                    sensNames, range(1,len(sensNames)+1), [chID]*len(sensNames)))
             ]
             )
         )
@@ -96,25 +100,57 @@ class TeleBot:
         
         # leggo il messaggio ed estraggo il chat_ID del medico a cui deve essere mandata la notifica 
         msg=json.loads(message) 
-        
-        print(json.dumps(msg))
-        #if topic == topic_alert:       
-        alert=msg["message"]
+
         chat_ID = msg["chat_ID"]
-        patient_ID = msg["patient_ID"]
-        topic_spit = topic.split("/")[-1]
+        
+        topic_split = topic.split("/")[-1]
 
-        if topic_spit == "personal_alert":   
+        personal_alert = json.loads(requests.get(
+            catalog_address +"/get_service_info",
+            params = {'service_ID':'telegram_bot'}).text)["personal_alert_topic"]
+        personal_alert = personal_alert.split("/")[-1]
+        
+        critical_alert = json.loads(requests.get(
+            catalog_address +"/get_service_info", 
+            params = {'service_ID':'telegram_bot'}).text)["critical_alert_topic"]
+        critical_alert = critical_alert.split("/")[-1]
+        
+
+        if topic_split == personal_alert:   
+            alert=msg["message"]
             personal_alert=f"ATTENTION!!!\n{alert}"
-            self.bot.sendMessage(chat_ID, text=personal_alert)
-
-        elif topic_spit == "critical_alert":
-            patient_ID = msg["patient_ID"]
-            critical_alert=f"ATTENTION {patient_ID}!!!\n{alert}"
-            self.bot.sendMessage(chat_ID, text=critical_alert)
-
-        #elif topic_spit == "weekly_report":
             
+            self.bot.sendMessage(chat_ID, text=personal_alert)
+            print(personal_alert)
+
+        elif topic_split == critical_alert:
+            alert=msg["message"]
+            full_name = msg["full_name"]
+            critical_alert=f"ATTENTION {full_name}!!!\n{alert}"
+            
+            self.bot.sendMessage(chat_ID, text=critical_alert)
+            print(critical_alert)
+
+        elif topic_split == "weekly_report":
+                # Template del messaggio MQTT:
+                #
+                #   msg = {
+                #       'chat_ID': ... ,
+                #       'full_name': ... ,
+                #       'sensors' : [ ... ],
+                #       'urls' : [ ... ]
+                #   }
+
+            text = [f"\tLast week data for patient {msg['full_name']}:\n"]
+            for s_name,url in zip(msg['sensors'],msg['urls']):
+                text.append(f"{s_name}:    {url}\n")
+            text = "\n".join(text)
+
+            self.bot.sendMessage(chat_ID, text=text)
+            print("WeeklyReport sent!")
+            
+
+
 
 
 if __name__ == "__main__":
