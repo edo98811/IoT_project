@@ -195,8 +195,13 @@ class catalog():
             resp = json.loads(requests.post("https://api.thingspeak.com/channels.json",b).text)
             
             # Definisce la nuova scheda paziente e la inserisce nella variabile locale che rappresenta il catalog
+            if pats:
+                newID = pats[-1]['patient_ID'].split('_')[-1]+1
+            else:
+                newID = 1
+            
             f_newPat={
-                "patient_ID": f"p_{pats[-1]['patient_ID'].split('_')[-1]+1}",
+                "patient_ID": f"p_{newID}",
                 "personal_info": {
                     "name": newPat["name"],
                     "surname": newPat["surname"],
@@ -243,8 +248,13 @@ class catalog():
             #         return f"Hi {newDoc['name']}, you are already registered!\nPlease log in and follow the procedure"
 
             # Definisce la nuova scheda dottore e la inserisce nella variabile locale che rappresenta il catalog
+            if docs:
+                newID = docs[-1]['doctor_ID'].split('_')[-1]+1
+            else:
+                newID = 1
+
             f_newDoc={
-                "doctor_ID": f"d_{docs[-1]['doctor_ID'].split('_')[-1]+1}",
+                "doctor_ID": f"d_{newID}",
                 "name": newDoc["name"],
                 "surname": newDoc["surname"],
                 "chatID" : newDoc["chatID"]
@@ -278,8 +288,13 @@ class catalog():
             #         return f"Your clinic is already registered!"
 
             # Definisce la nuova scheda dottore e la inserisce nella variabile locale che rappresenta il catalog
+            if cls:
+                newID = cls[-1]['clinic_ID'].split('_')[-1]+1
+            else:
+                newID = 1
+
             f_newCls={
-                "clinic_ID": f"d_{cls[-1]['clinic_ID'].split('_')[-1]+1}",
+                "clinic_ID": f"d_{newID}",
                 "clinic_name": newCls["name"],
                 "lon": newCls["lon"],
                 "lat" : newCls["lat"]
@@ -289,6 +304,33 @@ class catalog():
             # Aggiorna 'catalog.json'
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
+
+        elif uri[0] == "s_rec":         #### ADD SENSOR ####
+            sensors = catalog['sensors_type']
+
+            # Legge il body del POST richiesto da 'dev-rec.html'
+            newSen=json.loads(cherrypy.request.body.read())
+
+            # Definisce la nuova scheda sensore e la inserisce nella variabile locale che rappresenta il catalog
+            if sensors:
+                newID = sensors[-1]['type_ID'].split('_')[-1]+1
+            else:
+                newID = 1
+
+            f_newSen={
+                "type_ID": f"s_{newID}",
+                "type": newSen["type"],
+                "range": newSen["range"],
+                "unit": newSen["unit"]
+                }
+
+            catalog["sensors_type"].append(f_newSen)
+
+            # Aggiorna 'catalog.json'
+            with open(self.catalog_file,'w') as f:
+                json.dump(catalog,f,indent=4)
+
+
 
         elif uri[0] == "p_del":         #### DELETE PATIENT ####
 

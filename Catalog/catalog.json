@@ -68,7 +68,7 @@
             "type_ID": "s_1",
             "type": "Heart rate monitor",
             "range": [
-                60.0,
+                40.0,
                 180.0
             ],
             "unit": "bpm"
