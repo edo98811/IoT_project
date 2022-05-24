@@ -57,11 +57,11 @@ class device_connector():                                                 #class
 			}
         self._message['e'].append({                          
                 'n':'lat',
-                'v':0,
+                'v': random.uniform(45.0000, 45.1000),
             })
         self._message['e'].append({                            
                 'n':'lon',
-                'v':0,
+                'v': random.uniform(7.5000, 7.8400),
             })
         #inizializza una lista vuota in cui andrà a mettere gli oggetti sensore
         self._sensors = []
@@ -104,8 +104,8 @@ class device_connector():                                                 #class
     def get_readings(self): 
         self.message = deepcopy(self._message)
         # genera una posizione casuale vicina a quella attuale, latitudine e longitudine vengono modificati casualmente
-        self.message['e'][0]['v'] = self.message['e'][0]['v'] + random.randint(-10,+10) # ipotizzando che la posizione vari casualmente di questa quantità
-        self.message['e'][1]['v'] = self.message['e'][1]['v'] + random.randint(-10,+10)
+        self.message['e'][0]['v'] = self.message['e'][0]['v'] + random.randint(-10, 10)*0.0001 # ipotizzando che la posizione vari casualmente di questa quantità
+        self.message['e'][1]['v'] = self.message['e'][1]['v'] + random.randint(-10, 10)*0.0001 
 
         # itera su tutti i sensori memorizzati e aggiorna il contenuto dei campi del message, poi lo manda
         for n,sensor in enumerate(self._sensors):

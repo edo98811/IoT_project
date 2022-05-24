@@ -91,8 +91,8 @@
             "clinic_ID": "cl_1",
             "name": "St. Mary Clinic",
             "location": {
-                "longitude": "40000",
-                "latitude": "013000"
+                "longitude": "45.03726",
+                "latitude": "7.64310"
             },
             "clinic_topic": "alert/cl_1"
         }
