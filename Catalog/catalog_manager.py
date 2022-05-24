@@ -59,7 +59,9 @@ class catalog():
                     "type":s_type["type"],
                     "range":s_type["range"],
                     "safe_range":s_info["safe_range"],
-                    "unit":s_type["unit"]
+                    "unit":s_type["unit"],
+                    "over_safe":s_info["over_safe"],
+                    "under_safe":s_info["under_safe"]
                 }
 
                 # lo aggiunge ad una lista
