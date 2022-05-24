@@ -445,10 +445,6 @@ if __name__ == '__main__':
     host = cat["base_host"]                                                        
     port = cat["base_port"]
     catalog_address = "http://"+host+":"+port+cat["address"]
-
-    print(catalog_address)
-    # with open("./config.json",'r') as f:
-    #   catalog_address = json.load(f)["catalog_address"]
     
     with open('catalog.json','r') as f:
                 front_info = json.load(f)['services']['front_end']
