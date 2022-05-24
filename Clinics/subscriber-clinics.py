@@ -32,12 +32,13 @@ class Clinica1(object):					#Subscriber Clinica Alert
 
 
 if __name__=='__main__':
-	# catalog_address = "http://"+host+":"+port+cat["services"]["catalog_manager"]["address"]
-	with open("config.json",'r') as f:                                               # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
-		cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
+	
+	with open('config.json','r') as f:                                               
+		cat = json.load(f)    
 
-	catalog_address = cat["catalog_address"]
-
+	host = cat["base_host"]                                                        
+	port = cat["base_port"]
+	catalog_address = "http://"+host+":"+port+cat["address"]
 ####
   
     # Ottiene dal catalog l'indirizzo del servizio di location

@@ -62,9 +62,6 @@ if __name__ == "__main__":
     catalog_address = "http://"+host+":"+port+cat["address"]
     ####
 
-    #with open("config.json",'r') as f:
-    #    catalog_address = json.load(f)["catalog_address"]
-
     # Ottiene dal catalog l'indirizzo del servizio MQTT
     MQTT_info = json.loads(requests.get(catalog_address+"/get_service_info", params =  {'service_ID':'MQTT'}).text)
     broker = MQTT_info["broker"]
