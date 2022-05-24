@@ -78,10 +78,10 @@
         },
         {
             "type_ID": "s_3",
-            "type": "Sensorized courset",
+            "type": "Oximeter",
             "range": [
-                0,
-                1
+                40,
+                100
             ],
             "unit": "v"
         }
