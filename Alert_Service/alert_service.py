@@ -71,7 +71,7 @@ class alert_service:
                 if float(measure['v']) > float(is_critical['safe_range'][1]) or float(measure['v']) < float(is_critical['safe_range'][0]):
                     
                     patient_info = json.loads(r.get(self.catalog_address + '/get_patient_info',params = {"patient_ID":patient_ID}).text)
-                    problem = f"{patient_info['personal_info']['name']} {patient_info['personal_info']['surname']} - reading {sensor_info[n]['type']}: {measure['v']} {measure['u']}, out of safe range!"
+                    problem = f"{patient_info['personal_info']['name']} {patient_info['personal_info']['surname']} - reading {sensor_info[n]['type']}: {measure['v']} {measure['u']}, out of safe range!!!"
 
                     # se la misurazione è informativa (allerta solo al paziente)
                     if is_critical["is_critical"] == "personal":
