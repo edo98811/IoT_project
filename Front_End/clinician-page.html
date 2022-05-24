@@ -101,12 +101,12 @@
                         <p><label for="surname">Patient surname:</label>
                                 <input type="text" name="surname" id="surname" required>
                         </p>
+                        <br>
 
-                        <p><label for="devs">Sensor type</label>
+                        <p><label for="devs">Sensor type:</label>
                                 <select name="devs" id="devs" required>
                                 </select>
                         </p>
-
                         <p><label for="crit">Importance level:</label>
                                 <select name="crit" id="crit" required>
                                         <option value="not_critical">Not critical</option>
@@ -114,6 +114,7 @@
                                         <option value="critical">Critical</option>
                                 </select>
                         </p>
+                        <br>
 
                         <p>Safe range:</p>
                         <p>
@@ -122,8 +123,22 @@
                                 <label for="max">Maximum:</label>
                                 <input type="number" name="max" id="max" required>
                         </p>
+                        <br>
+                        
+                        <p><b>In case of <i>personal</i> importance level selected:</b></p>
+
+                        <p>
+                                <label for="overSafe">What should the patient do in case of value higher than safe range:</label>
+                                <textarea name="overSafe" id="overSafe" cols="60" rows="2" placeholder="Take two pills of this drug"></textarea>
+                        </p>
+                        <p>
+                                <label for="underSafe">What should the patient do in case of value lower than safe range:</label>
+                                <textarea name="underSafe" id="underSafe" cols="60" rows="2" placeholder="Rest lying horizontal for two minutes and call you doctor"></textarea>
+                        </p>
+
                         <button type="reset" id="reset">RESET</button>
                         <button type="submit">Update device</button>
+
 
                 </form>
 
@@ -176,7 +191,8 @@
                         crit = $("#crit").val();
                         min = $("#min").val();
                         max = $("#max").val();
-                        
+                        overSafe = $("#overSafe").val();
+                        underSafe = $("#underSafe").val();                        
 
                         $.ajax({
                                 type: "PUT",
@@ -187,7 +203,10 @@
                                         surname: surname,
                                         devID: devID,
                                         is_critical: crit,
-                                        safe_range: [min, max]
+                                        safe_range: [min, max],
+                                        over_safe: overSafe,
+                                        under_safe: underSafe
+
                                 }),
                                 contentType: "text/plain",
                                 dataType: "text",

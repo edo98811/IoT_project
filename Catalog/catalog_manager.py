@@ -401,7 +401,10 @@ class catalog():
                                         # 			surname: ,
                                         # 			devID: ,
                                         #           is_critical: ,
-                                        #           safe_range: ["min", "max"] 
+                                        #           safe_range: ["min", "max"],
+                                        #           over_safe: ,
+                                        #           under_safe:
+                                        #       }
 
             # Legge il body del POST richiesto da 'patient-rec.html' e lo visualizza nel terminal
             devInfo=json.loads(cherrypy.request.body.read())
@@ -425,6 +428,8 @@ class catalog():
             # Applica l'aggiornamento alla scheda sensore
             dev["is_critical"] = devInfo["is_critical"]
             dev["safe_range"] = [float(val) for val in devInfo["safe_range"]]
+            dev["over_safe"] = devInfo["over_safe"]
+            dev["under_safe"] = devInfo["under_safe"]
 
             # Aggiorna il catalog
             catalog["patients"][patInd]["sensors"][devInd] = dev
