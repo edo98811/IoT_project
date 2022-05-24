@@ -118,8 +118,7 @@ class TeleBot:
 
         if topic_split == personal_alert:   
             alert=msg["message"]
-            personal_alert=f"ATTENTION!!!\n{alert}"
-            
+            personal_alert=f"ATTENTION!!!\n{alert}" 
             self.bot.sendMessage(chat_ID, text=personal_alert)
             print(personal_alert)
 

@@ -57,11 +57,11 @@ class device_connector():                                                 #class
 			}
         self._message['e'].append({                          
                 'n':'lat',
-                'v':0,
+                'v': random.uniform(45.0000, 45.1000),
             })
         self._message['e'].append({                            
                 'n':'lon',
-                'v':0,
+                'v': random.uniform(7.5000, 7.8400),
             })
         #inizializza una lista vuota in cui andrà a mettere gli oggetti sensore
         self._sensors = []
@@ -104,8 +104,8 @@ class device_connector():                                                 #class
     def get_readings(self): 
         self.message = deepcopy(self._message)
         # genera una posizione casuale vicina a quella attuale, latitudine e longitudine vengono modificati casualmente
-        self.message['e'][0]['v'] = self.message['e'][0]['v'] + random.randint(-10,+10) # ipotizzando che la posizione vari casualmente di questa quantità
-        self.message['e'][1]['v'] = self.message['e'][1]['v'] + random.randint(-10,+10)
+        self.message['e'][0]['v'] = self.message['e'][0]['v'] + random.randint(-10, 10)*0.0001 # ipotizzando che la posizione vari casualmente di questa quantità
+        self.message['e'][1]['v'] = self.message['e'][1]['v'] + random.randint(-10, 10)*0.0001 
 
         # itera su tutti i sensori memorizzati e aggiorna il contenuto dei campi del message, poi lo manda
         for n,sensor in enumerate(self._sensors):
@@ -183,11 +183,11 @@ if __name__ == '__main__':
     print(json.dumps(patient_info ))
     device_connector1 = device_connector(patient_info ["broker"], patient_info ["port"], patient_ID, patient_info ["topic"],catalog_address)
     
-    # per simulare un sistema più complesso viene inizializzato un secondo device connector che funzionerà in parallelo al primo 
-    patient_ID = 'p_2'
-    patient_info  = json.loads(requests.get(catalog_address + '/get_dc_info' ,params = {"patient_ID":patient_ID}).text)
-    print(patient_info )
-    device_connector2 = device_connector(patient_info ["broker"], patient_info ["port"], patient_ID, patient_info ["topic"], catalog_address)
+    # # per simulare un sistema più complesso viene inizializzato un secondo device connector che funzionerà in parallelo al primo 
+    # patient_ID = 'p_2'
+    # patient_info  = json.loads(requests.get(catalog_address + '/get_dc_info' ,params = {"patient_ID":patient_ID}).text)
+    # print(patient_info )
+    # device_connector2 = device_connector(patient_info ["broker"], patient_info ["port"], patient_ID, patient_info ["topic"], catalog_address)
 
     count=30
     while True:
@@ -196,13 +196,13 @@ if __name__ == '__main__':
         count=count-1
         if count==1:
             device_connector1.change()
-            device_connector2.change()
+           # device_connector2.change()
         if count==0:
             device_connector1.change()
-            device_connector2.change()
+            #device_connector2.change()
             count=30
         device_connector1.get_readings()
         device_connector1.send()
-        device_connector2.get_readings()
-        device_connector2.send()
+        # device_connector2.get_readings()
+        # device_connector2.send()
 
