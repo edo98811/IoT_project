@@ -85,7 +85,7 @@
                 <hr>
 
                 <h2>New patient registration</h2>
-                <form action="patient-rec.html">
+                <form action="patient-rec">
                         <button>Go to patient registration page</button>
                 </form>
 
@@ -146,7 +146,7 @@
 
                 <p id="confirm"></p>
 
-                <form action="home.html">
+                <form action="home">
                         <button>Back to home</button>
                 </form>
         </div>
@@ -207,14 +207,11 @@
 
                                 }),
                                 contentType: "text/plain",
-                                dataType: "text", 
-                                // si aspetta una risposta text, magari json meglio, da esplorare con il .[key]
+                                dataType: "json",
                                 success: function(response) {
-                                        console.log(response)
-                                        let sensor = document.getElementById('devs')
                                         $("#reset").click();
                                         let confirmMsg = document.getElementById('confirm');
-                                        confirmMsg.innerText = 'Sensor ('+sensor.text+') successfully updated!'
+                                        confirmMsg.innerText = response.text
                                 }
 
                         });

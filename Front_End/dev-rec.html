@@ -106,15 +106,15 @@
         </form>
 
         <p id="confirm"></p>
-        <form action="home.html">
-            <button>Back to home</button>
+        <form action="patient-rec">
+            <button>Back to patient registration page</button>
         </form>
     </div>
 
     <script type="text/javascript">
 
-            function sendPOSTrequest() {//GESTIRE RISPOSTE
-
+            function sendPOSTrequest() {
+                
                     event.preventDefault();
 
                     type = $("#type").val();
@@ -132,11 +132,11 @@
                                 unit: unit
                             }),
                             contentType: "text/plain",
-                            dataType: "text",
-                            success: function() {
+                            dataType: "json",
+                            success: function(response) {
                                     $("#reset").click();
                                     let confirmMsg = document.getElementById('confirm');
-                                    confirmMsg.innerText = 'New device successfully added!'
+                                    confirmMsg.innerText = response.text
                             }
 
                     });
