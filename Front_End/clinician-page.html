@@ -153,9 +153,7 @@
 
         <script type="text/javascript">
 
-                const baseUrl = 'http://catalog:8081/catalog_manager'
-
-                url = baseUrl + '/avail_devs';
+                const url = '/avail_devs';
 
                 let devsDropdown = document.getElementById('devs');
                 devsDropdown.length = 0;
@@ -182,7 +180,7 @@
 
                         })
 
-                function sendPOSTrequest() {
+                function sendPOSTrequest() { // LAVORARE ALLE RISPOSTE
 
                         event.preventDefault();
                         name = $("#name").val();
@@ -209,8 +207,10 @@
 
                                 }),
                                 contentType: "text/plain",
-                                dataType: "text",
-                                success: function() {
+                                dataType: "text", 
+                                // si aspetta una risposta text, magari json meglio, da esplorare con il .[key]
+                                success: function(response) {
+                                        console.log(response)
                                         let sensor = document.getElementById('devs')
                                         $("#reset").click();
                                         let confirmMsg = document.getElementById('confirm');
