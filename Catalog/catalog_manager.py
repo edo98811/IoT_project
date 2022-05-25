@@ -199,7 +199,7 @@ class catalog():
             
             # Definisce la nuova scheda paziente e la inserisce nella variabile locale che rappresenta il catalog
             if pats:
-                newID = pats[-1]['patient_ID'].split('_')[-1]+1
+                newID = int(pats[-1]['patient_ID'].split('_')[-1])+1
             else:
                 newID = 1
             
@@ -217,7 +217,7 @@ class catalog():
                 "doctor_ID": newPat["docID"],
                 "device_connector": {
                     "service_ID": "",
-                    "topic": f"service/dc_{pats[-1]['patient_ID'].split('_')[-1]+1}"
+                    "topic": f"service/dc_{int(pats[-1]['patient_ID'].split('_')[-1])+1}"
                 }
             }
 
@@ -252,7 +252,7 @@ class catalog():
 
             # Definisce la nuova scheda dottore e la inserisce nella variabile locale che rappresenta il catalog
             if docs:
-                newID = docs[-1]['doctor_ID'].split('_')[-1]+1
+                newID = int(docs[-1]['doctor_ID'].split('_')[-1])+1
             else:
                 newID = 1
 
@@ -292,7 +292,7 @@ class catalog():
 
             # Definisce la nuova scheda dottore e la inserisce nella variabile locale che rappresenta il catalog
             if cls:
-                newID = cls[-1]['clinic_ID'].split('_')[-1]+1
+                newID = int(cls[-1]['clinic_ID'].split('_')[-1])+1
             else:
                 newID = 1
 
@@ -316,7 +316,7 @@ class catalog():
 
             # Definisce la nuova scheda sensore e la inserisce nella variabile locale che rappresenta il catalog
             if sensors:
-                newID = sensors[-1]['type_ID'].split('_')[-1]+1
+                newID = int(sensors[-1]['type_ID'].split('_')[-1])+1
             else:
                 newID = 1
 
