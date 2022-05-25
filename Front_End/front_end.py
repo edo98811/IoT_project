@@ -10,14 +10,19 @@ class FrontEnd:
     
     def GET(self, *uri, **params):
 
-        if uri[0] in ['avail_devs','avail_docs']:
+        if not uri[0]:
+            with open(f"./home.html",'r') as f:
+                view = f.read()
+            return view
+
+        elif uri[0] in ['avail_devs','avail_docs']:
             resp = requests.get(f"{self.catalog_address}/{uri[0]}")
             return resp
         
-        # Essendo l'uri corrispondente al nome del file html posso fare direttamente:
-        with open(f"./{uri[0]}.html",'r') as f:
-            view=f.read()
-        return view
+        else:
+            with open(f"./{uri[0]}.html",'r') as f:
+                view=f.read()
+            return view
 
     def POST(self, *uri, **params):
 
