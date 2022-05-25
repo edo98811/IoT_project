@@ -2,7 +2,8 @@
 FROM python:latest
 
 # Switch to app directory
-WORKDIR /Catalog
+WORKDIR /Catalog 
+# si puo togliere
 
 # Copy the requirements in to the app
 COPY requirements.txt ./

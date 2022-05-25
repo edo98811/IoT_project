@@ -11,7 +11,9 @@ services:
       - "8081:8081"
     expose:
       - 8081
-
+    volumes:
+      - ./Catalog:/Catalog
+    
   device_connector:
     container_name: device_connector
     image: tdevice_connector_1
@@ -54,7 +56,6 @@ services:
     expose:
       - 8082
 
-
   alert_service:
     container_name: alert_service
     image: alert_service_1
@@ -81,7 +82,6 @@ services:
     healthcheck:
       test: ["CMD", "curl" , "-f", "http://catalog:8081/catalog_manager/get_sensors?patient_ID=p_1"]
 
-
   tsAdaptor:
     container_name: tsAdaptor
     image: tsadaptor_1
@@ -94,7 +94,6 @@ services:
     healthcheck:
       test: ["CMD", "curl" , "-f", "http://catalog:8081/catalog_manager/get_sensors?patient_ID=p_1"]
 
-
   Weekly_report:
     container_name: Weekly_report
     image: weekly_report_1
@@ -106,7 +105,6 @@ services:
       - catalog
     healthcheck:
       test: ["CMD", "curl" , "-f", "http://catalog:8081/catalog_manager/get_sensors?patient_ID=p_1"]
-
 
 networks:
   project:
