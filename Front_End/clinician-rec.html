@@ -96,14 +96,14 @@
         </form>
 
         <p id="confirm"></p>
-        <form action="home.html">
+        <form action="home">
             <button>Back to home</button>
         </form>
     </div>
 
     <script type="text/javascript">
 
-        function sendPOSTrequest() { //GESTIRE RISPOSTE
+        function sendPOSTrequest() { 
             
             event.preventDefault();
             name = $("#name").val();
@@ -120,11 +120,11 @@
                     chatID: chatID
                 }),
                 contentType: "text/plain",
-                dataType: "text",
-                success: function() {
+                dataType: "json",
+                success: function(response) {
                     $("#reset").click();
                     let confirmMsg = document.getElementById('confirm');
-                    confirmMsg.innerText = 'Welcome Dr. ' + name + ' ' + surname + ', you have been successfully registered!'
+                    confirmMsg.innerText = response.text
                 }
             });
         }

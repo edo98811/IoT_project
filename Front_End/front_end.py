@@ -10,7 +10,7 @@ class FrontEnd:
     
     def GET(self, *uri, **params):
 
-        if not uri[0]:
+        if not uri:
             with open(f"./home.html",'r') as f:
                 view = f.read()
             return view
@@ -52,37 +52,6 @@ if __name__ == '__main__':
     port = cat["base_port"]
     catalog_address = f"http://{host}:{port}{cat['address']}"
 
-    # Corregge i 'baseUrl' in tutti i file html che fanno richieste di GET al catalog_manager
-    # Per i post viene adottata la strategia indicata dal prof. Orlando, ma per i get di riempimento 
-    # dei menù a tendina abbiamo scelto di conservare la richesta diretta al catalog manager
-    htmlFiles=[
-        'patient-rec.html',
-        'clinician-page.html'
-    ]
-
-    import re
-    for fileName in htmlFiles:
-        with open(fileName, 'r') as file:
-            lines = file.readlines()
-
-        l = -1;i = -1
-        for line in lines:
-            l+=1
-            if line.find("const baseUrl") != -1:
-                break
-
-        i = lines[l].find("//")
-        toSub = lines[l][i:]
-        new = "//"+host+":"+port+"/catalog_manager'\n"
-        lines[l] = re.sub(toSub,new,lines[l])
-
-        with open(fileName, 'w') as file:
-            file.writelines(lines)
-    ####
-    
-    # with open("./config.json",'r') as f:
-    #   catalog_address = json.load(f)["catalog_address"]
-
     service_info = json.loads(requests.get(f"{catalog_address}/get_service_info?service_ID=front_end").text)
     
     conf = {
@@ -92,7 +61,7 @@ if __name__ == '__main__':
         }
     }
 
-    cherrypy.tree.mount(FrontEnd('./'), '/', conf)
+    cherrypy.tree.mount(FrontEnd(catalog_address), '/', conf)
 
     cherrypy.config.update({'server.socket_host': service_info['host'],
                             'server.socket_port': int(service_info['port'])})
