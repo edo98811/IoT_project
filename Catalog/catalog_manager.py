@@ -279,7 +279,7 @@ class catalog():
 
             # Definisce la nuova scheda dottore e la inserisce nella variabile locale che rappresenta il catalog
             f_newCls={
-                "clinic_ID": f"d_{cls[-1]['clinic_ID'].split('_')[-1]+1}",
+                "clinic_ID": f"d_{int(cls[-1]['clinic_ID'].split('_')[-1])+1}",
                 "clinic_name": newCls["name"],
                 "lon": newCls["lon"],
                 "lat" : newCls["lat"]
