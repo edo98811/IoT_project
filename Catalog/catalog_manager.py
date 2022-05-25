@@ -294,11 +294,14 @@ class catalog():
                 newID = 1
 
             f_newCls={
-                "clinic_ID": f"c_{newID}",
+                "clinic_ID": f"cl_{newID}",
                 "name": newCls["name"],
-                "lon": newCls["lon"],
-                "lat" : newCls["lat"]
-                }
+                "location":{
+                    "lon": newCls["lon"],
+                    "lat" : newCls["lat"]
+                },
+                "topic": f"alert/cl_{newID}"
+            }
             catalog["clinics"].append(f_newCls)
 
             # Aggiorna 'catalog.json'
