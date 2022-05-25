@@ -77,7 +77,8 @@
 </head>
 
 <body>
-    <form onsubmit="sendPOSTrequest_clDel()">
+    <div class="rec-form">
+    <form onsubmit="sendDELrequest_clDel()">
         <h3>Clinic unsubscription</h3>
         
         <input type="text" id="clName" placeholder="Clinic name" required>
@@ -85,7 +86,7 @@
         <button type="submit">Unsubscribe clinic from service</button>
     </form>
 
-    <form onsubmit="sendPOSTrequest_patDel()">
+    <form onsubmit="sendDELrequest_patDel()">
         <h3>Patient unsubscription</h3>
 
         <input type="text" id="patName" placeholder="Patient name" required>
@@ -94,7 +95,7 @@
         <button type="submit">Unsubscribe patient from service</button>
     </form>
 
-    <form onsubmit="sendPOSTrequest_docDel()">
+    <form onsubmit="sendDELrequest_docDel()">
             <h3>Doctor unsubscription</h3>
             
             <input type="text" id="docName" placeholder="Doctor name" required>
@@ -110,13 +111,13 @@
 
     <script type="text/javascript">
 
-        function sendPOSTrequest_clDel() {
+        function sendDELrequest_clDel() { //GESTIRE RISPOSTE
 
             event.preventDefault();
             name = $("#clName").val();
 
             $.ajax({
-                    type: "POST",
+                    type: "DELETE",
                     url: '/c_del',
 
                     data: JSON.stringify({
@@ -132,14 +133,14 @@
             });
         }
 
-        function sendPOSTrequest_patDel() {
+        function sendDELrequest_patDel() { //GESTIRE RISPOSTE
 
             event.preventDefault();
             name = $("#patName").val();
             surname = $("#patSurname").val();
 
             $.ajax({
-                    type: "POST",
+                    type: "DELETE",
                     url: '/p_del',
 
                     data: JSON.stringify({
@@ -156,14 +157,14 @@
                 });
         }
 
-        function sendPOSTrequest_docDel() {
+        function sendDELrequest_docDel() { //GESTIRE RISPOSTE
 
             event.preventDefault();
             name = $("#docName").val();
             surname = $("#docSurname").val();
 
             $.ajax({
-                    type: "POST",
+                    type: "DELETE",
                     url: '/d_del',
 
                     data: JSON.stringify({
@@ -180,5 +181,6 @@
         }
 
     </script>
+    </div>
 </body>
 </html>

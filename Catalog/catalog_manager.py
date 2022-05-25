@@ -12,8 +12,10 @@ import os
 class catalog():
     exposed=True
 
+
     def __init__(self,catalog_file):
         self.catalog_file = catalog_file
+
 
     def GET(self,*uri,**params): 
 
@@ -141,6 +143,7 @@ class catalog():
         else: 
             #cherrypyerror
             pass
+
 
     def POST(self,*uri,**params):
         
@@ -331,8 +334,13 @@ class catalog():
                 json.dump(catalog,f,indent=4)
 
 
+    def DELETE(self, *uri, **params):
 
-        elif uri[0] == "p_del":         #### DELETE PATIENT ####
+        # Estrae il catalog dal file
+        with open(self.catalog_file,'r') as f:
+            catalog = json.load(f)
+
+        if uri[0] == "p_del":           #### DELETE PATIENT ####
 
                                         # 	uri: /p_del
                                         # 	body del post:
@@ -421,13 +429,6 @@ class catalog():
             # Salva su file il catalog aggiornato
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
-
-
-
-            
-
-
-
 
 
     def PUT(self,*uri,**params):
