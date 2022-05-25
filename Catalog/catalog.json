@@ -14,7 +14,9 @@
                     "safe_range": [
                         30.0,
                         70.0
-                    ]
+                    ],
+                    "over_safe": "__PROVA__",
+                    "under_safe": "__PROVA__"
                 },
                 {
                     "type_ID": "s_2",
@@ -22,7 +24,9 @@
                     "safe_range": [
                         130.0,
                         200.0
-                    ]
+                    ],
+                    "over_safe": "__PROVA__",
+                    "under_safe": "__PROVA__"
                 },
                 {
                     "type_ID": "s_3",
@@ -30,7 +34,9 @@
                     "safe_range": [
                         130.0,
                         200.0
-                    ]
+                    ],
+                    "over_safe": "__PROVA__",
+                    "under_safe": "__PROVA__"
                 }
             ],
             "TS_chID": 1726296,
@@ -62,7 +68,7 @@
             "type_ID": "s_1",
             "type": "Heart rate monitor",
             "range": [
-                60.0,
+                40.0,
                 180.0
             ],
             "unit": "bpm"

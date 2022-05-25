@@ -12,8 +12,10 @@ import os
 class catalog():
     exposed=True
 
+
     def __init__(self,catalog_file):
         self.catalog_file = catalog_file
+
 
     def GET(self,*uri,**params): 
 
@@ -142,6 +144,7 @@ class catalog():
             #cherrypyerror
             pass
 
+
     def POST(self,*uri,**params):
         
         # Estrae il catalog dal file
@@ -195,8 +198,13 @@ class catalog():
             resp = json.loads(requests.post("https://api.thingspeak.com/channels.json",b).text)
             
             # Definisce la nuova scheda paziente e la inserisce nella variabile locale che rappresenta il catalog
+            if pats:
+                newID = int(pats[-1]['patient_ID'].split('_')[-1])+1
+            else:
+                newID = 1
+            
             f_newPat={
-                "patient_ID": f"p_{pats[-1]['patient_ID'].split('_')[-1]+1}",
+                "patient_ID": f"p_{newID}",
                 "personal_info": {
                     "name": newPat["name"],
                     "surname": newPat["surname"],
@@ -209,7 +217,7 @@ class catalog():
                 "doctor_ID": newPat["docID"],
                 "device_connector": {
                     "service_ID": "",
-                    "topic": f"service/dc_{pats[-1]['patient_ID'].split('_')[-1]+1}"
+                    "topic": f"service/dc_{int(pats[-1]['patient_ID'].split('_')[-1])+1}"
                 }
             }
 
@@ -243,8 +251,13 @@ class catalog():
             #         return f"Hi {newDoc['name']}, you are already registered!\nPlease log in and follow the procedure"
 
             # Definisce la nuova scheda dottore e la inserisce nella variabile locale che rappresenta il catalog
+            if docs:
+                newID = int(docs[-1]['doctor_ID'].split('_')[-1])+1
+            else:
+                newID = 1
+
             f_newDoc={
-                "doctor_ID": f"d_{docs[-1]['doctor_ID'].split('_')[-1]+1}",
+                "doctor_ID": f"d_{newID}",
                 "name": newDoc["name"],
                 "surname": newDoc["surname"],
                 "chatID" : newDoc["chatID"]
@@ -278,8 +291,13 @@ class catalog():
             #         return f"Your clinic is already registered!"
 
             # Definisce la nuova scheda dottore e la inserisce nella variabile locale che rappresenta il catalog
+            if cls:
+                newID = int(cls[-1]['clinic_ID'].split('_')[-1])+1
+            else:
+                newID = 1
+
             f_newCls={
-                "clinic_ID": f"d_{int(cls[-1]['clinic_ID'].split('_')[-1])+1}",
+                "clinic_ID": f"d_{newID}",
                 "clinic_name": newCls["name"],
                 "lon": newCls["lon"],
                 "lat" : newCls["lat"]
@@ -290,7 +308,39 @@ class catalog():
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
 
-        elif uri[0] == "p_del":         #### DELETE PATIENT ####
+        elif uri[0] == "s_rec":         #### ADD SENSOR ####
+            sensors = catalog['sensors_type']
+
+            # Legge il body del POST richiesto da 'dev-rec.html'
+            newSen=json.loads(cherrypy.request.body.read())
+
+            # Definisce la nuova scheda sensore e la inserisce nella variabile locale che rappresenta il catalog
+            if sensors:
+                newID = int(sensors[-1]['type_ID'].split('_')[-1])+1
+            else:
+                newID = 1
+
+            f_newSen={
+                "type_ID": f"s_{newID}",
+                "type": newSen["type"],
+                "range": newSen["range"],
+                "unit": newSen["unit"]
+                }
+
+            catalog["sensors_type"].append(f_newSen)
+
+            # Aggiorna 'catalog.json'
+            with open(self.catalog_file,'w') as f:
+                json.dump(catalog,f,indent=4)
+
+
+    def DELETE(self, *uri, **params):
+
+        # Estrae il catalog dal file
+        with open(self.catalog_file,'r') as f:
+            catalog = json.load(f)
+
+        if uri[0] == "p_del":           #### DELETE PATIENT ####
 
                                         # 	uri: /p_del
                                         # 	body del post:
@@ -379,13 +429,6 @@ class catalog():
             # Salva su file il catalog aggiornato
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
-
-
-
-            
-
-
-
 
 
     def PUT(self,*uri,**params):

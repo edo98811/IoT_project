@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+                integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <title>New device registration</title>
+
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: sans-serif;
+        }
+
+        body{
+            background-size: cover;
+            background-color: skyblue;
+            color: black ;
+            width: 100%;
+            height: 100%;
+        }
+
+        #map{
+            width: 400px;
+            height: 300px;
+        }
+
+        .rec-form{
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%,0%);
+            width: 600px;
+        }
+
+        .rec-form h1{
+            text-align: center;
+            text-transform: uppercase;
+            margin: 40px;
+        }
+
+        .rec-form h2{
+            text-align: center;
+            margin: 15px;
+        }
+
+        .rec-form p{
+            margin: 5px;
+        }
+
+        .rec-form input{
+            padding: 2px 5px;
+            width: 100%;
+            border: 0;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .rec-form button{
+            font-weight: bold;
+            margin: 20px 0px;
+            padding: 10px 15px;
+            border: 0;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+
+        .rec-form button:hover{
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="rec-form">
+        <h1>New device registration page</h1>
+        
+        <hr>
+
+        <form onsubmit="sendPOSTrequest()">
+            <h2>Device info</h2>
+            <p><label for="type">Measure type:</label>
+            <input type="text" name="type" id="type" placeholder="Heart rate monitor" required></p>
+            <br>
+
+            <p>Measure range:</p>
+                        <p>
+                                <label for="min">Minimum:</label>
+                                <input type="number" name="min" id="min" placeholder="40" required>
+                                <label for="max">Maximum:</label>
+                                <input type="number" name="max" id="max" placeholder="180" required>
+                        </p>
+                        <br>
+
+            <p><label for="unit">Unit:</label>
+            <input type="text" id="unit" name="unit" placeholder="bpm" required></p>
+            <br>
+
+            <button type="reset" id="reset">RESET</button>
+            <button type="submit">REGISTER</button>
+        </form>
+
+        <p id="confirm"></p>
+        <form action="home.html">
+            <button>Back to home</button>
+        </form>
+    </div>
+
+    <script type="text/javascript">
+
+            function sendPOSTrequest() {//GESTIRE RISPOSTE
+
+                    event.preventDefault();
+
+                    type = $("#type").val();
+                    min = $("#min").val();
+                    max = $("#max").val();
+                    unit = $("#unit").val();
+
+                    $.ajax({
+                            type: "POST",
+                            url: '/s_rec',
+
+                            data: JSON.stringify({
+                                type: type,
+                                range: [min, max],
+                                unit: unit
+                            }),
+                            contentType: "text/plain",
+                            dataType: "text",
+                            success: function() {
+                                    $("#reset").click();
+                                    let confirmMsg = document.getElementById('confirm');
+                                    confirmMsg.innerText = 'New device successfully added!'
+                            }
+
+                    });
+            } 
+            
+    </script>
+
+</body>
+</html>

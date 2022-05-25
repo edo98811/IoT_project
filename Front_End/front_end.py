@@ -9,22 +9,36 @@ class FrontEnd:
         self.catalog_address = catalog_address
     
     def GET(self, *uri, **params):
-                
-        # Essendo l'uri corrispondente al nome del file html posso fare direttamente:
-        with open(f"./{uri[0]}",'r') as f:
-            view=f.read()
-        return view
+
+        if not uri[0]:
+            with open(f"./home.html",'r') as f:
+                view = f.read()
+            return view
+
+        elif uri[0] in ['avail_devs','avail_docs']:
+            resp = requests.get(f"{self.catalog_address}/{uri[0]}")
+            return resp
+        
+        else:
+            with open(f"./{uri[0]}.html",'r') as f:
+                view=f.read()
+            return view
 
     def POST(self, *uri, **params):
 
         body = json.loads(cherrypy.request.body.read())
-        resp = requests.post(f"{catalog_address}/{uri[0]}", json=body)
+        resp = requests.post(f"{self.catalog_address}/{uri[0]}", json=body)
         return resp
         
     def PUT(self, *uri, **params):
 
         body = json.loads(cherrypy.request.body.read())
-        requests.put(f"{catalog_address}/{uri[0]}", json=body)
+        resp = requests.put(f"{self.catalog_address}/{uri[0]}", json=body)
+        return resp
+
+# In javascript devo dire ad ajax di aspettarsi un json (dataType = json) in risposta,
+# quindi il metodo nel server dovrà ritornare la risposta di cat_man (la quale deve essere un json),
+# e all'interno di tale dizionario potrò muovermi utilizzando la notazione [obj].[key] 
 
 #####################################################################################
 

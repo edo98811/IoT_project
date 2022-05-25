@@ -61,7 +61,8 @@ class TeleBot:
             # se nessun messaggio e' riconosciuto rimando la lista dei possibili comandi
             self.bot.sendMessage(chat_ID, text="Command not supported. The available command are:\n\
     /start: if you want to know your ChatID\n\
-    /report: if you want the report of a patient\n")
+    /report: if you want the report of a patient\n\
+    /quit: exit?\n")
             
 
 
@@ -117,8 +118,7 @@ class TeleBot:
 
         if topic_split == personal_alert:   
             alert=msg["message"]
-            personal_alert=f"ATTENTION!!!\n{alert}"
-            
+            personal_alert=f"ATTENTION!!!\n{alert}" 
             self.bot.sendMessage(chat_ID, text=personal_alert)
             print(personal_alert)
 

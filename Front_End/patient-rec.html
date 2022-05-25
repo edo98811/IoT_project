@@ -102,6 +102,10 @@
                 <select name="devs" id="devs" multiple> 
                 </select></p>
             
+            <p><i>If you need a device not shown in this list, please fill the form to <b>add a new device</b> to the system</i></p>
+            <form action="dev-rec.html">
+                <button>Register a new device</button>
+            </form>
             
             <button type="reset" id="reset">RESET</button>
             <button type="submit">REGISTER</button>
@@ -117,7 +121,7 @@
     
     <script type="text/javascript">
 
-        const baseUrl = 'http://catalog:8081/catalog_manager'
+        const url = '/avail_docs';
 
         let docsDropdown = document.getElementById('docs');
         docsDropdown.length = 0;
@@ -127,8 +131,6 @@
         
         docsDropdown.add(docsDefaultOption);
         docsDropdown.selectedIndex = 0;
-
-        var url = baseUrl+'/avail_docs';
 
         fetch(url)
             .then((response) => {
@@ -146,7 +148,7 @@
 
             })
 
-        url = baseUrl +'/avail_devs';
+        url = '/avail_devs';
 
         let devsDropdown = document.getElementById('devs');
         devsDropdown.length = 0;
@@ -173,7 +175,7 @@
 
             })
         
-        function sendPOSTrequest() {
+        function sendPOSTrequest() { //GESTIRE RISPOSTE
             
             event.preventDefault();
             name = $("#name").val();
