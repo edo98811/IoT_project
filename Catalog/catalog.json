@@ -101,13 +101,19 @@
                 "latitude": "7.64310"
             },
             "clinic_topic": "alert/cl_1"
+        },
+        {
+            "clinic_ID": "d_2",
+            "clinic_name": "fgukhvjk",
+            "lon": "9.758",
+            "lat": "6.868"
         }
     ],
     "services": {
         "location_service": {
             "host": "location_service",
             "port": "8083",
-            "docker_alias":"location_service:82",
+            "docker_alias": "location_service:82",
             "service_ID": "location_service",
             "topic": "service/#"
         },
@@ -126,7 +132,7 @@
         "front_end": {
             "host": "front_end",
             "port": "8082",
-            "docker_alias":"front_end"
+            "docker_alias": "front_end"
         },
         "weekly_report": {
             "service_ID": "weekly_report"

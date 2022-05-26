@@ -107,11 +107,15 @@
     <hr>
 
     <p id="confirm"></p>
+
+    <form action="home">
+        <button>Back to home</button>
+    </form>
     </div>
 
     <script type="text/javascript">
 
-        function sendDELrequest_clDel() { //GESTIRE RISPOSTE
+        function sendDELrequest_clDel() { 
 
             event.preventDefault();
             name = $("#clName").val();
@@ -124,16 +128,16 @@
                             name: name
                     }),
                     contentType: "text/plain",
-                    dataType: "text",
-                    success: function() {
+                    dataType: "json",
+                    success: function(response) {
                             let confirmMsg = document.getElementById('confirm');
-                            confirmMsg.innerText = 'Clinic '+name+' successfully unsubscribed!'
+                            confirmMsg.innerText = response.text
                     }
 
             });
         }
 
-        function sendDELrequest_patDel() { //GESTIRE RISPOSTE
+        function sendDELrequest_patDel() { 
 
             event.preventDefault();
             name = $("#patName").val();
@@ -148,16 +152,16 @@
                             surname: surname
                     }),
                     contentType: "text/plain",
-                    dataType: "text",
-                    success: function() {
+                    dataType: "json",
+                    success: function(response) {
                             let confirmMsg = document.getElementById('confirm');
-                            confirmMsg.innerText = 'Patient '+name+' '+surname+' successfully unsubscribed!'
+                            confirmMsg.innerText = response.text
                     }
 
                 });
         }
 
-        function sendDELrequest_docDel() { //GESTIRE RISPOSTE
+        function sendDELrequest_docDel() { 
 
             event.preventDefault();
             name = $("#docName").val();
@@ -172,10 +176,10 @@
                             surname: surname
                     }),
                     contentType: "text/plain",
-                    dataType: "text",
+                    dataType: "json",
                     success: function(response) {
                             let confirmMsg = document.getElementById('confirm');
-                            confirmMsg.innerText = 'Doctor '+name+' '+surname+' successfully unsubscribed!'
+                            confirmMsg.innerText = response.text
                     }
             });
         }
