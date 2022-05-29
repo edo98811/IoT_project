@@ -16,7 +16,7 @@ services:
     
   device_connector:
     container_name: device_connector
-    image: tdevice_connector_1
+    image: device_connector_1
     build: ./device_connector
     networks:
       - project
