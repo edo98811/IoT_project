@@ -94,7 +94,7 @@
     ],
     "clinics": [
         {
-            "clinic_ID": "c_1",
+            "clinic_ID": "cl_1",
             "name": "St. Mary Clinic",
             "location": {
                 "longitude": "45.03726",
