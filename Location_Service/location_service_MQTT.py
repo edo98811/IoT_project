@@ -120,7 +120,7 @@ class location_service():
                 clinic_location = clinic['location']
 
                 #calcolo della piu vicina con la distanza euclidea
-                d = math.dist([int(patient_location['longitude']),int(patient_location['latitude'])],[int(clinic_location["longitude"]),int(clinic_location["latitude"])])
+                d = math.dist([float(patient_location['longitude']),float(patient_location['latitude'])],[float(clinic_location["longitude"]),float(clinic_location["latitude"])])
 
                 # se dist_temp è vuota (prima iterazione) la inizializza a d
                 try:

@@ -17,7 +17,7 @@ class Clinica1(object):					#Subscriber Clinica Alert
 	def notify(self,topic, msg):
 		#Messaggio ricevuto dall'Alert Service
 		msg=json.loads(msg)
-		patientID=msg['p_ID']
+		patientID=msg['patient_ID']
 		name=msg['full_name']
 		latitudine=msg['patient_location']['latitude']
 		longitudine=msg['patient_location']['longitude']
@@ -45,6 +45,7 @@ if __name__=='__main__':
     # s = requests.session() # session non dovrebbe servire a noi: https://realpython.com/python-requests/#the-session-object
 	MQTT_info = json.loads(r.get(catalog_address+"/get_service_info",params={'service_ID':'MQTT'}).text)
 	info_clinics=json.loads(r.get(catalog_address +"/get_clinics").text)
+	basetopic = MQTT_info['baseTopic']
 
 	while True:
 		k=0
@@ -55,7 +56,7 @@ if __name__=='__main__':
 				name_clinics=p['name']
 				print(f'Your clinics {name_clinics} is subscriber!')
 				# carica i dati relativi al client MQTT e agli indirizzi del location service e del catalog manager
-				topic = p["clinic_topic"]
+				topic = basetopic+'/'+p["clinic_topic"]
 				broker=MQTT_info["broker"]
 				port = MQTT_info['port']
 				service_ID = p["clinic_ID"]

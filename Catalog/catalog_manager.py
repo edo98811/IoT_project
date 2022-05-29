@@ -297,10 +297,10 @@ class catalog():
                 "clinic_ID": f"cl_{newID}",
                 "name": newCls["name"],
                 "location":{
-                    "lon": newCls["lon"],
-                    "lat" : newCls["lat"]
+                    "longitude": newCls["lon"],
+                    "latitude" : newCls["lat"]
                 },
-                "topic": f"alert/cl_{newID}"
+                "clinic_topic": f"alert/cl_{newID}"
             }
             catalog["clinics"].append(f_newCls)
 
