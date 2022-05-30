@@ -26,8 +26,10 @@ class catalog():
         if uri[0] == 'get_dc_info':                 # per informazioni necessarie per l'avvio del device connector
 
             # richiamato da device connector    
-
-            patient = next((p for p in catalog['patients'] if p['patient_ID'] == params['patient_ID'] ), None) 
+            try:
+                patient = next((p for p in catalog['patients'] if p['patient_ID'] == params['patient_ID'] ), None) 
+            except:
+                raise cherrypy.HTTPError(500, f"invalid parameter sent, patient not registered")
 
             msg = {
                 "broker":catalog["services"]["MQTT"]["broker"],
@@ -42,7 +44,11 @@ class catalog():
             # richiamato da device connector
           
             # prende le info del paziente a recupera la lista dei sensori
-            patient = next((p for p in catalog['patients'] if p['patient_ID'] == params['patient_ID'] ), None)
+            try:
+                patient = next((p for p in catalog['patients'] if p['patient_ID'] == params['patient_ID'] ), None)
+            except: 
+                raise cherrypy.HTTPError(500, f"invalid parameter sent, patient not registered")
+
             sensors_info = patient["sensors"]
             sensors = []
 
@@ -82,8 +88,12 @@ class catalog():
 
 
             # richiamato da alert service
+            try:
+                msg = next((p for p in catalog['patients'] if p['patient_ID'] ==  params["patient_ID"]), None)  
+            except: 
+                raise cherrypy.HTTPError(500, f"invalid parameter sent, patient not registered")
 
-            msg = next((p for p in catalog['patients'] if p['patient_ID'] ==  params["patient_ID"]), None)  
+        
             return json.dumps(msg)
         
         elif uri[0] == 'get_patients':              # per tutte le info su un paziente singolo 
@@ -95,10 +105,17 @@ class catalog():
         elif uri[0] == 'get_doctor_info':           # per il dottore associato ad un paziente
             
             # prima trova il paziente per cui devo ricercare il medico
-            patient = next((p for p in catalog['patients'] if p['patient_ID'] == params["patient_ID"] ), None) 
+            try:
+                patient = next((p for p in catalog['patients'] if p['patient_ID'] == params["patient_ID"] ), None)
+            except: 
+                raise cherrypy.HTTPError(500, f"invalid parameter sent, patient not registered")
+
 
             # poi cerco le informazioni del medico salvate nella lista dei medici
-            msg = next((d for d in catalog['doctors'] if d['doctor_ID'] == patient["doctor_ID"]), None) 
+            try:
+                msg = next((d for d in catalog['doctors'] if d['doctor_ID'] == patient["doctor_ID"]), None) 
+            except: 
+                raise cherrypy.HTTPError(500, f"patient's doctor not registered")
 
             return json.dumps(msg)
 
@@ -138,9 +155,7 @@ class catalog():
             return json.dumps(patient)
         
         else: 
-            #cherrypyerror
-            pass
-
+            raise cherrypy.HTTPError(500, f"{uri[0]} it is not an available command")
 
     def POST(self,*uri,**params):
         
@@ -311,6 +326,7 @@ class catalog():
             return json.dumps({"text": f"Clinic {newCls['name']} successfully registered!"})
 
         elif uri[0] == "s_rec":         #### ADD SENSOR ####
+
             sensors = catalog['sensors_type']
 
             # Legge il body del POST richiesto da 'dev-rec.html'
@@ -337,6 +353,8 @@ class catalog():
             
             return json.dumps({"text": f"Sensor {newSen['type']} successfully registered!"})
 
+        else: 
+            raise cherrypy.HTTPError(500, f"{uri[0]} it is not an available command")
 
     def DELETE(self, *uri, **params):
 
@@ -465,6 +483,9 @@ class catalog():
 
             return json.dumps({"text": f"Clinic {body['name']} successfully unsubscribed!"})
 
+        else: 
+            raise cherrypy.HTTPError(500, f"{uri[0]} it is not an available command")
+
     def PUT(self,*uri,**params):
         
         # Estrae il catalog dal file
@@ -525,7 +546,8 @@ class catalog():
                 json.dump(catalog,f,indent=4)
 
             return json.dumps({"text": f"Device information successfully updated!"})
-
+        else: 
+            raise cherrypy.HTTPError(500, f"{uri[0]} it is not an available command")
             
 #####################################################################################################
 
