@@ -1,9 +1,8 @@
 import json
 import time
-import requests
+import requests as r
 
 from MyMQTT import *
-import requests as r
     
 class alert_service:
     def __init__(self, broker, port, ID, topic,location_service,catalog_address):
@@ -13,6 +12,8 @@ class alert_service:
         self.catalog_address = catalog_address 
         self.location_service = location_service
         self.baseTopic = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'MQTT'}).text)["baseTopic"]
+        self.time_s = time.time()
+        self.tl = 10 # time limit 
 
     def notify(self, topic, msg): 
 
@@ -47,7 +48,7 @@ class alert_service:
         # itera lungo le misurazioni dei singoli sensori e controlla la criticità associata ad essa, nel caso ci sia un problema richiama i metodi di notifica 
         # i metodi per le procedure di allerta sono definiti sotto 
         # print(measures)
-        sensor_info_list = json.loads(requests.get(self.catalog_address + '/get_critical_info', params= {'patient_ID':patient_ID}).text)["sensors"]
+        sensor_info_list = json.loads(r.get(self.catalog_address + '/get_critical_info', params= {'patient_ID':patient_ID}).text)["sensors"]
         sensor_info = json.loads(r.get(self.catalog_address + '/get_sensors',params = {"patient_ID":patient_ID}).text)
 
     
@@ -71,22 +72,22 @@ class alert_service:
                 part1 = f"Pay attention {patient_info['personal_info']['name']} {patient_info['personal_info']['surname']}!\n\
                     Your device ({sensor_info[n]['type']}) is recording a value outside of your safe range"
                 
-                if float(measure['v']) > float(is_critical['safe_range'][1]):
+                if float(measure['v']) > float(is_critical['safe_range'][1]) and time.time - self.time_s > self.tl:
                     part2 = f"({measure['v']} {sensor_info[n]['unit']} > {is_critical['safe_range'][1]} {sensor_info[n]['unit']})\n\
                         Please, follow this measure (suggested by your personal doctor):\n\
                         {sensor_info[n]['over_safe']}"
                     self.personal_alert(patient_ID,f"{part1} {part2}")
+                    self.time_s = time.time()
 
-                elif float(measure['v']) < float(is_critical['safe_range'][0]):
+                elif float(measure['v']) < float(is_critical['safe_range'][0]) and time.time - self.time_s > self.tl:
                     part2 = f"({measure['v']} {sensor_info[n]['unit']} < {is_critical['safe_range'][1]} {sensor_info[n]['unit']})\n\
                         Please, follow this measure (suggested by your personal doctor):\n\
                         {sensor_info[n]['under_safe']}"
-
                     self.personal_alert(patient_ID,f"{part1} {part2}")
-
+                    self.time_s = time.time()
 
             elif is_critical["is_critical"] == "critical":
-                if float(measure['v']) > float(is_critical['safe_range'][1]) or float(measure['v']) < float(is_critical['safe_range'][0]):
+                if float(measure['v']) > float(is_critical['safe_range'][1]) or float(measure['v']) < float(is_critical['safe_range'][0]) and time.time - self.time_s > self.tl:
                     problem = f"Warning! Critical event ongoing for patient: {patient_info['personal_info']['name']} {patient_info['personal_info']['surname']}\n\
                         Recorded by device: {sensor_info[n]['type']}\n\
                         Value: {measure['v']} {sensor_info[n]['unit']}\n\
@@ -95,7 +96,9 @@ class alert_service:
                             \tlon = {msg['e'][1]['v']}\n\
                         "
                     self.critical_alert(patient_ID,problem) # a questo punto chiamo la funzione alert (basta richiamarlo ogni volta)
-            
+                    self.time_s = time.time()
+            else: 
+                pass
                 
     # allerta critica (medico e clinica)
     def critical_alert(self,patient_ID,problem):
@@ -203,7 +206,7 @@ if __name__ =='__main__':
 ####
   
     # Ottiene dal catalog l'indirizzo del servizio di location
-    # s = requests.session() # session non dovrebbe servire a noi: https://realpython.com/python-requests/#the-session-object
+    # s = r.session() # session non dovrebbe servire a noi: https://realpython.com/python-r/#the-session-object
 
     settings = json.loads(r.get(f"{catalog_address}/get_service_info", params={'service_ID': 'alert_service'}).text)
     mqtt_settings = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'MQTT'}).text)
