@@ -70,31 +70,37 @@ class alert_service:
 
             elif is_critical["is_critical"] == "personal":
                 part1 = f"Pay attention {patient_info['personal_info']['name']} {patient_info['personal_info']['surname']}!\n\
-                    Your device ({sensor_info[n]['type']}) is recording a value outside of your safe range"
+Your device ({sensor_info[n]['type']}) is recording a value outside of your safe range"
                 
                 if float(measure['v']) > float(is_critical['safe_range'][1]) and time.time - self.time_s > self.tl:
                     part2 = f"({measure['v']} {sensor_info[n]['unit']} > {is_critical['safe_range'][1]} {sensor_info[n]['unit']})\n\
-                        Please, follow this measure (suggested by your personal doctor):\n\
-                        {sensor_info[n]['over_safe']}"
+Please, follow this measure (suggested by your personal doctor):\n\
+        {sensor_info[n]['over_safe']}"
                     self.personal_alert(patient_ID,f"{part1} {part2}")
                     self.time_s = time.time()
 
                 elif float(measure['v']) < float(is_critical['safe_range'][0]) and time.time - self.time_s > self.tl:
                     part2 = f"({measure['v']} {sensor_info[n]['unit']} < {is_critical['safe_range'][1]} {sensor_info[n]['unit']})\n\
+<<<<<<< HEAD
                         Please, follow this measure (suggested by your personal doctor):\n\
                         {sensor_info[n]['under_safe']}"
+=======
+Please, follow this measure (suggested by your personal doctor):\n\
+        {sensor_info[n]['under_safe']}"
+
+>>>>>>> 93d720908c407d571379f93412dc68222316133e
                     self.personal_alert(patient_ID,f"{part1} {part2}")
                     self.time_s = time.time()
 
             elif is_critical["is_critical"] == "critical":
                 if float(measure['v']) > float(is_critical['safe_range'][1]) or float(measure['v']) < float(is_critical['safe_range'][0]) and time.time - self.time_s > self.tl:
                     problem = f"Warning! Critical event ongoing for patient: {patient_info['personal_info']['name']} {patient_info['personal_info']['surname']}\n\
-                        Recorded by device: {sensor_info[n]['type']}\n\
-                        Value: {measure['v']} {sensor_info[n]['unit']}\n\
-                        Patient location:\n\
-                            \tlat = {msg['e'][0]['v']}\n\
-                            \tlon = {msg['e'][1]['v']}\n\
-                        "
+Recorded by device: {sensor_info[n]['type']}\n\
+Value: {measure['v']} {sensor_info[n]['unit']}\n\
+Patient location:\n\
+    \tlat = {msg['e'][0]['v']}\n\
+    \tlon = {msg['e'][1]['v']}\n\
+"
                     self.critical_alert(patient_ID,problem) # a questo punto chiamo la funzione alert (basta richiamarlo ogni volta)
                     self.time_s = time.time()
             else: 
