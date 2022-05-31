@@ -47,6 +47,49 @@
                 "service_ID": "dc_2_342312",
                 "topic": "service/dc_1"
             }
+        },
+        {
+            "patient_ID": "p_2",
+            "personal_info": {
+                "name": "Giovanni",
+                "surname": "Giorgio",
+                "chat_ID": "486580635"
+            },
+            "sensors": [
+                {
+                    "type_ID": "s_1",
+                    "is_critical": "critical",
+                    "safe_range": [
+                        50.0,
+                        140.0
+                    ],
+                    "over_safe": "",
+                    "under_safe": ""
+                },
+                {
+                    "type_ID": "s_2",
+                    "is_critical": "informative",
+                    "safe_range": [
+                        70.0,
+                        180.0
+                    ],
+                    "over_safe": "take insuline fast!",
+                    "under_safe": "take glucose"
+                },
+                {
+                    "type_ID": "s_3",
+                    "is_critical": "",
+                    "safe_range": []
+                }
+            ],
+            "TS_chID": 1753812,
+            "TS_wKey": "ZNIV5NU0FMQQ20JT",
+            "TS_rKey": "857R9G8QO6HI7F46",
+            "doctor_ID": "d_2",
+            "device_connector": {
+                "service_ID": "hgihf",
+                "topic": "service/dc_2"
+            }
         }
     ],
     "doctors": [
@@ -80,16 +123,16 @@
                 20.0,
                 300.0
             ],
-            "unit": "mg/l"
+            "unit": "mg/dl"
         },
         {
             "type_ID": "s_3",
-            "type": "Sensorized courset",
+            "type": "oximeter",
             "range": [
-                0,
-                1
+                70,
+                100
             ],
-            "unit": "v"
+            "unit": "spO2"
         }
     ],
     "clinics": [
