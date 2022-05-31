@@ -78,39 +78,43 @@
 
 <body>
     <div class="rec-form">
-    <form onsubmit="sendDELrequest_clDel()">
-        <h3>Clinic unsubscription</h3>
-        
-        <input type="text" id="clName" placeholder="Clinic name" required>
-        
-        <button type="submit">Unsubscribe clinic from service</button>
-    </form>
+        <h1>User unsubscription page</h1>
+        <hr>
+        <br>
 
-    <form onsubmit="sendDELrequest_patDel()">
-        <h3>Patient unsubscription</h3>
-
-        <input type="text" id="patName" placeholder="Patient name" required>
-        <input type="text" id="patSurname" placeholder="Patient surname" required>
-        
-        <button type="submit">Unsubscribe patient from service</button>
-    </form>
-
-    <form onsubmit="sendDELrequest_docDel()">
-            <h3>Doctor unsubscription</h3>
+        <form onsubmit="sendDELrequest_clDel()">
+            <h3>Clinic unsubscription</h3>
             
-            <input type="text" id="docName" placeholder="Doctor name" required>
-            <input type="text" id="docSurname" placeholder="Doctor surname" required>
+            <input type="text" id="clName" placeholder="Clinic name" required>
             
-            <button type="submit">Unsubscribe doctor from service</button>
-    </form>
+            <button type="submit">Unsubscribe clinic from service</button>
+        </form>
 
-    <hr>
+        <form onsubmit="sendDELrequest_patDel()">
+            <h3>Patient unsubscription</h3>
 
-    <p id="confirm"></p>
+            <input type="text" id="patName" placeholder="Patient name" required>
+            <input type="text" id="patSurname" placeholder="Patient surname" required>
+            
+            <button type="submit">Unsubscribe patient from service</button>
+        </form>
 
-    <form action="home">
-        <button>Back to home</button>
-    </form>
+        <form onsubmit="sendDELrequest_docDel()">
+                <h3>Doctor unsubscription</h3>
+                
+                <input type="text" id="docName" placeholder="Doctor name" required>
+                <input type="text" id="docSurname" placeholder="Doctor surname" required>
+                
+                <button type="submit">Unsubscribe doctor from service</button>
+        </form>
+
+        <hr>
+
+        <p id="confirm"></p>
+
+        <form action="home">
+            <button>Back to home</button>
+        </form>
     </div>
 
     <script type="text/javascript">
