@@ -24,11 +24,11 @@ class Clinica1(object):					#Subscriber Clinica Alert
 		problema=msg['message']
 		doctor=msg['doctor_name']
 		chat_id=msg['chat_ID']
-		print(f'ATTENTION!\n The patient {name} pID:{patientID} needs an ambulance at the coordinates lat:{latitudine} long:{longitudine}!\n Suffers from {problema} , contact his Doctor {doctor} chat ID number:{chat_id}')
+		print(f'ATTENTION!\nPatient:{patientID}\n{problema}\ncontact his Doctor {doctor} chat ID number:{chat_id}')
 		#stampo a video l'indirizzo del bot che conduce alla mappa
 		#print(f'\n https://www.latlong.net/c/?lat=&long=')
 		url_maps= (json.loads(r.get(catalog_address+"/get_service_info",params={'service_ID':'Clinics_client'}).text)['url_maps']).split('&')
-		print (f'link looking at the position: {url_maps[0]}{latitudine}&{url_maps[1]}{longitudine}')
+		print (f'link to find out the position: {url_maps[0]}{latitudine}&{url_maps[1]}{longitudine}')
 
 
 
