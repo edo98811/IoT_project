@@ -101,6 +101,24 @@
                 "latitude": "7.64310"
             },
             "clinic_topic": "alert/cl_1"
+        },
+        {
+            "clinic_ID": "cl_2",
+            "name": "San Paolo",
+            "location": {
+                "longitude": "7.542",
+                "latitude": "45.837"
+            },
+            "clinic_topic": "alert/cl_2"
+        },
+        {
+            "clinic_ID": "cl_3",
+            "name": "prova 2",
+            "location": {
+                "longitude": "7.345",
+                "latitude": "45.463"
+            },
+            "clinic_topic": "alert/cl_3"
         }
     ],
     "services": {
