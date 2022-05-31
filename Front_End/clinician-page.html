@@ -85,7 +85,7 @@
                 <hr>
 
                 <h2>New patient registration</h2>
-                <form action="patient-rec.html">
+                <form action="patient-rec">
                         <button>Go to patient registration page</button>
                 </form>
 
@@ -146,16 +146,14 @@
 
                 <p id="confirm"></p>
 
-                <form action="home.html">
+                <form action="home">
                         <button>Back to home</button>
                 </form>
         </div>
 
         <script type="text/javascript">
 
-                const baseUrl = 'http://catalog:8081/catalog_manager'
-
-                url = baseUrl + '/avail_devs';
+                const url = '/avail_devs';
 
                 let devsDropdown = document.getElementById('devs');
                 devsDropdown.length = 0;
@@ -209,12 +207,11 @@
 
                                 }),
                                 contentType: "text/plain",
-                                dataType: "text",
-                                success: function() {
-                                        let sensor = document.getElementById('devs')
+                                dataType: "json",
+                                success: function(response) {
                                         $("#reset").click();
                                         let confirmMsg = document.getElementById('confirm');
-                                        confirmMsg.innerText = 'Sensor ('+sensor.text+') successfully updated!'
+                                        confirmMsg.innerText = response.text
                                 }
 
                         });

@@ -11,18 +11,18 @@ services:
       - "8081:8081"
     expose:
       - 8081
-
+    volumes:
+      - ./Catalog:/Catalog
+    
   device_connector:
     container_name: device_connector
-    image: tdevice_connector_1
+    image: device_connector_1
     build: ./device_connector
     networks:
       - project
     #network_mode: host
     depends_on:
       - catalog
-    healthcheck:
-      test: ["CMD", "curl" , "-f", "http://catalog:8081/catalog_manager/get_sensors?patient_ID=p_1"]
 
   location_service:
     container_name: location_service
@@ -33,8 +33,6 @@ services:
     #network_mode: host
     depends_on:
       - catalog
-    healthcheck:
-      test: ["CMD", "curl" , "-f", "http://catalog:8081/catalog_manager/get_sensors?patient_ID=p_1"]
     expose:
       - 8083
 
@@ -47,13 +45,10 @@ services:
     #network_mode: host
     depends_on:
       - catalog
-    healthcheck:
-      test: ["CMD", "curl" , "-f", "http://catalog:8081/catalog_manager/get_sensors?patient_ID=p_1"]
     ports:
       - "8082:8082"
     expose:
       - 8082
-
 
   alert_service:
     container_name: alert_service
@@ -64,8 +59,6 @@ services:
     #network_mode: host
     depends_on:
       - catalog
-    healthcheck:
-      test: ["CMD", "curl" , "-f", "http://catalog:8081/catalog_manager/get_sensors?patient_ID=p_1"]
     expose:
       - 8084
 
@@ -78,9 +71,6 @@ services:
     #network_mode: host
     depends_on:
       - catalog
-    healthcheck:
-      test: ["CMD", "curl" , "-f", "http://catalog:8081/catalog_manager/get_sensors?patient_ID=p_1"]
-
 
   tsAdaptor:
     container_name: tsAdaptor
@@ -91,9 +81,6 @@ services:
     #network_mode: host
     depends_on:
       - catalog
-    healthcheck:
-      test: ["CMD", "curl" , "-f", "http://catalog:8081/catalog_manager/get_sensors?patient_ID=p_1"]
-
 
   Weekly_report:
     container_name: Weekly_report
@@ -104,9 +91,6 @@ services:
     #network_mode: host
     depends_on:
       - catalog
-    healthcheck:
-      test: ["CMD", "curl" , "-f", "http://catalog:8081/catalog_manager/get_sensors?patient_ID=p_1"]
-
 
 networks:
   project:

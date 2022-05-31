@@ -75,24 +75,26 @@ class alert_service:
                     part2 = f"({measure['v']} {sensor_info[n]['unit']} > {is_critical['safe_range'][1]} {sensor_info[n]['unit']})\n\
                         Please, follow this measure (suggested by your personal doctor):\n\
                         {sensor_info[n]['over_safe']}"
+                    self.personal_alert(patient_ID,f"{part1} {part2}")
 
                 elif float(measure['v']) < float(is_critical['safe_range'][0]):
                     part2 = f"({measure['v']} {sensor_info[n]['unit']} < {is_critical['safe_range'][1]} {sensor_info[n]['unit']})\n\
                         Please, follow this measure (suggested by your personal doctor):\n\
                         {sensor_info[n]['under_safe']}"
 
-                self.personal_alert(patient_ID,f"{part1} {part2}")
+                    self.personal_alert(patient_ID,f"{part1} {part2}")
 
 
             elif is_critical["is_critical"] == "critical":
-                problem = f"Warning! Critical event ongoing for patient: {patient_info['personal_info']['name']} {patient_info['personal_info']['surname']}\n\
+                if float(measure['v']) > float(is_critical['safe_range'][1]) or float(measure['v']) < float(is_critical['safe_range'][0]):
+                    problem = f"Warning! Critical event ongoing for patient: {patient_info['personal_info']['name']} {patient_info['personal_info']['surname']}\n\
                         Recorded by device: {sensor_info[n]['type']}\n\
                         Value: {measure['v']} {sensor_info[n]['unit']}\n\
                         Patient location:\n\
                             \tlat = {msg['e'][0]['v']}\n\
                             \tlon = {msg['e'][1]['v']}\n\
-                            "
-                self.critical_alert(patient_ID,problem) # a questo punto chiamo la funzione alert (basta richiamarlo ogni volta)
+                        "
+                    self.critical_alert(patient_ID,problem) # a questo punto chiamo la funzione alert (basta richiamarlo ogni volta)
             
                 
     # allerta critica (medico e clinica)
@@ -147,6 +149,7 @@ class alert_service:
 
             # messaggio mandato alla clinica
             self.alert_service.myPublish(basetopic + '/'+ nearest_clinic_topic, msg)
+            print (f'message correctly sent - topic:{nearest_clinic_topic}')
 
             # messaggio mandato al medico
             telebot_critical = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'telegram_bot'}).text)["critical_alert_topic"]

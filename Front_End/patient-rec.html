@@ -78,7 +78,11 @@
         
         <hr>
         <!-- in action si inserisce l'url del server a cui fare il get/post -->
-        
+        <p><i><b>Attention!</b> If you need a device not shown in the list below, please fill the form to <b>add a new device</b> to the system</i></p>
+            <form action="dev-rec">
+                <button>Register a new device</button>
+            </form>
+            
         <form onsubmit="sendPOSTrequest()">
         <!-- <form action="results.html" method="GET"> -->
             
@@ -102,14 +106,13 @@
                 <select name="devs" id="devs" multiple> 
                 </select></p>
             
-            
             <button type="reset" id="reset">RESET</button>
             <button type="submit">REGISTER</button>
         </form>
 
         <p id="confirm"></p>
         
-        <form action="clinician-page.html">
+        <form action="clinician-page">
             <button>Back to your personal page</button>
         </form>
     </div>
@@ -117,7 +120,7 @@
     
     <script type="text/javascript">
 
-        const baseUrl = 'http://catalog:8081/catalog_manager'
+        var url = 'avail_docs';
 
         let docsDropdown = document.getElementById('docs');
         docsDropdown.length = 0;
@@ -127,8 +130,6 @@
         
         docsDropdown.add(docsDefaultOption);
         docsDropdown.selectedIndex = 0;
-
-        var url = baseUrl+'/avail_docs';
 
         fetch(url)
             .then((response) => {
@@ -146,7 +147,7 @@
 
             })
 
-        url = baseUrl +'/avail_devs';
+        url = 'avail_devs';
 
         let devsDropdown = document.getElementById('devs');
         devsDropdown.length = 0;
@@ -173,7 +174,7 @@
 
             })
         
-        function sendPOSTrequest() {
+        function sendPOSTrequest() { 
             
             event.preventDefault();
             name = $("#name").val();
@@ -194,11 +195,11 @@
                     devID: devID
                 }),
                 contentType: "text/plain",
-                dataType: "text",
-                success: function() {
+                dataType: "json",
+                success: function(response) {
                     $("#reset").click();
                     let confirmMsg = document.getElementById('confirm');
-                    confirmMsg.innerText = 'Patient ' + name + ' ' + surname + ' successfully registered!'
+                    confirmMsg.innerText = response.text
                 }
             });
         }

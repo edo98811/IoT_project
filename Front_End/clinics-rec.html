@@ -100,14 +100,14 @@
 
         <p id="confirm"></p>
 
-        <form action="home.html">
+        <form action="home">
             <button>Back to home</button>
         </form>
     </div>
 
     <script type="text/javascript">
 
-        function sendPOSTrequest() {
+        function sendPOSTrequest() { 
             
             event.preventDefault();
             name = $("#name").val();
@@ -124,11 +124,12 @@
                     lat: lat
                 }),
                 contentType: "text/plain",
-                dataType: "text",
-                success: function() {
+                dataType: "json",
+                success: function(response) {
+                    console.log(response)
                     $("#reset").click();
                     let confirmMsg = document.getElementById('confirm');
-                    confirmMsg.innerText = 'Welcome ' + name + ', clinic successfully registered!'
+                    confirmMsg.innerText = response.text
                 }                 
             });
         }

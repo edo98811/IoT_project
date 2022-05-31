@@ -12,8 +12,10 @@ import os
 class catalog():
     exposed=True
 
+
     def __init__(self,catalog_file):
         self.catalog_file = catalog_file
+
 
     def GET(self,*uri,**params): 
 
@@ -24,11 +26,10 @@ class catalog():
         if uri[0] == 'get_dc_info':                 # per informazioni necessarie per l'avvio del device connector
 
             # richiamato da device connector    
-
-            # questa funzione crea un iterator della lista e mi restituisce le informazioni 
-            # sul paziente identificato dal patient_ID passato alla funzione
-            # spiegato male: un iterator è un oggetto che applica una funzione ad un altro oggetto 
-            patient = next((p for p in catalog['patients'] if p['patient_ID'] == params['patient_ID'] ), None) 
+            try:
+                patient = next((p for p in catalog['patients'] if p['patient_ID'] == params['patient_ID'] ), None) 
+            except:
+                raise cherrypy.HTTPError(500, f"invalid parameter sent, patient not registered")
 
             msg = {
                 "broker":catalog["services"]["MQTT"]["broker"],
@@ -43,7 +44,11 @@ class catalog():
             # richiamato da device connector
           
             # prende le info del paziente a recupera la lista dei sensori
-            patient = next((p for p in catalog['patients'] if p['patient_ID'] == params['patient_ID'] ), None)
+            try:
+                patient = next((p for p in catalog['patients'] if p['patient_ID'] == params['patient_ID'] ), None)
+            except: 
+                raise cherrypy.HTTPError(500, f"invalid parameter sent, patient not registered")
+
             sensors_info = patient["sensors"]
             sensors = []
 
@@ -83,8 +88,12 @@ class catalog():
 
 
             # richiamato da alert service
+            try:
+                msg = next((p for p in catalog['patients'] if p['patient_ID'] ==  params["patient_ID"]), None)  
+            except: 
+                raise cherrypy.HTTPError(500, f"invalid parameter sent, patient not registered")
 
-            msg = next((p for p in catalog['patients'] if p['patient_ID'] ==  params["patient_ID"]), None)  
+        
             return json.dumps(msg)
         
         elif uri[0] == 'get_patients':              # per tutte le info su un paziente singolo 
@@ -96,10 +105,17 @@ class catalog():
         elif uri[0] == 'get_doctor_info':           # per il dottore associato ad un paziente
             
             # prima trova il paziente per cui devo ricercare il medico
-            patient = next((p for p in catalog['patients'] if p['patient_ID'] == params["patient_ID"] ), None) 
+            try:
+                patient = next((p for p in catalog['patients'] if p['patient_ID'] == params["patient_ID"] ), None)
+            except: 
+                raise cherrypy.HTTPError(500, f"invalid parameter sent, patient not registered")
+
 
             # poi cerco le informazioni del medico salvate nella lista dei medici
-            msg = next((d for d in catalog['doctors'] if d['doctor_ID'] == patient["doctor_ID"]), None) 
+            try:
+                msg = next((d for d in catalog['doctors'] if d['doctor_ID'] == patient["doctor_ID"]), None) 
+            except: 
+                raise cherrypy.HTTPError(500, f"patient's doctor not registered")
 
             return json.dumps(msg)
 
@@ -139,8 +155,7 @@ class catalog():
             return json.dumps(patient)
         
         else: 
-            #cherrypyerror
-            pass
+            raise cherrypy.HTTPError(500, f"{uri[0]} it is not an available command")
 
     def POST(self,*uri,**params):
         
@@ -165,11 +180,10 @@ class catalog():
             # Legge il body del POST richiesto da 'patient-rec.html' e lo visualizza nel terminal
             newPat=json.loads(cherrypy.request.body.read())
 
-            # CONTROLLO DA RISCRIVERE
-            # # Se il paziente è gia registrato mostra un banner di errore e indica di compiere il log-in
-            # for p in pats:
-            #     if (p["personal_info"]["nome"]+p["personal_info"]["cognome"]).lower == (newPat["name"]+newPat["surname"]).lower:
-            #         return f"Hi {newPat['name']}, you are already registered!\nTo add a new device, please log in and follow the procedure"
+            # Se il paziente è gia registrato mostra un messaggio di errore
+            for p in pats:
+                if (p["personal_info"]["name"]+p["personal_info"]["surname"]).lower() == (newPat["name"]+newPat["surname"]).lower():
+                    return json.dumps({"text": f"{newPat['name']} {newPat['surname']} was already registered"})
 
             # Definisce la lista di sensori del nuovo paziente
             newPatDevs=[]
@@ -195,8 +209,13 @@ class catalog():
             resp = json.loads(requests.post("https://api.thingspeak.com/channels.json",b).text)
             
             # Definisce la nuova scheda paziente e la inserisce nella variabile locale che rappresenta il catalog
+            if pats:
+                newID = int(pats[-1]['patient_ID'].split('_')[-1])+1
+            else:
+                newID = 1
+            
             f_newPat={
-                "patient_ID": f"p_{pats[-1]['patient_ID'].split('_')[-1]+1}",
+                "patient_ID": f"p_{newID}",
                 "personal_info": {
                     "name": newPat["name"],
                     "surname": newPat["surname"],
@@ -209,7 +228,7 @@ class catalog():
                 "doctor_ID": newPat["docID"],
                 "device_connector": {
                     "service_ID": "",
-                    "topic": f"service/dc_{pats[-1]['patient_ID'].split('_')[-1]+1}"
+                    "topic": f"service/dc_{int(pats[-1]['patient_ID'].split('_')[-1])+1}"
                 }
             }
 
@@ -220,6 +239,8 @@ class catalog():
             # Salva su file il catalog aggiornato
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
+
+            return json.dumps({"text": f"Patient {newPat['name']} {newPat['surname']} successfully registered!"})
 
         elif uri[0] == "d_rec":         #### ADD DOCTOR ####
 
@@ -236,15 +257,19 @@ class catalog():
             # Legge il body del POST richiesto da 'patient-rec.html' e lo visualizza nel terminal
             newDoc=json.loads(cherrypy.request.body.read())
             
-                # CONTROLLO
-            # # Se il paziente è gia registrato mostra un banner di errore e indica di compiere il log-in
-            # for d in docs:
-            #     if (d["personal_info"]["nome"]+d["personal_info"]["cognome"]).lower == (newDoc["name"]+newDoc["surname"]).lower:
-            #         return f"Hi {newDoc['name']}, you are already registered!\nPlease log in and follow the procedure"
+            # Se il medico è gia registrato mostra un messaggio di errore
+            for d in docs:
+                if (d["name"]+d["surname"]).lower() == (newDoc["name"]+newDoc["surname"]).lower():
+                    return json.dumps({"text": f"{newDoc['name']} {newDoc['surname']} is already registered"})
 
             # Definisce la nuova scheda dottore e la inserisce nella variabile locale che rappresenta il catalog
+            if docs:
+                newID = int(docs[-1]['doctor_ID'].split('_')[-1])+1
+            else:
+                newID = 1
+
             f_newDoc={
-                "doctor_ID": f"d_{docs[-1]['doctor_ID'].split('_')[-1]+1}",
+                "doctor_ID": f"d_{newID}",
                 "name": newDoc["name"],
                 "surname": newDoc["surname"],
                 "chatID" : newDoc["chatID"]
@@ -254,6 +279,8 @@ class catalog():
             # Aggiorna 'catalog.json'
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
+
+            return json.dumps({"text": f"Doctor {newDoc['name']} {newDoc['surname']} successfully registered!"})
 
         elif uri[0] == "c_rec":         #### ADD CLINIC ####
 
@@ -269,28 +296,73 @@ class catalog():
 
             # Legge il body del POST richiesto da 'patient-rec.html' e lo visualizza nel terminal
             newCls=json.loads(cherrypy.request.body.read())
-            print(newCls)
 
-                # CONTROLLO
-            # # Se la clinica è gia registrata mostra un banner di errore e indica di compiere il log-in
-            # for c in cls:
-            #     if (c["clinic_name"]).lower == (newCls["name"]).lower:
-            #         return f"Your clinic is already registered!"
+            # Se la clinica è gia registrata mostra un messaggio di errore
+            for c in cls:
+                if c["name"].lower() == newCls["name"].lower():
+                    return json.dumps({"text": f"Clinic {newCls['name']} was already registered"})
 
-            # Definisce la nuova scheda dottore e la inserisce nella variabile locale che rappresenta il catalog
+            # Definisce la nuova scheda clinics e la inserisce nella variabile locale che rappresenta il catalog
+            if cls:
+                newID = int(cls[-1]['clinic_ID'].split('_')[-1])+1
+            else:
+                newID = 1
+
             f_newCls={
-                "clinic_ID": f"d_{cls[-1]['clinic_ID'].split('_')[-1]+1}",
-                "clinic_name": newCls["name"],
-                "lon": newCls["lon"],
-                "lat" : newCls["lat"]
-                }
+                "clinic_ID": f"cl_{newID}",
+                "name": newCls["name"],
+                "location":{
+                    "longitude": newCls["lon"],
+                    "latitude" : newCls["lat"]
+                },
+                "clinic_topic": f"alert/cl_{newID}"
+            }
             catalog["clinics"].append(f_newCls)
 
             # Aggiorna 'catalog.json'
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
 
-        elif uri[0] == "p_del":         #### DELETE PATIENT ####
+            return json.dumps({"text": f"Clinic {newCls['name']} successfully registered!"})
+
+        elif uri[0] == "s_rec":         #### ADD SENSOR ####
+
+            sensors = catalog['sensors_type']
+
+            # Legge il body del POST richiesto da 'dev-rec.html'
+            newSen=json.loads(cherrypy.request.body.read())
+
+            # Definisce la nuova scheda sensore e la inserisce nella variabile locale che rappresenta il catalog
+            if sensors:
+                newID = int(sensors[-1]['type_ID'].split('_')[-1])+1
+            else:
+                newID = 1
+
+            f_newSen={
+                "type_ID": f"s_{newID}",
+                "type": newSen["type"],
+                "range": newSen["range"],
+                "unit": newSen["unit"]
+                }
+
+            catalog["sensors_type"].append(f_newSen)
+
+            # Aggiorna 'catalog.json'
+            with open(self.catalog_file,'w') as f:
+                json.dump(catalog,f,indent=4)
+            
+            return json.dumps({"text": f"Sensor {newSen['type']} successfully registered!"})
+
+        else: 
+            raise cherrypy.HTTPError(500, f"{uri[0]} it is not an available command")
+
+    def DELETE(self, *uri, **params):
+
+        # Estrae il catalog dal file
+        with open(self.catalog_file,'r') as f:
+            catalog = json.load(f)
+
+        if uri[0] == "p_del":           #### DELETE PATIENT ####
 
                                         # 	uri: /p_del
                                         # 	body del post:
@@ -302,19 +374,27 @@ class catalog():
             pats = catalog["patients"]
             body = json.loads(cherrypy.request.body.read())
 
-            pat2del = [p for p in pats if p['personal_info']['name']+p['personal_info']['surname'] == body['name']+body['surname']][0]
+            # Controllo sulla correttezza del nome inserito
+            i = -1
+            for n,p in enumerate(pats):
+                if p['personal_info']['name']+p['personal_info']['surname'] == body['name']+body['surname']:
+                    i = n
+            if i == -1:
+                return json.dumps({"text": f"There is no patient named '{body['name']} {body['surname']}' in the system"})
+            
+            pat2del = pats[i]
+            
             chan2del = pat2del['TS_chID']
-            APIkey = catalog['services']['ThingSpeak']
-            i = pats.index(pat2del)
+            APIkey = catalog['services']['ThingSpeak']['api_key']
 
             # Eliminazione della scheda paziente
             pats.pop(i) 
 
             # Eliminazione canale TS
             TS_uri = catalog['services']['ThingSpeak']['url_delete_channel'].split('/')
-            TS_uri[-1] = f"{pat2del['TS_chID']}.json"
+            TS_uri[-1] = f"{chan2del}.json"
             url = '/'.join(TS_uri)
-            requests.delete(url,json={'api_key':catalog['services']['ThingSpeak']['api_key']})
+            requests.delete(url,json={'api_key':APIkey})
 
             # Aggiorna il catalog
             catalog["patients"] = pats
@@ -323,6 +403,8 @@ class catalog():
             # Salva su file il catalog aggiornato
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
+
+            return json.dumps({"text": f"Patient {body['name']} {body['surname']} successfully removed from the system!"})
 
         elif uri[0] == "d_del":         #### DELETE DOCTOR ####
         
@@ -336,26 +418,40 @@ class catalog():
             docs = catalog['doctors']
             body = json.loads(cherrypy.request.body.read())
 
-            doc2del = [d for d in docs if d['name']+d['surname'] == body['name']+body['surname']][0]
-            i = docs.index(doc2del)
+            # Controllo sulla correttezza del nome inserito
+            i = -1
+            for n,d in enumerate(docs):
+                if d['name']+d['surname'] == body['name']+body['surname']:
+                    i = n
+            if i == -1:
+                return json.dumps({"text": f"There is no doctor named '{body['name']} {body['surname']}' in the system"})
+            
+
+            doc2del = docs[i]
+
             docID = doc2del['doctor_ID']
 
             pats = catalog['patients']
             stillPats = [p for p in pats if p['doctor_ID'] == docID]
 
-            if not stillPats:
-                docs.pop(i)
-            else:
-                # Sono ancora iscritti pazienti a cui è assegnato il medico
-                # che si vuole eliminare, restituire un messaggio di errore
-                raise cherrypy.HTTPError(message='The doctor has still patients subscribed to the platform')
+            if stillPats:
+                msg = f"Doctor {body['name']} {body['surname']} has some patients still registered to the system:<br>"
+                for p in stillPats:
+                    msg += f"{p['personal_info']['name']} {p['personal_info']['surname']}<br>"
+                msg += "<br>Once these patients will be unsubscribed, the doctor will be able to unsubscribe too"
+                return json.dumps({"text": msg})
 
+            else:
+                docs.pop(i)
+            
             # Aggiorna il catalog
             catalog["doctors"] = docs
                         
             # Salva su file il catalog aggiornato
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
+
+            return json.dumps({"text": f"Doctor {body['name']} {body['surname']} successfully unsubscribed!"})
 
         elif uri[0] == "c_del":         #### DELETE CLINIC ####
 
@@ -368,9 +464,14 @@ class catalog():
             cls = catalog['clinics']
             body = json.loads(cherrypy.request.body.read())
 
-            cl2del = [c for c in cls if c['name'] == body['name']][0]
-            i = cls.index(cl2del)
-
+             # Controllo sulla correttezza del nome inserito
+            i = -1
+            for n,c in enumerate(cls):
+                if c['name'] == body['name']:
+                    i = n
+            if i == -1:
+                return json.dumps({"text": f"There is no clinic named '{body['name']} {body['surname']}' in the system"})
+            
             cls.pop(i)
 
             # Aggiorna il catalog
@@ -380,13 +481,10 @@ class catalog():
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
 
+            return json.dumps({"text": f"Clinic {body['name']} successfully unsubscribed!"})
 
-
-            
-
-
-
-
+        else: 
+            raise cherrypy.HTTPError(500, f"{uri[0]} it is not an available command")
 
     def PUT(self,*uri,**params):
         
@@ -408,23 +506,32 @@ class catalog():
                                         #           under_safe:
                                         #       }
 
-            # Legge il body del POST richiesto da 'patient-rec.html' e lo visualizza nel terminal
+            # Legge il body del POST richiesto da 'patient-rec.html'
             devInfo=json.loads(cherrypy.request.body.read())
 
-            # Individua il paziente 
-            patInd = 0
-            for pat in catalog["patients"]:    
-                if  pat["personal_info"]["name"]+pat["personal_info"]["surname"] == devInfo["name"]+devInfo["surname"]:
-                    break
-                patInd+=1
-            pat = catalog["patients"][patInd]
+            # Controllo sulla correttezza del nome inserito
+            i = -1
+            for n,p in enumerate(catalog['patients']):
+                if p['personal_info']['name']+p['personal_info']['surname'] == devInfo['name']+devInfo['surname']:
+                    i = n
+            if i == -1:
+                return json.dumps({"text": f"There is no patient named '{devInfo['name']} {devInfo['surname']}' in the system"})
             
+            pat = catalog["patients"][i]
+
             # Individua il sensore
             devInd = 0
+            notFound = True
             for dev in pat["sensors"]:
                 if dev["type_ID"] == devInfo["devID"]:
+                    notFound = False
                     break
                 devInd+=1
+            
+            # Controllo sulla correttezza del sensore selezionato
+            if notFound:
+                return json.dumps({"text": f"Patient {devInfo['name']} {devInfo['surname']} does not have the selected device"})
+            
             dev = pat["sensors"][devInd]
 
             # Applica l'aggiornamento alla scheda sensore
@@ -434,10 +541,13 @@ class catalog():
             dev["under_safe"] = devInfo["under_safe"]
 
             # Aggiorna il catalog
-            catalog["patients"][patInd]["sensors"][devInd] = dev
+            catalog["patients"][i]["sensors"][devInd] = dev
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
 
+            return json.dumps({"text": f"Device information successfully updated!"})
+        else: 
+            raise cherrypy.HTTPError(500, f"{uri[0]} it is not an available command")
             
 #####################################################################################################
 
