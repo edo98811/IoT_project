@@ -200,7 +200,7 @@ if __name__ == '__main__':
         if count==0:
             device_connector1.change()
             device_connector2.change()
-            count=6
+            count=30
         device_connector1.get_readings()
         device_connector1.send()
         device_connector2.get_readings()
