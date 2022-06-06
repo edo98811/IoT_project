@@ -39,7 +39,7 @@ class FrontEnd:
     def DELETE(self, *uri, **params):
 
         body = json.loads(cherrypy.request.body.read())
-        resp = requests.put(f"{self.catalog_address}/{uri[0]}", json=body)
+        resp = requests.delete(f"{self.catalog_address}/{uri[0]}", json=body)
         return resp
 
 # In javascript devo dire ad ajax di aspettarsi un json (dataType = json) in risposta,
