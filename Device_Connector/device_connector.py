@@ -196,13 +196,13 @@ if __name__ == '__main__':
         count=count-1
         if count==1:
             device_connector1.change()
-            device_connector2.change()
+            #device_connector2.change()
         if count==0:
             device_connector1.change()
-            device_connector2.change()
+            #device_connector2.change()
             count=6
         device_connector1.get_readings()
         device_connector1.send()
-        device_connector2.get_readings()
-        device_connector2.send()
+        #device_connector2.get_readings()
+        #device_connector2.send()
 
