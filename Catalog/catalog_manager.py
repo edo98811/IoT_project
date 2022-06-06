@@ -395,7 +395,7 @@ class catalog():
             TS_uri[-1] = f"{chan2del}.json"
             url = '/'.join(TS_uri)
             resp = requests.delete(url,json={'api_key':APIkey})
-            if resp.status_code != 200:
+            if int(resp.status_code) != 200:
                 return json.dumps({"text": f"A problem occurred contacting Thingspeak during patient {body['name']} {body['surname']} unsubscription!"})
 
 
