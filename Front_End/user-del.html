@@ -126,7 +126,7 @@
             name = $("#clName").val();
 
             $.ajax({
-                    type: "DELETE",
+                    type: "POST",
                     url: '/c_del',
 
                     data: JSON.stringify({
@@ -149,7 +149,7 @@
             surname = $("#patSurname").val();
 
             $.ajax({
-                    type: "DELETE",
+                    type: "POST",
                     url: '/p_del',
 
                     data: JSON.stringify({
@@ -173,7 +173,7 @@
             surname = $("#docSurname").val();
 
             $.ajax({
-                    type: "DELETE",
+                    type: "POST",
                     url: '/d_del',
 
                     data: JSON.stringify({
