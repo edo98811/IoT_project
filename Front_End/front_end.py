@@ -29,7 +29,7 @@ class FrontEnd:
         body = json.loads(cherrypy.request.body.read())
 
         if uri[0] in ['p_del','d_del','c_del']:
-            resp = requests.delete(f"{self.catalog_address}/{uri[0]}", json=body)
+            resp = requests.delete(f"{self.catalog_address}/{'/'.join(uri)}")
         else:
             resp = requests.post(f"{self.catalog_address}/{uri[0]}", json=body)
         
@@ -40,7 +40,7 @@ class FrontEnd:
         body = json.loads(cherrypy.request.body.read())
         resp = requests.put(f"{self.catalog_address}/{uri[0]}", json=body)
         return resp
-        
+
 # In javascript devo dire ad ajax di aspettarsi un json (dataType = json) in risposta,
 # quindi il metodo nel server dovrà ritornare la risposta di cat_man (la quale deve essere un json),
 # e all'interno di tale dizionario potrò muovermi utilizzando la notazione [obj].[key] 

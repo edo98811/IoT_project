@@ -127,13 +127,13 @@
 
             $.ajax({
                     type: "POST",
-                    url: '/c_del',
+                    url: '/c_del/'+name,
 
-                    data: JSON.stringify({
-                            name: name
-                    }),
-                    contentType: "text/plain",
-                    dataType: "json",
+                    // data: JSON.stringify({
+                    //         name: name
+                    // }),
+                    // contentType: "text/plain",
+                    // dataType: "json",
                     success: function(response) {
                             let confirmMsg = document.getElementById('confirm');
                             confirmMsg.innerText = response.text
