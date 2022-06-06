@@ -47,7 +47,7 @@ class location_service():
         return json.dumps(next((p for p in self.nearest if p['patient_ID'] == params["patient_ID"]), None))
 
     def notify(self, topic, msg):
-        print('funzionaa')
+        #print('funzionaa')
 
     # template messaggio ricevuto: 
                                 # message = {			
@@ -78,7 +78,7 @@ class location_service():
         # alla prima iterazione (cioè quando i dizionari di self.clinics e di patient list sono vuoti) li inizializza, questo non è nell'init perchè il catalog e il location 
         # vengono inizializzati insieme, quindi all'inizio il catalog non può rispondere alle richieste
             if not self.clinics:
-                print(msg)
+                #print(msg)
                 #manda due richieste al catalog per la lista delle cliniche e dei pazienti (come scritte nel catalog)
                 self.clinics = json.loads(r.get(self.catalog_address + '/get_clinics').text)
                 self.patient_list = json.loads(r.get(self.catalog_address + '/get_patients').text)
@@ -147,7 +147,7 @@ class location_service():
             self.nearest[p_index]['clinic_location'] = self.clinics[nearest_index]['location']
             self.nearest[p_index]['clinic_topic'] = self.clinics[nearest_index]['clinic_topic'] # aggiungere il basetopic
 
-            print (json.dumps(self.nearest))
+            #print (json.dumps(self.nearest))
             time.sleep(0.1)
 
 

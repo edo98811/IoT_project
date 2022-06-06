@@ -81,14 +81,8 @@ Please, follow this measure (suggested by your personal doctor):\n\
 
                 elif float(measure['v']) < float(is_critical['safe_range'][0]) and time.time - self.time_s > self.tl:
                     part2 = f"({measure['v']} {sensor_info[n]['unit']} < {is_critical['safe_range'][1]} {sensor_info[n]['unit']})\n\
-<<<<<<< HEAD
                         Please, follow this measure (suggested by your personal doctor):\n\
                         {sensor_info[n]['under_safe']}"
-=======
-Please, follow this measure (suggested by your personal doctor):\n\
-        {sensor_info[n]['under_safe']}"
-
->>>>>>> 93d720908c407d571379f93412dc68222316133e
                     self.personal_alert(patient_ID,f"{part1} {part2}")
                     self.time_s = time.time()
 

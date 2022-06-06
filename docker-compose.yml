@@ -14,15 +14,15 @@ services:
     volumes:
       - ./Catalog:/Catalog
     
-  device_connector:
-    container_name: device_connector
-    image: device_connector_1
-    build: ./device_connector
-    networks:
-      - project
-    #network_mode: host
-    depends_on:
-      - catalog
+  # device_connector:
+  #   container_name: device_connector
+  #   image: device_connector_1
+  #   build: ./device_connector
+  #   networks:
+  #     - project
+  #   #network_mode: host
+  #   depends_on:
+  #     - catalog
 
   location_service:
     container_name: location_service

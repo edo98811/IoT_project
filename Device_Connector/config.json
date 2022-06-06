@@ -1,5 +1,5 @@
 {
-    "base_host":"catalog",
+    "base_host":"localhost",
     "base_port":"8081",
     "address":"/catalog_manager"
 }

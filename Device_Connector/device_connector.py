@@ -19,7 +19,7 @@ class sensor_def():                                                     ### defi
     # genera un numero casuale nel range impostato (self.range)
     def get_reading_safe(self):                                          
         value =  random.randint(self.safe_range[0],self.safe_range[1])
-        print (value)
+        #print (value)
         return value
 
     ### serve a noi per simulare una lettura fuori range -> 
@@ -68,7 +68,7 @@ class device_connector():                                                 #class
 
         #prende dal catalog i sensori assegnati a questo device connector 
         sensors = json.loads(requests.get(catalog_address + '/get_sensors',params= {'patient_ID':patient_ID}).text) #chiede la lista dei sensori del patient id che gli passo  
-        print(json.dumps(sensors))
+       #print(json.dumps(sensors))
                                 # sensors = [{
                                 #       "type": sensor["sensor_type"],
                                 #       "ID": sensor["sensor_ID"]
@@ -98,7 +98,7 @@ class device_connector():                                                 #class
                 'v':'',#value
                 'u':s.unit
             })
-        print(self._message)
+        #print(self._message)
         
     # prende il valore del sensore e lo inserisce nel messaggio 
     def get_readings(self): 
@@ -119,7 +119,7 @@ class device_connector():                                                 #class
 
         #print("sensori funzionanti")
         self.message['t'] = time.time()-self.basetime 
-        print(self.message)
+        #print(self.message)
 
     # cambia lo stato di criticità delle letture che arrivano dal device connector (per debug)
     def change(self):
@@ -183,11 +183,11 @@ if __name__ == '__main__':
     print(json.dumps(patient_info ))
     device_connector1 = device_connector(patient_info ["broker"], patient_info ["port"], patient_ID, patient_info ["topic"],catalog_address)
     
-     # per simulare un sistema più complesso viene inizializzato un secondo device connector che funzionerà in parallelo al primo 
-    patient_ID = 'p_2'
-    patient_info  = json.loads(requests.get(catalog_address + '/get_dc_info' ,params = {"patient_ID":patient_ID}).text)
-    print(patient_info )
-    device_connector2 = device_connector(patient_info ["broker"], patient_info ["port"], patient_ID, patient_info ["topic"], catalog_address)
+    #  # per simulare un sistema più complesso viene inizializzato un secondo device connector che funzionerà in parallelo al primo 
+    # patient_ID = 'p_2'
+    # patient_info  = json.loads(requests.get(catalog_address + '/get_dc_info' ,params = {"patient_ID":patient_ID}).text)
+    # print(patient_info )
+    # device_connector2 = device_connector(patient_info ["broker"], patient_info ["port"], patient_ID, patient_info ["topic"], catalog_address)
 
     count=30
     while True:
