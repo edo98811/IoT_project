@@ -25,15 +25,17 @@ class FrontEnd:
             return view
 
     def POST(self, *uri, **params):
-
-        if uri[0] in ['p_del','d_del','c_del']:
-            resp = requests.delete(f"{self.catalog_address}/{'/'.join(uri)}")
-        else:
-            body = json.loads(cherrypy.request.body.read())
-            resp = requests.post(f"{self.catalog_address}/{uri[0]}", json=body)
+    
+        body = json.loads(cherrypy.request.body.read())
+        resp = requests.post(f"{self.catalog_address}/{uri[0]}", json=body)
         
         return resp
         
+    def DELETE(self, *uri, **params):
+
+        resp = requests.delete(f"{self.catalog_address}/{'/'.join(uri)}")
+        return resp
+    
     def PUT(self, *uri, **params):
 
         body = json.loads(cherrypy.request.body.read())
