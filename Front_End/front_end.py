@@ -26,11 +26,10 @@ class FrontEnd:
 
     def POST(self, *uri, **params):
 
-        body = json.loads(cherrypy.request.body.read())
-
         if uri[0] in ['p_del','d_del','c_del']:
             resp = requests.delete(f"{self.catalog_address}/{'/'.join(uri)}")
         else:
+            body = json.loads(cherrypy.request.body.read())
             resp = requests.post(f"{self.catalog_address}/{uri[0]}", json=body)
         
         return resp
