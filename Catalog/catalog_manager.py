@@ -323,7 +323,7 @@ class catalog():
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
 
-            return json.dumps({"text": f"Clinic {newCls['name']} successfully registered!"})
+            return json.dumps({"text": f"Clinic {newCls['name']} successfully registered! (Clinic ID: {f_newCls['clinic_ID']})"})
 
         elif uri[0] == "s_rec":         #### ADD SENSOR ####
 
