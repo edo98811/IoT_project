@@ -119,7 +119,7 @@ class device_connector():                                                 #class
 
         #print("sensori funzionanti")
         self.message['t'] = time.time()-self.basetime 
-        #print(self.message)
+        print(self.message)
 
     # cambia lo stato di criticità delle letture che arrivano dal device connector (per debug)
     def change(self):
@@ -189,7 +189,7 @@ if __name__ == '__main__':
     # print(patient_info )
     # device_connector2 = device_connector(patient_info ["broker"], patient_info ["port"], patient_ID, patient_info ["topic"], catalog_address)
 
-    count=30
+    count=7
     while True:
         time.sleep(3)
         print(count)
