@@ -474,7 +474,7 @@ class catalog():
                 if c['name'] == body['name']:
                     i = n
             if i == -1:
-                return json.dumps({"text": f"There is no clinic named '{body['name']} {body['surname']}' in the system"})
+                return json.dumps({"text": f"There is no clinic named '{body['name']}' in the system"})
             
             cls.pop(i)
 
