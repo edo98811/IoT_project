@@ -113,9 +113,9 @@ class device_connector():                                                 #class
                 value = sensor.get_reading_safe() 
             if self.critical == 1: 
                 value = sensor.get_reading_alert()
-            print(value)
+            #print(value)
             self.message['e'][n+2]['v'] = value
-            print(n)
+            #print(n)
 
         #print("sensori funzionanti")
         self.message['t'] = time.time()-self.basetime 
