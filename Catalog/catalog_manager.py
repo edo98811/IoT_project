@@ -394,7 +394,10 @@ class catalog():
             TS_uri = catalog['services']['ThingSpeak']['url_delete_channel'].split('/')
             TS_uri[-1] = f"{chan2del}.json"
             url = '/'.join(TS_uri)
-            requests.delete(url,json={'api_key':APIkey})
+            resp = requests.delete(url,json={'api_key':APIkey})
+            if int(resp.status_code) != 200:
+                return json.dumps({"text": f"A problem occurred contacting Thingspeak during patient {body['name']} {body['surname']} unsubscription!"})
+
 
             # Aggiorna il catalog
             catalog["patients"] = pats
