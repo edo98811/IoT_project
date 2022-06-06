@@ -145,14 +145,9 @@
             surname = $("#patSurname").val();
 
             $.ajax({
-                    type: "POST",
-                    url: '/p_del',
+                    type: "DELETE",
+                    url: '/p_del/'+name+'/'+surname,
 
-                    data: JSON.stringify({
-                            name: name,
-                            surname: surname
-                    }),
-                    contentType: "text/plain",
                     dataType: "json",
                     success: function(response) {
                             let confirmMsg = document.getElementById('confirm');
@@ -169,14 +164,9 @@
             surname = $("#docSurname").val();
 
             $.ajax({
-                    type: "POST",
-                    url: '/d_del',
+                    type: "DELETE",
+                    url: '/d_del/'+name+'/'+surname,
 
-                    data: JSON.stringify({
-                            name: name,
-                            surname: surname
-                    }),
-                    contentType: "text/plain",
                     dataType: "json",
                     success: function(response) {
                             let confirmMsg = document.getElementById('confirm');

@@ -372,7 +372,9 @@ class catalog():
                                         # 		})
             
             pats = catalog["patients"]
-            body = json.loads(cherrypy.request.body.read())
+            body = {}
+            body['name'] = uri[1]
+            body['surname'] = uri[2]
 
             # Controllo sulla correttezza del nome inserito
             i = -1
@@ -419,7 +421,9 @@ class catalog():
                                         # 		})
             
             docs = catalog['doctors']
-            body = json.loads(cherrypy.request.body.read())
+            body = {}
+            body['name'] = uri[1]
+            body['surname'] = uri[2]
 
             # Controllo sulla correttezza del nome inserito
             i = -1
