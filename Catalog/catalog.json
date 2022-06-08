@@ -32,8 +32,8 @@
                     "type_ID": "s_3",
                     "is_critical": "personal",
                     "safe_range": [
-                        130.0,
-                        200.0
+                        80.0,
+                        90.0
                     ],
                     "over_safe": "__PROVA__",
                     "under_safe": "__PROVA__"
@@ -106,7 +106,7 @@
             "type_ID": "s_1",
             "type": "Heart rate monitor",
             "range": [
-                40.0,
+                20.0,
                 180.0
             ],
             "unit": "bpm"
