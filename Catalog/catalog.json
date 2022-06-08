@@ -68,18 +68,13 @@
                 },
                 {
                     "type_ID": "s_2",
-                    "is_critical": "informative",
+                    "is_critical": "personal",
                     "safe_range": [
                         70.0,
                         180.0
                     ],
                     "over_safe": "take insuline fast!",
                     "under_safe": "take glucose"
-                },
-                {
-                    "type_ID": "s_3",
-                    "is_critical": "",
-                    "safe_range": []
                 }
             ],
             "TS_chID": 1753812,

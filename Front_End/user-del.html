@@ -127,12 +127,8 @@
 
             $.ajax({
                     type: "DELETE",
-                    url: '/c_del',
+                    url: '/c_del/'+name,
 
-                    data: JSON.stringify({
-                            name: name
-                    }),
-                    contentType: "text/plain",
                     dataType: "json",
                     success: function(response) {
                             let confirmMsg = document.getElementById('confirm');
@@ -150,13 +146,8 @@
 
             $.ajax({
                     type: "DELETE",
-                    url: '/p_del',
+                    url: '/p_del/'+name+'/'+surname,
 
-                    data: JSON.stringify({
-                            name: name,
-                            surname: surname
-                    }),
-                    contentType: "text/plain",
                     dataType: "json",
                     success: function(response) {
                             let confirmMsg = document.getElementById('confirm');
@@ -174,13 +165,8 @@
 
             $.ajax({
                     type: "DELETE",
-                    url: '/d_del',
+                    url: '/d_del/'+name+'/'+surname,
 
-                    data: JSON.stringify({
-                            name: name,
-                            surname: surname
-                    }),
-                    contentType: "text/plain",
                     dataType: "json",
                     success: function(response) {
                             let confirmMsg = document.getElementById('confirm');
