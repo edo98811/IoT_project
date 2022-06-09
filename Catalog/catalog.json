@@ -157,15 +157,6 @@
                 "latitude": "45.463"
             },
             "clinic_topic": "alert/cl_3"
-        },
-        {
-            "clinic_ID": "cl_4",
-            "name": "Prova3",
-            "location": {
-                "longitude": "7.493",
-                "latitude": "45.967"
-            },
-            "clinic_topic": "alert/cl_4"
         }
     ],
     "services": {
