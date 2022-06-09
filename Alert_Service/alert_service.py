@@ -12,8 +12,7 @@ class alert_service:
         self.catalog_address = catalog_address 
         self.location_service = location_service
         self.baseTopic = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'MQTT'}).text)["baseTopic"]
-        self.time_s = time.time()
-        self.tl = 10 # time limit 
+
 
     def notify(self, topic, msg): 
 
@@ -70,6 +69,7 @@ class alert_service:
                 pass
 
             elif is_critical["is_critical"] == "personal":
+                
                 part1 = f"Pay attention {patient_info['personal_info']['name']} {patient_info['personal_info']['surname']}!\n\
                 Your device ({sensor_info[n]['type']}) is recording a value outside of your safe range"
 
@@ -103,6 +103,7 @@ class alert_service:
                     print(f"        reading out of critical range: read{measure['v']} critical range {is_critical['safe_range'][0]}-{is_critical['safe_range'][1]}")
             else: 
                 pass
+        
                 
     # allerta critica (medico e clinica)
     def critical_alert(self,patient_ID,problem):

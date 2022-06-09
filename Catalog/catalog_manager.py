@@ -72,11 +72,6 @@ class catalog():
                 # lo aggiunge ad una lista
                 sensors.append(s_msg)
 
-            # dato che la lista non si può mandare in un json creo un messaggio con una chiave associata alla lista
-
-            msg ={
-                'sl':sensors
-            } 
             return json.dumps(sensors)
 
         elif uri[0] == 'get_clinics':               # per info su tutte le cliniche

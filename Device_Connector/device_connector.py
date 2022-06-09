@@ -98,7 +98,7 @@ class device_connector():                                                 #class
                 'v':'',#value
                 'u':s.unit
             })
-        #print(self._message)
+        # print(self._message)
         
     # prende il valore del sensore e lo inserisce nel messaggio 
     def get_readings(self): 
@@ -131,6 +131,12 @@ class device_connector():                                                 #class
     #pubblica il messaggio scritto in get_readings
     def send(self):
 
+        ################# debug 
+        if self.critical:
+            print("Device connector sending values out of safe range")
+        #########################
+
+        
         self.dc.myPublish(self.topic, self.message) #pubblica nel topic corretto poi cancella il messaggio 
         del self.message # elimina il messaggio dopo averlo mandato
         # il messaggio dovrebbe essere ricevuto dal data analysis
