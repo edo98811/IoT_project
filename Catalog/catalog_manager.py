@@ -252,11 +252,6 @@ class catalog():
             # Legge il body del POST richiesto da 'patient-rec.html' e lo visualizza nel terminal
             newDoc=json.loads(cherrypy.request.body.read())
             
-            # Se il medico è gia registrato mostra un messaggio di errore
-            for d in docs:
-                if (d["name"]+d["surname"]).lower() == (newDoc["name"]+newDoc["surname"]).lower():
-                    return json.dumps({"text": f"{newDoc['name']} {newDoc['surname']} is already registered"})
-
             # Definisce la nuova scheda dottore e la inserisce nella variabile locale che rappresenta il catalog
             if docs:
                 newID = int(docs[-1]['doctor_ID'].split('_')[-1])+1
@@ -269,13 +264,19 @@ class catalog():
                 "surname": newDoc["surname"],
                 "chatID" : newDoc["chatID"]
                 }
+            
+            # Se il medico è gia registrato mostra un messaggio di errore
+            for d in docs:
+                if (d["name"]+d["surname"]+d["chatID"]).lower() == (f_newDoc["name"]+f_newDoc["surname"]+f_newDoc["chatID"]).lower():
+                    return json.dumps({"text": f"{newDoc['name']} {newDoc['surname']} is already registered"})
+
             catalog["doctors"].append(f_newDoc)
 
             # Aggiorna 'catalog.json'
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
 
-            return json.dumps({"text": f"Doctor {newDoc['name']} {newDoc['surname']} successfully registered!"})
+            return json.dumps({"text": f"Doctor {newDoc['name']} {newDoc['surname']} successfully registered! (doctor ID: {f_newDoc['doctor_ID']}"})
 
         elif uri[0] == "c_rec":         #### ADD CLINIC ####
 
