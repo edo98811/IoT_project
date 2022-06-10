@@ -361,25 +361,21 @@ class catalog():
 
         if uri[0] == "p_del":           #### DELETE PATIENT ####
 
-                                        # 	uri: /p_del
-                                        # 	body del post:
-                                        # 		{
-                                        # 			name: ,
-                                        # 			surname: 
-                                        # 		})
+                                        # 	uri: /p_del/<name>/<surname>/<ID>
             
             pats = catalog["patients"]
             body = {}
             body['name'] = uri[1]
             body['surname'] = uri[2]
+            body['ID'] = uri[3]
 
             # Controllo sulla correttezza del nome inserito
             i = -1
             for n,p in enumerate(pats):
-                if p['personal_info']['name']+p['personal_info']['surname'] == body['name']+body['surname']:
+                if p['personal_info']['name']+p['personal_info']['surname'] == body['name']+body['surname'] and p['patient_ID'] == body['ID']:
                     i = n
             if i == -1:
-                return json.dumps({"text": f"There is no patient named '{body['name']} {body['surname']}' in the system"})
+                return json.dumps({"text": f"There is no patient named '{body['name']} {body['surname']}' in the system, or you inserted the wrong ID"})
             
             pat2del = pats[i]
             

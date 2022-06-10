@@ -97,6 +97,7 @@
 
             <input type="text" id="patName" placeholder="Patient name" required>
             <input type="text" id="patSurname" placeholder="Patient surname" required>
+            <input type="text" id="patID" placeholder="Patient ID" required>
             
             <button type="submit">Unsubscribe patient from service</button>
         </form>
@@ -146,10 +147,11 @@
             event.preventDefault();
             name = $("#patName").val();
             surname = $("#patSurname").val();
+            ID = $("#patID").val();
 
             $.ajax({
                     type: "DELETE",
-                    url: '/p_del/'+name+'/'+surname,
+                    url: '/p_del/'+name+'/'+surname+'/'+ID,
 
                     dataType: "json",
                     success: function(response) {
