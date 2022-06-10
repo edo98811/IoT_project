@@ -406,25 +406,21 @@ class catalog():
 
         elif uri[0] == "d_del":         #### DELETE DOCTOR ####
         
-                                        # 	uri: /d_del
-                                        # 	body del post:
-                                        # 		{
-                                        # 			name: ,
-                                        # 			surname: 
-                                        # 		})
+                                        # 	uri: /d_del/<name>/<surname>/<ID>
             
             docs = catalog['doctors']
             body = {}
             body['name'] = uri[1]
             body['surname'] = uri[2]
+            body['ID'] = uri[3]
 
             # Controllo sulla correttezza del nome inserito
             i = -1
             for n,d in enumerate(docs):
-                if d['name']+d['surname'] == body['name']+body['surname']:
+                if d['name']+d['surname'] == body['name']+body['surname'] and d['doctor_ID'] == body['ID']:
                     i = n
             if i == -1:
-                return json.dumps({"text": f"There is no doctor named '{body['name']} {body['surname']}' in the system"})
+                return json.dumps({"text": f"There is no doctor named '{body['name']} {body['surname']}' in the system, or you inserted the wrong ID"})
             
 
             doc2del = docs[i]
