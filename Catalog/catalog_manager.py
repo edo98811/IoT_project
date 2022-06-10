@@ -175,11 +175,6 @@ class catalog():
             # Legge il body del POST richiesto da 'patient-rec.html' e lo visualizza nel terminal
             newPat=json.loads(cherrypy.request.body.read())
 
-            # Se il paziente è gia registrato mostra un messaggio di errore
-            for p in pats:
-                if (p["personal_info"]["name"]+p["personal_info"]["surname"]).lower() == (newPat["name"]+newPat["surname"]).lower():
-                    return json.dumps({"text": f"{newPat['name']} {newPat['surname']} was already registered"})
-
             # Definisce la lista di sensori del nuovo paziente
             newPatDevs=[]
             for s in newPat["devID"]:
@@ -227,6 +222,11 @@ class catalog():
                 }
             }
 
+            # Se il paziente è gia registrato mostra un messaggio di errore
+            for p in pats:
+                if p["personal_info"] == f_newPat["personal_info"]:
+                    return json.dumps({"text": f"{newPat['name']} {newPat['surname']} was already registered"})
+
             # Aggiorna il catalog
             catalog["patients"].append(f_newPat)
 
@@ -235,7 +235,7 @@ class catalog():
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
 
-            return json.dumps({"text": f"Patient {newPat['name']} {newPat['surname']} successfully registered!"})
+            return json.dumps({"text": f"Patient {newPat['name']} {newPat['surname']} successfully registered! (patient ID: {f_newPat['patient_ID']})"})
 
         elif uri[0] == "d_rec":         #### ADD DOCTOR ####
 
@@ -549,6 +549,7 @@ class catalog():
                 json.dump(catalog,f,indent=4)
 
             return json.dumps({"text": f"Device information successfully updated!"})
+        
         else: 
             raise cherrypy.HTTPError(500, f"{uri[0]} it is not an available command")
             
