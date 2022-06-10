@@ -262,12 +262,12 @@ class catalog():
                 "doctor_ID": f"d_{newID}",
                 "name": newDoc["name"],
                 "surname": newDoc["surname"],
-                "chatID" : newDoc["chatID"]
+                "chat_ID" : newDoc["chatID"]
                 }
             
             # Se il medico è gia registrato mostra un messaggio di errore
             for d in docs:
-                if (d["name"]+d["surname"]+d["chatID"]).lower() == (f_newDoc["name"]+f_newDoc["surname"]+f_newDoc["chatID"]).lower():
+                if (d["name"]+d["surname"]+d["chat_ID"]).lower() == (f_newDoc["name"]+f_newDoc["surname"]+f_newDoc["chat_ID"]).lower():
                     return json.dumps({"text": f"{newDoc['name']} {newDoc['surname']} is already registered"})
 
             catalog["doctors"].append(f_newDoc)
@@ -276,7 +276,7 @@ class catalog():
             with open(self.catalog_file,'w') as f:
                 json.dump(catalog,f,indent=4)
 
-            return json.dumps({"text": f"Doctor {newDoc['name']} {newDoc['surname']} successfully registered! (doctor ID: {f_newDoc['doctor_ID']}"})
+            return json.dumps({"text": f"Doctor {newDoc['name']} {newDoc['surname']} successfully registered! (doctor ID: {f_newDoc['doctor_ID']})"})
 
         elif uri[0] == "c_rec":         #### ADD CLINIC ####
 
