@@ -1,7 +1,7 @@
 from MyMQTT import *
 import requests
 import pprint
-#import schedule
+from schedule import repeat, every, run_pending
 import time
 from copy import deepcopy
 
@@ -21,7 +21,6 @@ class WK_Report:
                   }
 
 
-
     def weekly_report(self):
         # template url per i vari chart
         # https://api.thingspeak.com/channels/<CH_id>/charts/<field_id>?days=7       
@@ -33,11 +32,12 @@ class WK_Report:
         #   url_chart = ''
         # }
 
-
+        print('Sending weekly reports...')
         patients = json.loads(requests.get(self.catalog_address + '/get_patients').text)
         docs = json.loads(requests.get(f"{self.catalog_address}/avail_docs").text)
         # Definisce l'url 
         for pat in patients:
+            print('...')
 
             msg = deepcopy(self._msg) 
             msg['chat_ID'] = docs['chatID'][docs['docID'].index(pat['doctor_ID'])]
@@ -50,6 +50,8 @@ class WK_Report:
             msg['urls'] = [eval(f"f'{self._url}'") for i,chID in zip(range(1,len(msg['sensors'])+1),[pat['TS_chID']]*len(msg['sensors']))]
 
             self.client.myPublish(self.topic, msg)
+
+        print('All reports succesfully sent!')
 
 
 if __name__ == "__main__":
@@ -75,10 +77,17 @@ if __name__ == "__main__":
     url = json.loads(requests.get(catalog_address+"/get_service_info", params =  {'service_ID':'ThingSpeak'}).text)["url_weekly_report"]
 
     wkr = WK_Report(broker,port, topic, catalog_address, url)
-    #schedule.every().monday.at("9:00").do(wkr.weekly_report)
     time.sleep(3)
-    wkr.weekly_report()
 
+    #### Scommentare per passare alla programmazione settimanale
+    # every().monday.at('08:30').do(wkr.weekly_report)
+    
     print("Weekly Report started ...")
+
     while True:
-        time.sleep(3)
+        #### Scommentare per passare alla programmazione settimanale
+        # run_pending()
+        # time.sleep(3)
+
+        input("\nPress enter to send the weekly report")
+        wkr.weekly_report()
