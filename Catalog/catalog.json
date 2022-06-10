@@ -99,6 +99,12 @@
             "name": "Marco",
             "surname": "Gagliardi",
             "chat_ID": "612859950"
+        },
+        {
+            "doctor_ID": "d_3",
+            "name": "Mario",
+            "surname": "Rossi",
+            "chat_ID": "327778115"
         }
     ],
     "sensors_type": [
