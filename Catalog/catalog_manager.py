@@ -459,23 +459,20 @@ class catalog():
 
         elif uri[0] == "c_del":         #### DELETE CLINIC ####
 
-                                        # 	uri: /c_del
-                                        # 	body del post:
-                                        # 		{
-                                        # 			name: 
-                                        # 		})
-                    
+                                        # 	uri: /c_del/<cl_name>/<cl_ID>
+            
             cls = catalog['clinics']
             body = {}
             body['name'] = uri[1]
+            body['ID'] = uri[2]
 
              # Controllo sulla correttezza del nome inserito
             i = -1
             for n,c in enumerate(cls):
-                if c['name'] == body['name']:
+                if c['name'] == body['name'] and c['clinic_ID'] == body['ID']:
                     i = n
             if i == -1:
-                return json.dumps({"text": f"There is no clinic named '{body['name']}' in the system"})
+                return json.dumps({"text": f"There is no clinic named '{body['name']}' in the system, or you inserted the wrong ID"})
             
             cls.pop(i)
 

@@ -87,6 +87,8 @@
             
             <input type="text" id="clName" placeholder="Clinic name" required>
             
+            <input type="text" id="clID" placeholder="Clinic ID" required>
+            
             <button type="submit">Unsubscribe clinic from service</button>
         </form>
 
@@ -124,10 +126,11 @@
 
             event.preventDefault();
             name = $("#clName").val();
+            clID = $("#clID").val();
 
             $.ajax({
                     type: "DELETE",
-                    url: '/c_del/'+name,
+                    url: '/c_del/'+name+'/'+clID,
 
                     dataType: "json",
                     success: function(response) {
