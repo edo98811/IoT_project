@@ -91,7 +91,7 @@
 
                 <hr>
 
-                <form onsubmit="sendPOSTrequest()">
+                <form onsubmit="sendPUTrequest()">
                         <h2>Patient device update</h2>
 
                         <p><label for="name">Patient name:</label>
@@ -100,6 +100,10 @@
 
                         <p><label for="surname">Patient surname:</label>
                                 <input type="text" name="surname" id="surname" required>
+                        </p>
+
+                        <p><label for="patID">Patient surname:</label>
+                                <input type="text" name="patID" id="patID" required>
                         </p>
                         <br>
 
@@ -180,11 +184,12 @@
 
                         })
 
-                function sendPOSTrequest() {
+                function sendPUTrequest() {
 
                         event.preventDefault();
                         name = $("#name").val();
                         surname = $("#surname").val();
+                        patID = $("patID").val();
                         devID = $("#devs").val();
                         crit = $("#crit").val();
                         min = $("#min").val();
@@ -199,6 +204,7 @@
                                 data: JSON.stringify({
                                         name: name,
                                         surname: surname,
+                                        patID: patID,
                                         devID: devID,
                                         is_critical: crit,
                                         safe_range: [min, max],

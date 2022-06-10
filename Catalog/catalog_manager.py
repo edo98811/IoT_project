@@ -493,6 +493,7 @@ class catalog():
                                         # 		{
                                         # 			name: ,
                                         # 			surname: ,
+                                        #           patID: ,
                                         # 			devID: ,
                                         #           is_critical: ,
                                         #           safe_range: ["min", "max"],
@@ -506,10 +507,10 @@ class catalog():
             # Controllo sulla correttezza del nome inserito
             i = -1
             for n,p in enumerate(catalog['patients']):
-                if p['personal_info']['name']+p['personal_info']['surname'] == devInfo['name']+devInfo['surname']:
+                if p['personal_info']['name']+p['personal_info']['surname']+p['patient_ID'] == devInfo['name']+devInfo['surname']+devInfo['patID']:
                     i = n
             if i == -1:
-                return json.dumps({"text": f"There is no patient named '{devInfo['name']} {devInfo['surname']}' in the system"})
+                return json.dumps({"text": f"There is no patient named '{devInfo['name']} {devInfo['surname']}' in the system, or you inserted the wrong ID"})
             
             pat = catalog["patients"][i]
 
