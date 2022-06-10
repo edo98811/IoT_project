@@ -14,6 +14,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 #Run the python script
-ENTRYPOINT [ "python", "alert_service.py" ]
+ENTRYPOINT [ "python", "-u", "alert_service.py" ]
 
 EXPOSE 8084
