@@ -63,7 +63,7 @@ services:
       - 8084
 
   telebot:
-    container_name: Telebot
+    container_name: telebot
     image: telebot_1
     build: ./Telebot
     networks:
@@ -73,7 +73,7 @@ services:
       - catalog
 
   tsAdaptor:
-    container_name: tsAdaptor
+    container_name: ts_adaptor
     image: tsadaptor_1
     build: ./ts_Adaptor
     networks:
@@ -83,7 +83,7 @@ services:
       - catalog
 
   Weekly_report:
-    container_name: Weekly_report
+    container_name: w eekly_report
     image: weekly_report_1
     build: ./Weekly_report
     networks:
