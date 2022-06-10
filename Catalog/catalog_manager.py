@@ -293,11 +293,6 @@ class catalog():
             # Legge il body del POST richiesto da 'patient-rec.html' e lo visualizza nel terminal
             newCls=json.loads(cherrypy.request.body.read())
 
-            # Se la clinica è gia registrata mostra un messaggio di errore
-            for c in cls:
-                if c["name"].lower() == newCls["name"].lower():
-                    return json.dumps({"text": f"Clinic {newCls['name']} was already registered"})
-
             # Definisce la nuova scheda clinics e la inserisce nella variabile locale che rappresenta il catalog
             if cls:
                 newID = int(cls[-1]['clinic_ID'].split('_')[-1])+1
@@ -313,6 +308,12 @@ class catalog():
                 },
                 "clinic_topic": f"alert/cl_{newID}"
             }
+
+            # Se la clinica è gia registrata mostra un messaggio di errore
+            for c in cls:
+                if (c["name"]+json.dumps(c['location'])).lower() == (f_newCls["name"]+json.dumps(f_newCls['location'])).lower():
+                    return json.dumps({"text": f"Clinic {newCls['name']} was already registered"})
+
             catalog["clinics"].append(f_newCls)
 
             # Aggiorna 'catalog.json'
