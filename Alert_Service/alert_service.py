@@ -63,7 +63,7 @@ class alert_service:
                                 #       'safe_range':[numero1, numero2]
                                 #       'is_critical':
                                 # }
-            print(f"    sensor {n}, type: {measure['n']}, critical info: {is_critical['s_critical']}")
+            print(f"    sensor {n}, type: {measure['n']}, critical info: {is_critical['is_critical']}")
             if is_critical["is_critical"] == "not_critical":
                 pass
 
