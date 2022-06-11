@@ -83,7 +83,8 @@ if __name__ == "__main__":
     # every().monday.at('08:30').do(wkr.weekly_report)
     
     print("Weekly Report started ...")
-    # wkr.weekly_report()
+    # time.sleep(30)
+    wkr.weekly_report()
 
     while True:
         #### Scommentare per passare alla programmazione settimanale

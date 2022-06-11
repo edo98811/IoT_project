@@ -99,6 +99,9 @@ class TeleBot:
         
         # leggo il messaggio ed estraggo il chat_ID del medico a cui deve essere mandata la notifica 
         msg=json.loads(message) 
+        
+        if topic.split('_')[-1] == 'alert':
+            print(f"\nAlert occuring for {msg['patient_ID']}")
 
         chat_ID = msg["chat_ID"]
         
@@ -116,18 +119,20 @@ class TeleBot:
         
 
         if topic_split == personal_alert:   
+            print(f"    Type: personal")
             alert=msg["message"]
             personal_alert=f"ATTENTION!!!\n{alert}" 
             self.bot.sendMessage(chat_ID, text=personal_alert)
-            print(personal_alert)
+            print(f"Message successfully sent to chat ID: {chat_ID}")
 
         elif topic_split == critical_alert:
+            print(f"    Type: critical")
             alert=msg["message"]
             full_name = msg["full_name"]
             critical_alert=f"ATTENTION {full_name}!!!\n{alert}"
             
             self.bot.sendMessage(chat_ID, text=critical_alert)
-            print(critical_alert)
+            print(f"Message successfully sent to chat ID: {chat_ID}")
 
         elif topic_split == "weekly_report":
                 # Template del messaggio MQTT:

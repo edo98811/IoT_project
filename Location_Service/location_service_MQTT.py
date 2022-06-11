@@ -78,7 +78,7 @@ class location_service():
         # alla prima iterazione (cioè quando i dizionari di self.clinics e di patient list sono vuoti) li inizializza, questo non è nell'init perchè il catalog e il location 
         # vengono inizializzati insieme, quindi all'inizio il catalog non può rispondere alle richieste
             if not self.clinics:
-                #print(msg)
+                
                 #manda due richieste al catalog per la lista delle cliniche e dei pazienti (come scritte nel catalog)
                 self.clinics = json.loads(r.get(self.catalog_address + '/get_clinics').text)
                 self.patient_list = json.loads(r.get(self.catalog_address + '/get_patients').text)

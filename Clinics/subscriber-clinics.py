@@ -22,13 +22,11 @@ class Clinica1(object):					#Subscriber Clinica Alert
 		latitudine=msg['patient_location']['latitude']
 		longitudine=msg['patient_location']['longitude']
 		problema=msg['message']
-		doctor=msg['doctor_name']
+		doctor=f"{msg['doctor_name']} {msg['doctor_surname']}"
 		chat_id=msg['chat_ID']
-		print(f'ATTENTION!\n The patient {name} pID:{patientID} needs an ambulance at the coordinates lat:{latitudine} long:{longitudine}!\n Suffers from {problema} , contact his Doctor {doctor} chat ID number:{chat_id}')
-		#stampo a video l'indirizzo del bot che conduce alla mappa
-		#print(f'\n https://www.latlong.net/c/?lat=&long=')
+		print(f'{problema}\nSend an ambulance at the coordinates lat:{latitudine:.4f} long:{longitudine:.4f} and contact the personal doctor: {doctor}')
 		url_maps= (json.loads(r.get(catalog_address+"/get_service_info",params={'service_ID':'Clinics_client'}).text)['url_maps']).split('&')
-		print (f'link looking at the position: {url_maps[0]}{latitudine}&{url_maps[1]}{longitudine}')
+		print (f'\nLink pointing at the position: \n\n\t{url_maps[0]}{latitudine}&{url_maps[1]}{longitudine}')
 
 
 
@@ -66,7 +64,7 @@ if __name__=='__main__':
 
 				done=False
 				while not done:
-					time.sleep(1)
+					time.sleep(2)
 		if k==0:
 			print('The clinics is not subscriber!')
 			

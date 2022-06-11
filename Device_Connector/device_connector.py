@@ -88,7 +88,6 @@ class device_connector():                                                 #class
         for sensor in sensors:
 
             # utilizzando la classe sensor_def definisce i sensori associati al device connector
-            #print(sensor['type_ID']+sensor['type']+sensor["range"]+ sensor["safe_range"]+ sensor["unit"])
             s = sensor_def(sensor['type_ID'],sensor['type'],sensor["range"], sensor["safe_range"], sensor["unit"])
             self._sensors.append(s)
 
@@ -102,6 +101,7 @@ class device_connector():                                                 #class
         
     # prende il valore del sensore e lo inserisce nel messaggio 
     def get_readings(self): 
+        print("\nGetting readings...")
         self.message = deepcopy(self._message)
         # genera una posizione casuale vicina a quella attuale, latitudine e longitudine vengono modificati casualmente
         self.message['e'][0]['v'] = self.message['e'][0]['v'] + random.randint(-10, 10)*0.0001 # ipotizzando che la posizione vari casualmente di questa quantità
@@ -109,18 +109,17 @@ class device_connector():                                                 #class
 
         # itera su tutti i sensori memorizzati e aggiorna il contenuto dei campi del message, poi lo manda
         for n,sensor in enumerate(self._sensors):
+            
             if self.critical == 0:
                 value = sensor.get_reading_safe() 
-            if self.critical == 1: 
+            elif self.critical == 1: 
                 value = sensor.get_reading_alert()
-            #print(value)
+
             self.message['e'][n+2]['v'] = value
-            #print(n)
-
-        #print("sensori funzionanti")
+            print(f"Sensor type: {self.message['e'][n+2]['n']}   -   Value: {value} {self.message['e'][n+2]['u']}")
+            
         self.message['t'] = time.time()-self.basetime 
-        print(self.message)
-
+        
     # cambia lo stato di criticità delle letture che arrivano dal device connector (per debug)
     def change(self):
      if self.critical==0:
@@ -140,6 +139,8 @@ class device_connector():                                                 #class
         self.dc.myPublish(self.topic, self.message) #pubblica nel topic corretto poi cancella il messaggio 
         del self.message # elimina il messaggio dopo averlo mandato
         # il messaggio dovrebbe essere ricevuto dal data analysis
+
+        print("Message sent!")
 
         # template messaggio inviato: 
                                 # message = {			
@@ -175,7 +176,6 @@ if __name__ == '__main__':
 
     # Di default il DC sa a quale paziente è associato, dunzue il patient_ID è definito all'interno del suo codice
     patient_ID = 'p_1'
-    print(catalog_address)
     # manda una richiesta al catalog per i dati della connessione MQTT del device connector
     patient_info  = json.loads(requests.get(catalog_address + '/get_dc_info' , params= {"patient_ID":patient_ID}).text)
     # template messaggio ricevuto dal catalog
@@ -186,9 +186,8 @@ if __name__ == '__main__':
                                 #         }
     
     # Definizione del DC_1
-    print(json.dumps(patient_info ))
-    device_connector1 = device_connector(patient_info ["broker"], patient_info ["port"], patient_ID, patient_info ["topic"],catalog_address)
-    
+    device_connector1 = device_connector(patient_info ["broker"], patient_info ["port"], patient_ID, patient_info["topic"],catalog_address)
+    print(f"Publishing on topic: {patient_info['topic']}")
     #  # per simulare un sistema più complesso viene inizializzato un secondo device connector che funzionerà in parallelo al primo 
     # patient_ID = 'p_2'
     # patient_info  = json.loads(requests.get(catalog_address + '/get_dc_info' ,params = {"patient_ID":patient_ID}).text)
@@ -197,8 +196,8 @@ if __name__ == '__main__':
 
     count=7
     while True:
-        time.sleep(3)
-        print(count)
+        time.sleep(5)
+        # print(count)
         count=count-1
         if count==1:
             device_connector1.change()
@@ -206,7 +205,7 @@ if __name__ == '__main__':
         if count==0:
             device_connector1.change()
             #device_connector2.change()
-            count=6
+            count=7
         device_connector1.get_readings()
         device_connector1.send()
         #device_connector2.get_readings()

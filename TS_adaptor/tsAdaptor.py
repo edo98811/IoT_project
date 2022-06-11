@@ -2,6 +2,7 @@ from MyMQTT import *
 import requests
 import time
 from copy import deepcopy
+from pprint import pprint
 
 class TS_Adaptor:
     def __init__(self, broker, port, topic, catalog_address, url):
@@ -44,9 +45,13 @@ class TS_Adaptor:
 
 
     def notify(self,topic,message):
+
+        print(f"Message from device connector {topic.split('/')[-1]} received:\n")
         
         # Converte il messaggio in formato json
         message = json.loads(message)
+        pprint(message)
+        print("\n")
         
         # Ottiene il json del paziente da cui arriva il messaggio
         dc = int(topic.split('_')[-1])-1
@@ -76,7 +81,9 @@ class TS_Adaptor:
 
         # Inoltra la richiesta di POST
         resp = requests.post(newUrl,json=body)
-        print(f"{message['bn']} data updated")
+        print(f"\n{message['bn']} data updated!")
+        for meas in message['e'][2:]:
+            print(f"{meas['n']} --> {meas['v']} {meas['u']}")
 
 ##################################################################################################
 
@@ -104,10 +111,9 @@ if __name__ == "__main__":
 
     # Inizializza oggetto TS_Adaptor
     tsa = TS_Adaptor(broker, port, topic, catalog_address, url)
-    print(f"{broker}:{port}/{topic}\n\n{url} ")
-    print("Adaptor started...")
+    print("\nAdaptor started...")
 
     while True:
         time.sleep(3)
-        print('...')
+        
 

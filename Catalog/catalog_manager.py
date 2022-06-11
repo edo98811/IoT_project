@@ -338,7 +338,7 @@ class catalog():
             f_newSen={
                 "type_ID": f"s_{newID}",
                 "type": newSen["type"],
-                "range": newSen["range"],
+                "range": [float(val) for val in newSen["range"]],
                 "unit": newSen["unit"]
                 }
 
@@ -431,10 +431,10 @@ class catalog():
             stillPats = [p for p in pats if p['doctor_ID'] == docID]
 
             if stillPats:
-                msg = f"Doctor {body['name']} {body['surname']} has some patients still registered to the system:<br>"
+                msg = f"Doctor {body['name']} {body['surname']} has some patients still registered to the system:\n"
                 for p in stillPats:
-                    msg += f"{p['personal_info']['name']} {p['personal_info']['surname']}<br>"
-                msg += "<br>Once these patients will be unsubscribed, the doctor will be able to unsubscribe too"
+                    msg += f"\t- {p['personal_info']['name']} {p['personal_info']['surname']}\n"
+                msg += "\nOnce these patients will be unsubscribed, the doctor will be able to unsubscribe too"
                 return json.dumps({"text": msg})
 
             else:
@@ -489,7 +489,7 @@ class catalog():
         if uri[0] == "s_up":          #### UPDATE DEVICE ####
             
                                         # 	uri: /s_up
-                                        # 	body del post:
+                                        # 	body del put:
                                         # 		{
                                         # 			name: ,
                                         # 			surname: ,
@@ -503,6 +503,7 @@ class catalog():
 
             # Legge il body del POST richiesto da 'patient-rec.html'
             devInfo=json.loads(cherrypy.request.body.read())
+            print(devInfo)
 
             # Controllo sulla correttezza del nome inserito
             i = -1

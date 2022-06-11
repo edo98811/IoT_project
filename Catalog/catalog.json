@@ -92,19 +92,13 @@
             "doctor_ID": "d_1",
             "name": "Edoardo",
             "surname": "Filippi",
-            "chat_ID": "327778115"
+            "chat_ID": "486580635"
         },
         {
             "doctor_ID": "d_2",
             "name": "Marco",
             "surname": "Gagliardi",
             "chat_ID": "612859950"
-        },
-        {
-            "doctor_ID": "d_3",
-            "name": "Mario",
-            "surname": "Rossi",
-            "chat_ID": "327778115"
         }
     ],
     "sensors_type": [
@@ -128,21 +122,30 @@
         },
         {
             "type_ID": "s_3",
-            "type": "oximeter",
+            "type": "Oximeter",
             "range": [
                 70,
                 100
             ],
             "unit": "spO2"
+        },
+        {
+            "type_ID": "s_4",
+            "type": "Temperature",
+            "range": [
+                32.0,
+                45.0
+            ],
+            "unit": "C"
         }
     ],
     "clinics": [
         {
             "clinic_ID": "cl_1",
-            "name": "St. Mary Clinic",
+            "name": "Torino Sud",
             "location": {
-                "longitude": "45.03726",
-                "latitude": "7.64310"
+                "longitude": "7.64310",
+                "latitude": "45.03726"
             },
             "clinic_topic": "alert/cl_1"
         },
@@ -150,17 +153,17 @@
             "clinic_ID": "cl_2",
             "name": "San Paolo",
             "location": {
-                "longitude": "7.542",
-                "latitude": "45.837"
+                "longitude": "7.6485",
+                "latitude": "45.0628"
             },
             "clinic_topic": "alert/cl_2"
         },
         {
             "clinic_ID": "cl_3",
-            "name": "prova 2",
+            "name": "Vanchiglia",
             "location": {
-                "longitude": "7.345",
-                "latitude": "45.463"
+                "longitude": "7.7024",
+                "latitude": "45.0718"
             },
             "clinic_topic": "alert/cl_3"
         }

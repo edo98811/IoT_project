@@ -43,7 +43,7 @@ class alert_service:
         msg = json.loads(msg)
         patient_ID = msg['bn']
         measures = msg['e'][2:] # le prime 2 sono la posizione
-        print(f"message received from: {patient_ID}")
+        print(f"\nMeasures received from: {patient_ID}")
         # itera lungo le misurazioni dei singoli sensori e controlla la criticità associata ad essa, nel caso ci sia un problema richiama i metodi di notifica 
         # i metodi per le procedure di allerta sono definiti sotto 
         # print(measures)
@@ -63,43 +63,42 @@ class alert_service:
                                 #       'safe_range':[numero1, numero2]
                                 #       'is_critical':
                                 # }
-            print(f"    sensor {n}, type: {measure['n']}, critical info: {is_critical['is_critical']}")
+            print(f"    {measure['n']}, importance level: {is_critical['is_critical']}")
             if is_critical["is_critical"] == "not_critical":
                 pass
 
             elif is_critical["is_critical"] == "personal":
                 
                 part1 = f"Pay attention {patient_info['personal_info']['name']} {patient_info['personal_info']['surname']}!\n\
-                Your device ({sensor_info[n]['type']}) is recording a value outside of your safe range"
+Your device ({sensor_info[n]['type']}) is recording a value outside of your safe range"
 
                 if float(measure['v']) > float(is_critical['safe_range'][1]): 
+                    print(f"        reading out of safe range! --> value: {measure['v']} {measure['u']} - safe range: {is_critical['safe_range'][0]} {measure['u']} - {is_critical['safe_range'][1]} {measure['u']}")
                     part2 = f"({measure['v']} {sensor_info[n]['unit']} > {is_critical['safe_range'][1]} {sensor_info[n]['unit']})\n\
-                        Please, follow this measure (suggested by your personal doctor):\n\
-                                {sensor_info[n]['over_safe']}"
+Please, follow this measure (suggested by your personal doctor):\n\
+    {sensor_info[n]['over_safe']}"
                     self.personal_alert(patient_ID, f"{part1} {part2}")
 
-                    print(f"        reading out of critical range: read{measure['v']} critical range {is_critical['safe_range'][0]}-{is_critical['safe_range'][1]}")
-
+                    
                 elif float(measure['v']) < float(is_critical['safe_range'][0]): 
+                    print(f"        reading out of safe range! --> value: {measure['v']} {measure['u']} - safe range: {is_critical['safe_range'][0]} {measure['u']} - {is_critical['safe_range'][1]} {measure['u']}")
                     part2 = f"({measure['v']} {sensor_info[n]['unit']} < {is_critical['safe_range'][1]} {sensor_info[n]['unit']})\n\
-                        Please, follow this measure (suggested by your personal doctor):\n\
-                        {sensor_info[n]['under_safe']}"
+Please, follow this measure (suggested by your personal doctor):\n\
+    {sensor_info[n]['under_safe']}"
                     self.personal_alert(patient_ID, f"{part1} {part2}")
-
-                    print(f"        reading out of critical range: read{measure['v']} critical range {is_critical['safe_range'][0]}-{is_critical['safe_range'][1]}")
 
             elif is_critical["is_critical"] == "critical":
                 if (float(measure['v']) > float(is_critical['safe_range'][1])) or (float(measure['v']) < float(is_critical['safe_range'][0])): #and time.time - self.time_s > self.tl:
+                    print(f"        reading out of safe range! --> value: {measure['v']} {measure['u']} - safe range: {is_critical['safe_range'][0]} {measure['u']} - {is_critical['safe_range'][1]} {measure['u']}")
                     problem = f"Warning! Critical event ongoing for patient: {patient_info['personal_info']['name']} {patient_info['personal_info']['surname']}\n\
-                        Recorded by device: {sensor_info[n]['type']}\n\
-                        Value: {measure['v']} {sensor_info[n]['unit']}\n\
-                        Patient location:\n\
-                            \tlat = {msg['e'][0]['v']}\n\
-                            \tlon = {msg['e'][1]['v']}\n\
-                        "
+Recorded by device: {sensor_info[n]['type']}\n\
+Value: {measure['v']} {sensor_info[n]['unit']}\n\
+Patient location:\n\
+    \tlat = {msg['e'][0]['v']:.4f}\n\
+    \tlon = {msg['e'][1]['v']:.4f}\n\
+"
                     self.critical_alert(patient_ID,problem) # a questo punto chiamo la funzione alert (basta richiamarlo ogni volta)
 
-                    print(f"        reading out of critical range: read{measure['v']} critical range {is_critical['safe_range'][0]}-{is_critical['safe_range'][1]}")
             else: 
                 pass
         
@@ -107,7 +106,7 @@ class alert_service:
     # allerta critica (medico e clinica)
     def critical_alert(self,patient_ID,problem):
 
-        print(f'critical alert{patient_ID} - {problem}')
+        print(f'Sending critical alert - {patient_ID}')
         # get al catalog per informazioni di contatto del medico 
         doctor = json.loads(r.get(self.catalog_address + '/get_doctor_info',params = {"patient_ID":patient_ID}).text)
 
@@ -118,7 +117,6 @@ class alert_service:
                                 # }
 
         # get al location service per informazioni di contatto della 
-        # print(self.location_service)
         nearest_clinic = json.loads(r.get(self.location_service, params = {"patient_ID":patient_ID}).text)
 
         patient_info = json.loads(r.get(self.catalog_address + '/get_patient_info',params = {"patient_ID":patient_ID}).text)
@@ -146,7 +144,8 @@ class alert_service:
                     "longitude":nearest_clinic['patient_location']["longitude"]
                     },
                 "message":problem, # messaggio che verrà letto 
-                "doctor_name":doctor["name"], 
+                "doctor_name":doctor["name"],
+                "doctor_surname":doctor["surname"], 
                 "chat_ID":doctor["chat_ID"]
             }
 
@@ -179,24 +178,26 @@ class alert_service:
             #print ('error: patient location unknown') # in questo caso manda solo un messaggio la medico (non è aggiornata la posizione del paziente)
 
     # allerta informativa (paziente)
-        print(f"         critical alert message sent to: {self.baseTopic + '/' + telebot_critical}")
+        print(f"    Critical alert message published on: {self.baseTopic + '/' + telebot_critical}")
+
     def personal_alert(self,patient_ID,problem):
 
         # get al catalog per informazioni di contatto del paziente
-        print(f'personal alert - {patient_ID} - {problem}')
+        print(f'Sending personal alert - {patient_ID} ')
         patient = json.loads(r.get(self.catalog_address + '/get_patient_info',params = {"patient_ID":patient_ID}).text)
 
         # messaggio
         msg = {
             "message":problem,   
-            "chat_ID":patient["personal_info"]["chat_ID"]
+            "chat_ID":patient["personal_info"]["chat_ID"],
+            "patient_ID":patient["patient_ID"]
         }
 
         # messaggio mandato al paziente (da aggiornare)
         telebot_personal = json.loads(r.get(catalog_address +"/get_service_info", params = {'service_ID':'telegram_bot'}).text)["personal_alert_topic"]
         
         self.alert_service.myPublish(self.baseTopic + '/' + telebot_personal , msg)
-        print(f"         personal alert message sent to: {self.baseTopic + '/' + telebot_personal}")
+        print(f"    Personal alert message published on: {self.baseTopic + '/' + telebot_personal}")
 
 if __name__ =='__main__':
 
@@ -206,8 +207,6 @@ if __name__ =='__main__':
     host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
     port = cat["base_port"]
     catalog_address = "http://"+host+":"+port+cat["address"]
-
-    print(catalog_address)
 ####
   
     # Ottiene dal catalog l'indirizzo del servizio di location
