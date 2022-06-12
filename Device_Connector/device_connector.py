@@ -166,7 +166,7 @@ class device_connector():                                               ###class
 
 if __name__ == '__main__':
     
-####       CODICE DI "DEBUG"                                                            
+####                                                               
     with open("config.json",'r') as f:                                               
         cat = json.load(f)                                                              
     host = cat["base_host"]                                                            

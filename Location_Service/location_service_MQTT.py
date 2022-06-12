@@ -156,10 +156,10 @@ class location_service():
 
 if __name__ == '__main__':
 
-    ####       CODICE DI "DEBUG"                                                        # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
-    with open("config.json",'r') as f:                                                 # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
-        cat = json.load(f)                                                           # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
-    host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
+    ####                                                           
+    with open("config.json",'r') as f:                                                
+        cat = json.load(f)                                                           
+    host = cat["base_host"]                                                      
     port = cat["base_port"]
     catalog_address = "http://"+host+":"+port+ cat["address"]
     ####
@@ -183,7 +183,7 @@ if __name__ == '__main__':
       
     cherrypy.config.update({'server.socket_host': settings['host'],
                             'server.socket_port': int(settings['port'])})
-    # this is needed if you want to have the custom error page
+    
     # cherrypy.config.update({'error_page.400': error_page_400}) # potremmo metterla anche noi questa pagina
     cherrypy.engine.start()
     cherrypy.engine.block()
