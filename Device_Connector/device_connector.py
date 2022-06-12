@@ -38,7 +38,7 @@ class sensor_def():                                                     ### defi
     
 
 
-class device_connector():                                                 #classe del device connector (publisher MQTT)
+class device_connector():                                               ###classe del device connector (publisher MQTT)
     def __init__(self, broker, port, patient_ID, topic, catalog_address):
 
         # avvia la connessione MQTT
@@ -166,10 +166,10 @@ class device_connector():                                                 #class
 
 if __name__ == '__main__':
     
-####       CODICE DI "DEBUG"                                                            # Per motivi di comodità di progettazione e debug, preleva l'indirizzo del 
-    with open("config.json",'r') as f:                                               # catalog manager dal catalog stesso, in modo da poter avere le informazioni 
-        cat = json.load(f)                                                              # centralizzate, e in caso di necessità cambiando tale indirizzo nel catalog,
-    host = cat["base_host"]                                                             # tutti i codici si adattano al cambio
+####       CODICE DI "DEBUG"                                                            
+    with open("config.json",'r') as f:                                               
+        cat = json.load(f)                                                              
+    host = cat["base_host"]                                                            
     port = cat["base_port"]
     catalog_address = "http://"+host+":"+port+cat["address"]
 ####
